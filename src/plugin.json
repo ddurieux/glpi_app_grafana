@@ -9,8 +9,6 @@
   ],
 
   "css": {
-    "dark":  "css/dark.css",
-    "light":  "css/light.css"
   },
 
   "info": {
@@ -35,7 +33,7 @@
   "includes": [
     {"type": "dashboard", "name": "GLPI App Dashboard", "path": "dashboards/glpi_app_dashboard.json"},
     {"type": "panel", "name": "GLPI App Panel"},
-    {"type": "datasource", "name": "GLPI App Datasource"}
+    {"type": "datasource", "name": "GLPI"}
   ],
 
   "dependencies": {

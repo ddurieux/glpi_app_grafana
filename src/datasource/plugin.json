@@ -1,0 +1,5 @@
+{
+  "type": "datasource",
+  "name": "GLPI",
+  "id": "grafana-glpi-app-datasource"
+}

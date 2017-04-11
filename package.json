@@ -1,0 +1,38 @@
+{
+  "name": "glpi_app_grafana",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-plugin-transform-es2015-modules-systemjs": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "grunt": "^1.0.1",
+    "grunt-angular-templates": "^1.1.0",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^2.3.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-execute": "^0.2.2",
+    "grunt-systemjs-builder": "^1.0.0",
+    "grunt-ts": "^6.0.0-beta.15",
+    "grunt-typescript": "^0.8.0",
+    "load-grunt-tasks": "^3.5.2",
+    "typescript": "^2.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddurieux/glpi_app_grafana.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ddurieux/glpi_app_grafana/issues"
+  },
+  "homepage": "https://github.com/ddurieux/glpi_app_grafana#readme"
+}
