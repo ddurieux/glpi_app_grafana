@@ -31,24 +31,26 @@ module.exports = function(grunt) {
       },
     },
 
-    typescript: {
+    ts: {
         build: {
-            src: ['dist/**/*.ts', "!src/spec/**/*", "!**/*.d.ts"],
-            dest: 'dist/',
+            src: ["dist/**/*.ts", "!src/spec/**/*", "!**/*.d.ts"],
+            //dest: 'dist/',
             options: {
-                module: 'system', //or commonjs
-                target: 'es3', //or es5
-                rootDir: 'dist/',
-                keepDirectoryHierarchy: false,
+                compile: true,
+                module: 'system',
+                target: 'es5',
                 declaration: true,
                 emitDecoratorMetadata: true,
                 experimentalDecorators: true,
                 sourceMap: true,
                 noImplicitAny: false,
+                fast: "never",
+                sourceRoot: '',
+                mapRoot: '',
             }
         },
         distTests: {
-            src: ['src/**/*.ts', "!src/spec/**/*", "!**/*.d.ts"],
+            src: ["src/**/*.ts", "!src/spec/**/*", "!**/*.d.ts"],
             dest: 'dist/test/',
             options: {
                 module: 'commonjs', //or commonjs
@@ -83,5 +85,5 @@ module.exports = function(grunt) {
 
   });
 
-  grunt.registerTask('default', ['clean', 'copy', 'babel', 'typescript:build']);
+  grunt.registerTask('default', ['clean', 'copy', 'babel', 'ts:build']);
 };
