@@ -76,7 +76,7 @@ export class GlpiAppDatasource {
           // field num for creation_date
           var field_num = 15;
           if (itemtype == 'computer') {
-            field_num = 121;
+            field_num = 19; //121;
           }
           for (var i = 0; i < 50; i++) {
             if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
@@ -91,7 +91,7 @@ export class GlpiAppDatasource {
           }
 
           // Get all count per range / timerange
-          var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+          var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
           var interval_start = Math.round(options.range.from.valueOf() / 1000);
           var interval_end = Math.round(options.range.to.valueOf() / 1000);
           var range = _.range(interval_start, interval_end, interval_s);
@@ -114,7 +114,7 @@ export class GlpiAppDatasource {
             return bksrv.datasourceRequest(urloptions).then(response => {
               if (response.status >= 200 && response.status < 300) {
                 // get totalcount
-                var number_pages = Math.ceil(response.data["totalcount"] / 200);
+                var number_pages = Math.ceil(response.data["totalcount"] / 400);
 
                 // Create promises to request on API
                 var pool = [];
@@ -122,8 +122,8 @@ export class GlpiAppDatasource {
                   pool.push(function(args) {
                     bksrv = args[0];
                     var url2options = _.cloneDeep(args[1]);
-                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 199);
-                    args[4] += 200;
+                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 399);
+                    args[4] += 400;
                     return bksrv.datasourceRequest(url2options).then(response => {
                       if (response.status >= 200 && response.status < 300) {
                         args[3].push(response.data["data"]);
@@ -183,7 +183,7 @@ export class GlpiAppDatasource {
 
                   var ret = {data: [
                     {
-                      target: "tickets",
+                      target: q.alias,
                       datapoints: datapoints,
                     },
                   ]};

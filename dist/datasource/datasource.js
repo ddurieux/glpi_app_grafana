@@ -50,6 +50,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 var searchq = q.query.split(".php?");
                                 var url = searchq[0].split("/");
                                 var itemtype = url[url.length - 1];
+                                console.log(options.scopedVars);
                                 var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
                                 var interval_start = Math.round(options.range.from.valueOf() / 1000);
                                 var interval_end = Math.round(options.range.to.valueOf() / 1000);
@@ -57,7 +58,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
                                 var field_num = 15;
                                 if (itemtype == 'computer') {
-                                    field_num = 121;
+                                    field_num = 19;
                                 }
                                 for (var i = 0; i < 50; i++) {
                                     if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
@@ -70,7 +71,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                         break;
                                     }
                                 }
-                                var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+                                var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
                                 var interval_start = Math.round(options.range.from.valueOf() / 1000);
                                 var interval_end = Math.round(options.range.to.valueOf() / 1000);
                                 var range = lodash_1.default.range(interval_start, interval_end, interval_s);
@@ -89,14 +90,14 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 var to = function (bksrv, urloptions, timeperiods) {
                                     return bksrv.datasourceRequest(urloptions).then(function (response) {
                                         if (response.status >= 200 && response.status < 300) {
-                                            var number_pages = Math.ceil(response.data["totalcount"] / 200);
+                                            var number_pages = Math.ceil(response.data["totalcount"] / 400);
                                             var pool = [];
                                             for (var j = 0; j < number_pages; j++) {
                                                 pool.push(function (args) {
                                                     bksrv = args[0];
                                                     var url2options = lodash_1.default.cloneDeep(args[1]);
-                                                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 199);
-                                                    args[4] += 200;
+                                                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 399);
+                                                    args[4] += 400;
                                                     return bksrv.datasourceRequest(url2options).then(function (response) {
                                                         if (response.status >= 200 && response.status < 300) {
                                                             args[3].push(response.data["data"]);
@@ -150,7 +151,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                                 }
                                                 var ret = { data: [
                                                         {
-                                                            target: "tickets",
+                                                            target: q.alias,
                                                             datapoints: datapoints,
                                                         },
                                                     ] };
