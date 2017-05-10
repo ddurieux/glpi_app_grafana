@@ -65,28 +65,42 @@ export class GlpiAppDatasource {
           var searchq = q.query.split(".php?");
           var url = searchq[0].split("/");
           var itemtype = url[url.length - 1];
-          itemtype = "Ticket";
+          var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+          var interval_start = Math.round(options.range.from.valueOf() / 1000);
+          var interval_end = Math.round(options.range.to.valueOf() / 1000);
+          //itemtype = "ticket";
 
           // add timerange
+          var dateISO = new Date(interval_start * 1e3).toISOString();
+          var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
+          // field num for creation_date
+          var field_num = 15;
+          if (itemtype == 'computer') {
+            field_num = 121;
+          }
           for (var i = 0; i < 50; i++) {
             if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
-              // not found
               searchq[1] += "&criteria[" + i + "][link]=AND&" +
-                  "criteria[" + i + "][field]=15&" +
+                  "criteria[" + i + "][field]=" + field_num + "&" +
                   "criteria[" + i + "][searchtype]=morethan&" +
                   "_select_criteria[" + i + "][value]=0&" +
-                  "_criteria[" + i + "][value]=[[start_date]]&" +
-                  "criteria[" + i + "][value]=[[start_date]]&" +
-                  "criteria[" + (i + 1) + "][link]=AND&" +
-                  "criteria[" + (i + 1) + "][field]=15&" +
-                  "criteria[" + (i + 1) + "][searchtype]=lessthan&" +
-                  "_select_criteria[" + (i + 1) + "][value]=0&" +
-                  "_criteria[" + (i + 1) + "][value]=[[end_date]]&" +
-                  "criteria[" + (i + 1) + "][value]=[[end_date]]";
+                  "_criteria[" + i + "][value]=" + interval_start + "&" +
+                  "criteria[" + i + "][value]=" + url_start_date;
               break;
             }
           }
 
+          // Get all count per range / timerange
+          var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+          var interval_start = Math.round(options.range.from.valueOf() / 1000);
+          var interval_end = Math.round(options.range.to.valueOf() / 1000);
+          var range = _.range(interval_start, interval_end, interval_s);
+          var timeperiods = {};
+          for (var num in range) {
+            timeperiods[range[num]] = range[num] + interval_s; // ie timeperiod[start] = end
+          }
+
+          // URL options for GLPI API
           var urloptions: any = {
             method: "GET",
             url: this.url + "/search/" + itemtype + "?" + searchq[1],
@@ -95,80 +109,91 @@ export class GlpiAppDatasource {
           urloptions.headers["App-Token"] = this.apptoken;
           urloptions.headers["Session-Token"] = response.data["session_token"];
 
-          // Get all count per range of 10s on timerange
-          var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
-          var interval_start = Math.round(options.range.from.valueOf() / 1000);
-          var interval_end = Math.round(options.range.to.valueOf() / 1000);
-          var range = _.range(interval_start, interval_end, interval_s);
-          var timeperiods = [];
-          for (var num in range) {
-            timeperiods.push({
-              start: (range[num]),
-              end: (range[num] + interval_s),
-            });
-          }
-
-          //this.getSearchOptions(itemtype);
-          //console.log(this.searchOptions[itemtype]);
-
           var bksrv = this.backendSrv;
+          var to = function(bksrv, urloptions, timeperiods) {
+            return bksrv.datasourceRequest(urloptions).then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                // get totalcount
+                var number_pages = Math.ceil(response.data["totalcount"] / 200);
 
-          var pool = [];
-          for (var tperiod in timeperiods) {
-            pool.push(function(args) {
-              bksrv = args[0];
-              var url2options = _.cloneDeep(args[1]);
-              var timeperiod = args[2].splice(-1, 1);
-              var dateISO = new Date(timeperiod[0]["start"] * 1e3).toISOString();
-              var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
-              dateISO = new Date(timeperiod[0]["end"] * 1e3).toISOString();
-              var url_end_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
+                // Create promises to request on API
+                var pool = [];
+                for (var j = 0; j < number_pages; j++) {
+                  pool.push(function(args) {
+                    bksrv = args[0];
+                    var url2options = _.cloneDeep(args[1]);
+                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 199);
+                    args[4] += 200;
+                    return bksrv.datasourceRequest(url2options).then(response => {
+                      if (response.status >= 200 && response.status < 300) {
+                        args[3].push(response.data["data"]);
 
-              url2options["url"] = url2options["url"].replace("[[start_date]]", url_start_date);
-              url2options["url"] = url2options["url"].replace("[[start_date]]", url_start_date);
-              url2options["url"] = url2options["url"].replace("[[end_date]]", url_end_date);
-              url2options["url"] = url2options["url"].replace("[[end_date]]", url_end_date);
-
-              return bksrv.datasourceRequest(url2options).then(response => {
-                if (response.status === 200) {
-                  args[3].push([response.data["totalcount"], (timeperiod[0]["end"] * 1000)]);
-                  return [bksrv, args[1], args[2], args[3]];
+                        return [bksrv, args[1], args[2], args[3], args[4]];
+                      }
+                    });
+                  });
                 }
-              });
-            });
-          }
-          var k = 0;
-          for (var fun in pool) {
-            if (k == 0) {
-              var prom = pool[k]([bksrv, urloptions, timeperiods, []]);
-            } else {
-              prom = prom.then(pool[k]);
-            }
-            k += 1;
-          }
-          var resultfunc = function(data) {
+                // protect when no elements
+                if (pool.length == 0) {
+                  var datapointempty = [];
+                  for (var tp in timeperiods) {
+                    datapointempty.push([0, tp]);
+                  }
+                  return {data: [
+                    {
+                      target: "tickets",
+                      datapoints: datapointempty,
+                    },
+                  ]};
+                }
 
-            var ret = {data: [
-              {
-                target: "tickets",
-                datapoints: data[3],
+                var k = 0;
+                for (var fun in pool) {
+                  if (k == 0) {
+                    var prom = pool[k]([bksrv, urloptions, timeperiods, [], 0]);
+                  } else {
+                    prom = prom.then(pool[k]);
+                  }
+                  k += 1;
+                }
+                var resultfunc = function(data) {
+                  // Define all timeperiods
+                  var periods = {};
+                  for (var tp in timeperiods) {
+                    periods[tp] = 0;
+                  }
+                  for (var idx in data[3]) {
+                    for (var kkey in data[3][idx]) {
+                      var date = new Date(data[3][idx][kkey][field_num]);
+                      var item_date = Math.round(date.getTime() / 1000);
+                      for (var tp in timeperiods) {
+                        if (item_date >= Number(tp) && item_date < timeperiods[tp]) {
+                          periods[tp] += 1;
+                          break;
+                        }
+                      }
+                    }
+                  }
+
+                  // We create the datapoints
+                  var datapoints = [];
+                  for (var tp in periods) {
+                    datapoints.unshift([periods[tp], Number(tp) * 1000]);
+                  }
+
+                  var ret = {data: [
+                    {
+                      target: "tickets",
+                      datapoints: datapoints,
+                    },
+                  ]};
+                  return ret;
+                };
+                return prom.then(resultfunc);
               }
-            ]};
-            return ret;
+            });
           };
-
-          return prom.then(resultfunc);
-/*
-          return this.backendSrv.datasourceRequest(urloptions).then(response => {
-            if (response.status === 200) {
-              console.log(response.data);
-              var unix = Math.round(+new Date()/1000);
-              return {"data": [
-                {"target": 'test.cpu1', "datapoints": [[53,(unix-420)],[5,(unix-360)],[12,(unix-300)],[23,(unix-240)],[33,(unix-180)],[22,(unix-120)],[41,(unix-60)],[20,unix]]}
-              ]};
-            }
-          });
-          */
+          return to(bksrv, urloptions, timeperiods);
         }
       }
     });
@@ -264,4 +289,3 @@ export class GlpiAppDatasource {
     }
   }
 }
-

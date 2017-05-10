@@ -50,23 +50,33 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 var searchq = q.query.split(".php?");
                                 var url = searchq[0].split("/");
                                 var itemtype = url[url.length - 1];
-                                itemtype = "Ticket";
+                                var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+                                var interval_start = Math.round(options.range.from.valueOf() / 1000);
+                                var interval_end = Math.round(options.range.to.valueOf() / 1000);
+                                var dateISO = new Date(interval_start * 1e3).toISOString();
+                                var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
+                                var field_num = 15;
+                                if (itemtype == 'computer') {
+                                    field_num = 121;
+                                }
                                 for (var i = 0; i < 50; i++) {
                                     if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
                                         searchq[1] += "&criteria[" + i + "][link]=AND&" +
-                                            "criteria[" + i + "][field]=15&" +
+                                            "criteria[" + i + "][field]=" + field_num + "&" +
                                             "criteria[" + i + "][searchtype]=morethan&" +
                                             "_select_criteria[" + i + "][value]=0&" +
-                                            "_criteria[" + i + "][value]=[[start_date]]&" +
-                                            "criteria[" + i + "][value]=[[start_date]]&" +
-                                            "criteria[" + (i + 1) + "][link]=AND&" +
-                                            "criteria[" + (i + 1) + "][field]=15&" +
-                                            "criteria[" + (i + 1) + "][searchtype]=lessthan&" +
-                                            "_select_criteria[" + (i + 1) + "][value]=0&" +
-                                            "_criteria[" + (i + 1) + "][value]=[[end_date]]&" +
-                                            "criteria[" + (i + 1) + "][value]=[[end_date]]";
+                                            "_criteria[" + i + "][value]=" + interval_start + "&" +
+                                            "criteria[" + i + "][value]=" + url_start_date;
                                         break;
                                     }
+                                }
+                                var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+                                var interval_start = Math.round(options.range.from.valueOf() / 1000);
+                                var interval_end = Math.round(options.range.to.valueOf() / 1000);
+                                var range = lodash_1.default.range(interval_start, interval_end, interval_s);
+                                var timeperiods = {};
+                                for (var num in range) {
+                                    timeperiods[range[num]] = range[num] + interval_s;
                                 }
                                 var urloptions = {
                                     method: "GET",
@@ -75,60 +85,82 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 urloptions.headers = urloptions.headers || {};
                                 urloptions.headers["App-Token"] = _this.apptoken;
                                 urloptions.headers["Session-Token"] = response.data["session_token"];
-                                var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
-                                var interval_start = Math.round(options.range.from.valueOf() / 1000);
-                                var interval_end = Math.round(options.range.to.valueOf() / 1000);
-                                var range = lodash_1.default.range(interval_start, interval_end, interval_s);
-                                var timeperiods = [];
-                                for (var num in range) {
-                                    timeperiods.push({
-                                        start: (range[num]),
-                                        end: (range[num] + interval_s),
-                                    });
-                                }
                                 var bksrv = _this.backendSrv;
-                                var pool = [];
-                                for (var tperiod in timeperiods) {
-                                    pool.push(function (args) {
-                                        bksrv = args[0];
-                                        var url2options = lodash_1.default.cloneDeep(args[1]);
-                                        var timeperiod = args[2].splice(-1, 1);
-                                        var dateISO = new Date(timeperiod[0]["start"] * 1e3).toISOString();
-                                        var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
-                                        dateISO = new Date(timeperiod[0]["end"] * 1e3).toISOString();
-                                        var url_end_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
-                                        url2options["url"] = url2options["url"].replace("[[start_date]]", url_start_date);
-                                        url2options["url"] = url2options["url"].replace("[[start_date]]", url_start_date);
-                                        url2options["url"] = url2options["url"].replace("[[end_date]]", url_end_date);
-                                        url2options["url"] = url2options["url"].replace("[[end_date]]", url_end_date);
-                                        return bksrv.datasourceRequest(url2options).then(function (response) {
-                                            if (response.status === 200) {
-                                                args[3].push([response.data["totalcount"], (timeperiod[0]["end"] * 1000)]);
-                                                return [bksrv, args[1], args[2], args[3]];
+                                var to = function (bksrv, urloptions, timeperiods) {
+                                    return bksrv.datasourceRequest(urloptions).then(function (response) {
+                                        if (response.status >= 200 && response.status < 300) {
+                                            var number_pages = Math.ceil(response.data["totalcount"] / 200);
+                                            var pool = [];
+                                            for (var j = 0; j < number_pages; j++) {
+                                                pool.push(function (args) {
+                                                    bksrv = args[0];
+                                                    var url2options = lodash_1.default.cloneDeep(args[1]);
+                                                    url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 199);
+                                                    args[4] += 200;
+                                                    return bksrv.datasourceRequest(url2options).then(function (response) {
+                                                        if (response.status >= 200 && response.status < 300) {
+                                                            args[3].push(response.data["data"]);
+                                                            return [bksrv, args[1], args[2], args[3], args[4]];
+                                                        }
+                                                    });
+                                                });
                                             }
-                                        });
+                                            if (pool.length == 0) {
+                                                var datapointempty = [];
+                                                for (var tp in timeperiods) {
+                                                    datapointempty.push([0, tp]);
+                                                }
+                                                return { data: [
+                                                        {
+                                                            target: "tickets",
+                                                            datapoints: datapointempty,
+                                                        },
+                                                    ] };
+                                            }
+                                            var k = 0;
+                                            for (var fun in pool) {
+                                                if (k == 0) {
+                                                    var prom = pool[k]([bksrv, urloptions, timeperiods, [], 0]);
+                                                }
+                                                else {
+                                                    prom = prom.then(pool[k]);
+                                                }
+                                                k += 1;
+                                            }
+                                            var resultfunc = function (data) {
+                                                var periods = {};
+                                                for (var tp in timeperiods) {
+                                                    periods[tp] = 0;
+                                                }
+                                                for (var idx in data[3]) {
+                                                    for (var kkey in data[3][idx]) {
+                                                        var date = new Date(data[3][idx][kkey][field_num]);
+                                                        var item_date = Math.round(date.getTime() / 1000);
+                                                        for (var tp in timeperiods) {
+                                                            if (item_date >= Number(tp) && item_date < timeperiods[tp]) {
+                                                                periods[tp] += 1;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                var datapoints = [];
+                                                for (var tp in periods) {
+                                                    datapoints.unshift([periods[tp], Number(tp) * 1000]);
+                                                }
+                                                var ret = { data: [
+                                                        {
+                                                            target: "tickets",
+                                                            datapoints: datapoints,
+                                                        },
+                                                    ] };
+                                                return ret;
+                                            };
+                                            return prom.then(resultfunc);
+                                        }
                                     });
-                                }
-                                var k = 0;
-                                for (var fun in pool) {
-                                    if (k == 0) {
-                                        var prom = pool[k]([bksrv, urloptions, timeperiods, []]);
-                                    }
-                                    else {
-                                        prom = prom.then(pool[k]);
-                                    }
-                                    k += 1;
-                                }
-                                var resultfunc = function (data) {
-                                    var ret = { data: [
-                                            {
-                                                target: "tickets",
-                                                datapoints: data[3],
-                                            }
-                                        ] };
-                                    return ret;
                                 };
-                                return prom.then(resultfunc);
+                                return to(bksrv, urloptions, timeperiods);
                             }
                         }
                     });
