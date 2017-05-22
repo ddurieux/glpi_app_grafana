@@ -24,6 +24,6 @@ export declare class GlpiAppDatasourceQueryCtrl {
     getCollapsedText(): string;
     getPolicySegments(datatype: any): any;
     policyChanged(): void;
-    tablecolChanged(col_index: any, colval: any): void;
+    tablecolChanged(colindex: any, colval: any): void;
     getSession(): any;
 }

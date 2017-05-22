@@ -44,24 +44,24 @@ System.register(["lodash"], function (exports_1, context_1) {
                     var initsession = this.getSession();
                     return initsession.then(function (response) {
                         if (response.status === 200) {
-                            var target_pool = [];
+                            var targetPool = [];
                             for (var _i = 0, queryTargets_1 = queryTargets; _i < queryTargets_1.length; _i++) {
                                 var q = queryTargets_1[_i];
-                                target_pool.push(_this.promiseATarget(queryTargets, options, response, _this));
+                                targetPool.push(_this.promiseATarget(queryTargets, options, response, _this));
                             }
                             var l = 0;
-                            for (var funt in target_pool) {
+                            for (var funt in targetPool) {
                                 if (l === 0) {
-                                    var promt = target_pool[l]([l, _this.backendSrv, []]);
+                                    var promt = targetPool[l]([l, _this.backendSrv, []]);
                                 }
                                 else {
-                                    promt = promt.then(target_pool[l]);
+                                    promt = promt.then(targetPool[l]);
                                 }
                                 l += 1;
                             }
                             var resultalltarget = function (data) {
                                 var ret = {
-                                    data: data[2]
+                                    data: data[2],
                                 };
                                 return ret;
                             };
@@ -71,10 +71,10 @@ System.register(["lodash"], function (exports_1, context_1) {
                 };
                 GlpiAppDatasource.prototype.promiseATarget = function (queryTargets, options, response, myclass) {
                     return function (targetargs) {
-                        var current_target_num = targetargs[0];
+                        var currentTargetNum = targetargs[0];
                         var bksrv = targetargs[1];
                         var alltargetresult = targetargs[2];
-                        var q = queryTargets[current_target_num];
+                        var q = queryTargets[currentTargetNum];
                         q.query = decodeURI(q.query);
                         var searchq = q.query.split(".php?");
                         var url = searchq[0].split("/");
@@ -85,6 +85,8 @@ System.register(["lodash"], function (exports_1, context_1) {
                         var dateISO = new Date(interval_start * 1e3).toISOString();
                         var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
                         var field_num = q.datefield;
+                        var dateISOend = new Date(interval_end * 1e3).toISOString();
+                        var url_end_date = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
                         for (var i = 0; i < 50; i++) {
                             if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
                                 searchq[1] += "&criteria[" + i + "][link]=AND&" +
@@ -96,7 +98,14 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 break;
                             }
                         }
-                        if (q.table == 'yes') {
+                        i += 1;
+                        searchq[1] += "&criteria[" + i + "][link]=AND&" +
+                            "criteria[" + i + "][field]=" + field_num + "&" +
+                            "criteria[" + i + "][searchtype]=lessthan&" +
+                            "_select_criteria[" + i + "][value]=0&" +
+                            "_criteria[" + i + "][value]=" + interval_end + "&" +
+                            "criteria[" + i + "][value]=" + url_end_date;
+                        if (q.table == "yes") {
                             searchq[1] += "&giveItems=true";
                         }
                         var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
@@ -114,7 +123,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         urloptions.headers = urloptions.headers || {};
                         urloptions.headers["App-Token"] = myclass.apptoken;
                         urloptions.headers["Session-Token"] = response.data["session_token"];
-                        var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num);
+                        var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, currentTargetNum);
                         return to(bksrv, urloptions, timeperiods, alltargetresult);
                     };
                 };
@@ -138,7 +147,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                                 target: "tickets",
                                                 datapoints: datapointempty,
                                             },
-                                        ]
+                                        ],
                                     };
                                 }
                                 var k = 0;
@@ -165,7 +174,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         args[4] += 400;
                         return bksrv.datasourceRequest(url2options).then(function (response) {
                             if (response.status >= 200 && response.status < 300) {
-                                if (q.table == 'yes') {
+                                if (q.table == "yes") {
                                     args[3].push(response.data["data_html"]);
                                 }
                                 else {
@@ -178,14 +187,18 @@ System.register(["lodash"], function (exports_1, context_1) {
                 };
                 GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q, current_target_num) {
                     return function (data) {
-                        if (q.table == 'yes') {
+                        if (q.table == "yes") {
                             var columns = [];
                             columns.push({ text: q.col_0_alias, type: "string" });
                             columns.push({ text: q.col_1_alias, type: "string" });
                             var rows = [];
                             for (var idx in data[3]) {
                                 for (var kkey in data[3][idx]) {
-                                    rows.push([data[3][idx][kkey][q.cols[0]], data[3][idx][kkey][q.cols[1]]]);
+                                    var cleanedHTML = data[3][idx][kkey][q.cols[1]].replace(/<div.+<\/div>/, "");
+                                    cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+                                    cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+                                    console.log(cleanedHTML);
+                                    rows.push([data[3][idx][kkey][q.cols[0]], cleanedHTML]);
                                 }
                             }
                             data[5].push({
@@ -199,9 +212,9 @@ System.register(["lodash"], function (exports_1, context_1) {
                             for (var tp in timeperiods) {
                                 periods[tp] = 0;
                             }
-                            for (var idx in data[3]) {
-                                for (var kkey in data[3][idx]) {
-                                    var date = new Date(data[3][idx][kkey][field_num]);
+                            for (var idx2 in data[3]) {
+                                for (var kkey2 in data[3][idx2]) {
+                                    var date = new Date(data[3][idx2][kkey2][field_num]);
                                     var item_date = Math.round(date.getTime() / 1000);
                                     for (var tpd in timeperiods) {
                                         if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {

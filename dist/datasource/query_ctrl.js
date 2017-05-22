@@ -75,28 +75,28 @@ System.register([], function (exports_1, context_1) {
                             urloptions.headers = urloptions.headers || {};
                             urloptions.headers["App-Token"] = _this.datasource.apptoken;
                             urloptions.headers["Session-Token"] = response.data["session_token"];
-                            return _this.datasource.backendSrv.datasourceRequest(urloptions).then(function (response) {
-                                if (response.status >= 200 && response.status < 300) {
-                                    var date_fields = [];
-                                    for (var num in response.data) {
+                            return _this.datasource.backendSrv.datasourceRequest(urloptions).then(function (responselso) {
+                                if (responselso.status >= 200 && responselso.status < 300) {
+                                    var dateFields = [];
+                                    for (var num in responselso.data) {
                                         if (datatype == "date") {
-                                            if (response.data[num]["datatype"] == "datetime") {
-                                                date_fields.push(_this.uiSegmentSrv.newSegment({
+                                            if (responselso.data[num]["datatype"] == "datetime") {
+                                                dateFields.push(_this.uiSegmentSrv.newSegment({
                                                     html: num,
-                                                    value: response.data[num]["name"],
-                                                    expandable: false
+                                                    value: responselso.data[num]["name"],
+                                                    expandable: false,
                                                 }));
                                             }
                                         }
                                         else {
-                                            date_fields.push(_this.uiSegmentSrv.newSegment({
+                                            dateFields.push(_this.uiSegmentSrv.newSegment({
                                                 html: num,
-                                                value: response.data[num]["name"],
-                                                expandable: false
+                                                value: responselso.data[num]["name"],
+                                                expandable: false,
                                             }));
                                         }
                                     }
-                                    return date_fields;
+                                    return dateFields;
                                 }
                             });
                         }
@@ -106,8 +106,8 @@ System.register([], function (exports_1, context_1) {
                     this.target.datefield = this.policySegment.html;
                     this.panelCtrl.refresh();
                 };
-                GlpiAppDatasourceQueryCtrl.prototype.tablecolChanged = function (col_index, colval) {
-                    this.target.cols[col_index] = colval.html;
+                GlpiAppDatasourceQueryCtrl.prototype.tablecolChanged = function (colindex, colval) {
+                    this.target.cols[colindex] = colval.html;
                     this.panelCtrl.refresh();
                 };
                 GlpiAppDatasourceQueryCtrl.prototype.getSession = function () {
@@ -122,7 +122,7 @@ System.register([], function (exports_1, context_1) {
                 };
                 return GlpiAppDatasourceQueryCtrl;
             }());
-            GlpiAppDatasourceQueryCtrl.templateUrl = 'datasource/partials/query.editor.html';
+            GlpiAppDatasourceQueryCtrl.templateUrl = "datasource/partials/query.editor.html";
             exports_1("GlpiAppDatasourceQueryCtrl", GlpiAppDatasourceQueryCtrl);
         }
     };

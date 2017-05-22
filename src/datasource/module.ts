@@ -9,7 +9,6 @@ class GlpiQueryOptionsCtrl {
   static templateUrl = "datasource/partials/query.options.html";
 }
 
-
 export {
   GlpiAppDatasource as Datasource,
   GlpiAppDatasourceConfigCtrl as ConfigCtrl,

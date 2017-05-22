@@ -1,20 +1,11 @@
 ///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
 
-import angular from 'angular';
-import _ from 'lodash';
-import GlpiAppDatasource from 'datasource';
+import angular from "angular";
+import _ from "lodash";
+import GlpiAppDatasource from "datasource";
 
 export class GlpiAppDatasourceQueryCtrl {
-    static templateUrl = 'datasource/partials/query.editor.html';
-
-
-/*
-
- http://127.0.0.1/glpi090/front/ticket.php?is_deleted=0&criteria%5B0%5D%5Bfield%5D=12&criteria%5B0%5D%5Bsearchtype%5D=equals&criteria%5B0%5D%5Bvalue%5D=notold&criteria%5B1%5D%5Blink%5D=AND&criteria%5B1%5D%5Bfield%5D=12&criteria%5B1%5D%5Bsearchtype%5D=equals&criteria%5B1%5D%5Bvalue%5D=1&search=Rechercher&itemtype=Ticket&start=0&_glpi_csrf_token=34d68f75a06ea32db985e093c1e7e869
-
-
-*/
-
+    static templateUrl = "datasource/partials/query.editor.html";
     target: any;
     datasource: any;
     panelCtrl: any;
@@ -103,27 +94,27 @@ export class GlpiAppDatasourceQueryCtrl {
                 urloptions.headers["App-Token"] = this.datasource.apptoken;
                 urloptions.headers["Session-Token"] = response.data["session_token"];
 
-                return this.datasource.backendSrv.datasourceRequest(urloptions).then(response => {
-                    if (response.status >= 200 && response.status < 300) {
-                        var date_fields = [];
-                        for (var num in response.data) {
+                return this.datasource.backendSrv.datasourceRequest(urloptions).then(responselso => {
+                    if (responselso.status >= 200 && responselso.status < 300) {
+                        var dateFields = [];
+                        for (var num in responselso.data) {
                             if (datatype == "date") {
-                                if (response.data[num]["datatype"] == "datetime") {
-                                    date_fields.push(this.uiSegmentSrv.newSegment({
+                                if (responselso.data[num]["datatype"] == "datetime") {
+                                    dateFields.push(this.uiSegmentSrv.newSegment({
                                         html: num,
-                                        value: response.data[num]["name"],
-                                        expandable: false
+                                        value: responselso.data[num]["name"],
+                                        expandable: false,
                                     }));
                                 }
                             } else {
-                                date_fields.push(this.uiSegmentSrv.newSegment({
+                                dateFields.push(this.uiSegmentSrv.newSegment({
                                     html: num,
-                                    value: response.data[num]["name"],
-                                    expandable: false
+                                    value: responselso.data[num]["name"],
+                                    expandable: false,
                                 }));
                             }
                         }
-                        return date_fields;
+                        return dateFields;
                     }
                 });
             }
@@ -135,8 +126,8 @@ export class GlpiAppDatasourceQueryCtrl {
         this.panelCtrl.refresh();
     }
 
-    tablecolChanged(col_index, colval) {
-        this.target.cols[col_index] = colval.html;
+    tablecolChanged(colindex, colval) {
+        this.target.cols[colindex] = colval.html;
         this.panelCtrl.refresh();
     }
 

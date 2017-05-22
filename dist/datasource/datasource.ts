@@ -61,22 +61,22 @@ export class GlpiAppDatasource {
     return initsession.then(response => {
       if (response.status === 200) {
 
-        var target_pool = [];
+        var targetPool = [];
         for (var q of queryTargets) {
-          target_pool.push(this.promiseATarget(queryTargets, options, response, this));
+          targetPool.push(this.promiseATarget(queryTargets, options, response, this));
         }
         var l = 0;
-        for (var funt in target_pool) {
+        for (var funt in targetPool) {
           if (l === 0) {
-            var promt = target_pool[l]([l, this.backendSrv, []]);
+            var promt = targetPool[l]([l, this.backendSrv, []]);
           } else {
-            promt = promt.then(target_pool[l]);
+            promt = promt.then(targetPool[l]);
           }
           l += 1;
         }
         var resultalltarget = function (data) {
           var ret = {
-            data: data[2]
+            data: data[2],
           };
           return ret;
         };
@@ -88,10 +88,10 @@ export class GlpiAppDatasource {
   /** This will do the queries on GLPI of one of the different targets */
   promiseATarget(queryTargets, options, response, myclass) {
     return function(targetargs) {
-      var current_target_num = targetargs[0];
+      var currentTargetNum = targetargs[0];
       var bksrv = targetargs[1];
       var alltargetresult = targetargs[2];
-      var q = queryTargets[current_target_num];
+      var q = queryTargets[currentTargetNum];
 
       q.query = decodeURI(q.query);
       var searchq = q.query.split(".php?");
@@ -107,6 +107,9 @@ export class GlpiAppDatasource {
       // field num for creation_date
       var field_num = q.datefield;
 
+      var dateISOend = new Date(interval_end * 1e3).toISOString();
+      var url_end_date = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
+
       for (var i = 0; i < 50; i++) {
         if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
           searchq[1] += "&criteria[" + i + "][link]=AND&" +
@@ -118,7 +121,16 @@ export class GlpiAppDatasource {
           break;
         }
       }
-      if (q.table == 'yes') {
+      // And the end date
+      i += 1;
+      searchq[1] += "&criteria[" + i + "][link]=AND&" +
+          "criteria[" + i + "][field]=" + field_num + "&" +
+          "criteria[" + i + "][searchtype]=lessthan&" +
+          "_select_criteria[" + i + "][value]=0&" +
+          "_criteria[" + i + "][value]=" + interval_end + "&" +
+          "criteria[" + i + "][value]=" + url_end_date;
+
+      if (q.table == "yes") {
         searchq[1] += "&giveItems=true";
       }
 
@@ -141,7 +153,7 @@ export class GlpiAppDatasource {
       urloptions.headers["App-Token"] = myclass.apptoken;
       urloptions.headers["Session-Token"] = response.data["session_token"];
 
-      var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num);
+      var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, currentTargetNum);
       return to(bksrv, urloptions, timeperiods, alltargetresult);
     };
   }
@@ -171,7 +183,7 @@ export class GlpiAppDatasource {
                   target: "tickets",
                   datapoints: datapointempty,
                 },
-              ]
+              ],
             };
           }
 
@@ -201,7 +213,7 @@ export class GlpiAppDatasource {
       args[4] += 400;
       return bksrv.datasourceRequest(url2options).then(response => {
         if (response.status >= 200 && response.status < 300) {
-          if (q.table == 'yes') {
+          if (q.table == "yes") {
             args[3].push(response.data["data_html"]);
           } else {
             args[3].push(response.data["data"]);
@@ -215,14 +227,19 @@ export class GlpiAppDatasource {
   /** This will merge all results/elements (all ranges/pages) into same array */
   promiseMergeTargetResult(timeperiods, field_num, q, current_target_num) {
     return function(data) {
-      if (q.table == 'yes') {
+      if (q.table == "yes") {
         var columns = [];
         columns.push({text: q.col_0_alias, type: "string"});
         columns.push({text: q.col_1_alias, type: "string"});
         var rows = [];
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
-            rows.push([data[3][idx][kkey][q.cols[0]], data[3][idx][kkey][q.cols[1]]]);
+            var cleanedHTML = data[3][idx][kkey][q.cols[1]].replace(/<div.+<\/div>/, "");
+            cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+            cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+            console.log(cleanedHTML);
+
+            rows.push([data[3][idx][kkey][q.cols[0]], cleanedHTML]);
           }
         }
         data[5].push({
@@ -238,9 +255,9 @@ export class GlpiAppDatasource {
         for (var tp in timeperiods) {
           periods[tp] = 0;
         }
-        for (var idx in data[3]) {
-          for (var kkey in data[3][idx]) {
-            var date = new Date(data[3][idx][kkey][field_num]);
+        for (var idx2 in data[3]) {
+          for (var kkey2 in data[3][idx2]) {
+            var date = new Date(data[3][idx2][kkey2][field_num]);
             var item_date = Math.round(date.getTime() / 1000);
             for (var tpd in timeperiods) {
               if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
