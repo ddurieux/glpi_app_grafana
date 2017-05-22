@@ -135,7 +135,7 @@ export class GlpiAppDatasource {
       }
 
       // Get all count per range / timerange
-      var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
+      var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
       var interval_start = Math.round(options.range.from.valueOf() / 1000);
       var interval_end = Math.round(options.range.to.valueOf() / 1000);
       var range = _.range(interval_start, interval_end, interval_s);
@@ -229,17 +229,20 @@ export class GlpiAppDatasource {
     return function(data) {
       if (q.table == "yes") {
         var columns = [];
-        columns.push({text: q.col_0_alias, type: "string"});
-        columns.push({text: q.col_1_alias, type: "string"});
+        for (var colNum=0; colNum < Object.keys(q.cols).length; colNum++) {
+          columns.push({text: eval("q.col_" + colNum + "_alias"), type: "string"});
+        }
         var rows = [];
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
-            var cleanedHTML = data[3][idx][kkey][q.cols[1]].replace(/<div.+<\/div>/, "");
-            cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
-            cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
-            console.log(cleanedHTML);
-
-            rows.push([data[3][idx][kkey][q.cols[0]], cleanedHTML]);
+            var myrow = [];
+            for (var colNum2=0; colNum2 < Object.keys(q.cols).length; colNum2++) {
+              var cleanedHTML = data[3][idx][kkey][q.cols[colNum2]].replace(/<div.+<\/div>/, "");
+              cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+              cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+              myrow.push(cleanedHTML);
+            }
+            rows.push(myrow);
           }
         }
         data[5].push({
