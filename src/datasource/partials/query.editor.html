@@ -13,8 +13,71 @@
 	<div class="gf-form-inline">
 		<div class="gf-form max-width-40">
 			<label class="gf-form-label query-keyword width-12">Timerange based on</label>
-			<select class="gf-form-input gf-size-auto" ng-model="ctrl.panel.timerangefield" ng-options="f.id as f.value for f in ctrl.select_tr_fields"></select>
+			<metric-segment segment="ctrl.policySegment" get-options="ctrl.getPolicySegments('date')" on-change="ctrl.policyChanged()"></metric-segment>
 		</div>
+		<div class="gf-form max-width-40">
+			<label class="gf-form-label query-keyword width-12">Is it a table?</label>
+			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.table" ng-options="v.value as v.name for v in ctrl.table"></select>
+		</div>
+	</div>
+	<div ng-if="ctrl.target.table == 'yes'">
+		<div class="gf-form-inline">
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column A</label>
+				<metric-segment segment="ctrl.tableColASegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('0', ctrl.tableColASegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column A</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_0_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column B</label>
+				<metric-segment segment="ctrl.tableColBSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('1', ctrl.tableColBSegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column B</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_1_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+		</div>
+		<div class="gf-form-inline">
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column C</label>
+				<metric-segment segment="ctrl.tableColCSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('2', ctrl.tableColCSegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column C</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_2_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column D</label>
+				<metric-segment segment="ctrl.tableColDSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('3', ctrl.tableColDSegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column D</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_3_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+		</div>
+		<div class="gf-form-inline">
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column E</label>
+				<metric-segment segment="ctrl.tableColESegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('4', ctrl.tableColESegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column E</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_4_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Column F</label>
+				<metric-segment segment="ctrl.tableColFSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('5', ctrl.tableColFSegment)"></metric-segment>
+			</div>
+			<div class="gf-form max-width-40">
+				<label class="gf-form-label query-keyword width-12">Alias column F</label>
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_5_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+			</div>
+		</div>
+
 	</div>
 
 

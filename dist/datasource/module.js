@@ -27,7 +27,7 @@ System.register(["./datasource", "./query_ctrl"], function (exports_1, context_1
                 }
                 return GlpiQueryOptionsCtrl;
             }());
-            GlpiQueryOptionsCtrl.templateUrl = 'datasource/partials/query.options.html';
+            GlpiQueryOptionsCtrl.templateUrl = "datasource/partials/query.options.html";
             exports_1("QueryOptionsCtrl", GlpiQueryOptionsCtrl);
         }
     };

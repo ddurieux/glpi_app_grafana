@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import GlpiAppDatasource from 'datasource';
 
 export class GlpiAppDatasourceQueryCtrl {
     static templateUrl = 'datasource/partials/query.editor.html';
@@ -18,14 +19,50 @@ export class GlpiAppDatasourceQueryCtrl {
     datasource: any;
     panelCtrl: any;
     panel: any;
-    select_tr_fields: any;
+    policySegment: any;
+    datefield: any;
+    table: any;
+    tableColASegment: any;
+    tableColBSegment: any;
+    tableColCSegment: any;
+    tableColDSegment: any;
+    tableColESegment: any;
+    tableColFSegment: any;
 
-    constructor(public $scope, private $injector) {
+    constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
         this.panel = this.panelCtrl.panel;
-        this.select_tr_fields = [
-            {'id': 'date_creation', 'value': 'Creation date (generic)'},
-            {'id': 'date_mod', 'value': 'Modification date (generic)'}
-            ]
+        if (this.target.datefield === "") {
+            this.target.datefield = "0";
+        }
+        if (this.target.datefield == null) {
+            this.target.datefield = "0";
+        }
+        this.policySegment = uiSegmentSrv.newSegment(this.target.datefield);
+
+        // columns when it's a table
+        this.tableColASegment = uiSegmentSrv.newSegment(0);
+        this.tableColBSegment = uiSegmentSrv.newSegment(0);
+        this.tableColCSegment = uiSegmentSrv.newSegment(0);
+        this.tableColDSegment = uiSegmentSrv.newSegment(0);
+        this.tableColESegment = uiSegmentSrv.newSegment(0);
+        this.tableColFSegment = uiSegmentSrv.newSegment(0);
+
+        this.table = [
+            {
+                name: "Yes",
+                value: "yes",
+            },
+            {
+                name: "No",
+                value: "no",
+            },
+        ];
+        if (this.target.table == null) {
+            this.target.table = "no";
+        }
+        if (this.target.cols == null) {
+            this.target.cols = {};
+        }
     }
 
     refresh() {
@@ -33,23 +70,88 @@ export class GlpiAppDatasourceQueryCtrl {
     }
 
     getCollapsedText() {
-
-        var text = '';
+        var text = "";
 
         if (this.target.query) {
-            text += 'Query: ' + this.target.query + ', ';
+            text += "Query: " + this.target.query + ", ";
         }
 
         if (this.target.alias) {
-            text += 'Alias: ' + this.target.alias;
+            text += "Alias: " + this.target.alias;
         }
 
-        if (text == '') {
+        if (text == "") {
             text = "Make a search into GLPI interface and copy / paste the URL into 'query' field";
         }
-
         return text;
+    }
 
+    getPolicySegments(datatype) {
+        var initsession = this.getSession();
+        return initsession.then(response => {
+            if (response.status === 200) {
+                this.target.query = decodeURI(this.target.query);
+                var searchq = this.target.query.split(".php?");
+                var url = searchq[0].split("/");
+                var itemtype = url[url.length - 1];
+
+                var urloptions: any = {
+                    method: "GET",
+                    url: this.datasource.url + "/listSearchOptions/" + itemtype,
+                };
+                urloptions.headers = urloptions.headers || {};
+                urloptions.headers["App-Token"] = this.datasource.apptoken;
+                urloptions.headers["Session-Token"] = response.data["session_token"];
+
+                return this.datasource.backendSrv.datasourceRequest(urloptions).then(response => {
+                    if (response.status >= 200 && response.status < 300) {
+                        var date_fields = [];
+                        for (var num in response.data) {
+                            if (datatype == "date") {
+                                if (response.data[num]["datatype"] == "datetime") {
+                                    date_fields.push(this.uiSegmentSrv.newSegment({
+                                        html: num,
+                                        value: response.data[num]["name"],
+                                        expandable: false
+                                    }));
+                                }
+                            } else {
+                                date_fields.push(this.uiSegmentSrv.newSegment({
+                                    html: num,
+                                    value: response.data[num]["name"],
+                                    expandable: false
+                                }));
+                            }
+                        }
+                        return date_fields;
+                    }
+                });
+            }
+        });
+    }
+
+    policyChanged() {
+        this.target.datefield = this.policySegment.html;
+        this.panelCtrl.refresh();
+    }
+
+    tablecolChanged(col_index, colval) {
+        this.target.cols[col_index] = colval.html;
+        this.panelCtrl.refresh();
+    }
+
+    /** Need to have this in common file */
+
+    getSession() {
+        var options: any = {
+            method: "GET",
+            url: this.datasource.url + "/initSession",
+        };
+        options.headers = options.headers || {};
+        options.headers.Authorization = "user_token " + this.datasource.usertoken;
+        options.headers["App-Token"] = this.datasource.apptoken;
+
+        return this.datasource.backendSrv.datasourceRequest(options);
     }
 
 }

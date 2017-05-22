@@ -48,21 +48,24 @@ System.register(["lodash"], function (exports_1, context_1) {
                             for (var _i = 0, queryTargets_1 = queryTargets; _i < queryTargets_1.length; _i++) {
                                 var q = queryTargets_1[_i];
                                 target_pool.push(_this.promiseATarget(queryTargets, options, response, _this));
-                                var l = 0;
-                                for (var funt in target_pool) {
-                                    if (l == 0) {
-                                        var promt = target_pool[l]([l, _this.backendSrv, []]);
-                                    }
-                                    else {
-                                        promt = promt.then(target_pool[l]);
-                                    }
-                                    l += 1;
-                                }
-                                var resultalltarget = function (data) {
-                                    console.log(data);
-                                };
-                                return promt.then(resultalltarget);
                             }
+                            var l = 0;
+                            for (var funt in target_pool) {
+                                if (l === 0) {
+                                    var promt = target_pool[l]([l, _this.backendSrv, []]);
+                                }
+                                else {
+                                    promt = promt.then(target_pool[l]);
+                                }
+                                l += 1;
+                            }
+                            var resultalltarget = function (data) {
+                                var ret = {
+                                    data: data[2]
+                                };
+                                return ret;
+                            };
+                            return promt.then(resultalltarget);
                         }
                     });
                 };
@@ -72,7 +75,6 @@ System.register(["lodash"], function (exports_1, context_1) {
                         var bksrv = targetargs[1];
                         var alltargetresult = targetargs[2];
                         var q = queryTargets[current_target_num];
-                        current_target_num += 1;
                         q.query = decodeURI(q.query);
                         var searchq = q.query.split(".php?");
                         var url = searchq[0].split("/");
@@ -82,10 +84,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         var interval_end = Math.round(options.range.to.valueOf() / 1000);
                         var dateISO = new Date(interval_start * 1e3).toISOString();
                         var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
-                        var field_num = 15;
-                        if (itemtype == 'computer') {
-                            field_num = 19;
-                        }
+                        var field_num = q.datefield;
                         for (var i = 0; i < 50; i++) {
                             if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
                                 searchq[1] += "&criteria[" + i + "][link]=AND&" +
@@ -96,6 +95,9 @@ System.register(["lodash"], function (exports_1, context_1) {
                                     "criteria[" + i + "][value]=" + url_start_date;
                                 break;
                             }
+                        }
+                        if (q.table == 'yes') {
+                            searchq[1] += "&giveItems=true";
                         }
                         var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000) * 10;
                         var interval_start = Math.round(options.range.from.valueOf() / 1000);
@@ -112,20 +114,20 @@ System.register(["lodash"], function (exports_1, context_1) {
                         urloptions.headers = urloptions.headers || {};
                         urloptions.headers["App-Token"] = myclass.apptoken;
                         urloptions.headers["Session-Token"] = response.data["session_token"];
-                        var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass);
+                        var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num);
                         return to(bksrv, urloptions, timeperiods, alltargetresult);
                     };
                 };
-                GlpiAppDatasource.prototype.promiseGetNumberElementsOfTarget = function (field_num, q, myclass) {
+                GlpiAppDatasource.prototype.promiseGetNumberElementsOfTarget = function (field_num, q, myclass, current_target_num) {
                     return function (bksrv, urloptions, timeperiods, alltargetresult) {
                         return bksrv.datasourceRequest(urloptions).then(function (response) {
                             if (response.status >= 200 && response.status < 300) {
                                 var number_pages = Math.ceil(response.data["totalcount"] / 400);
                                 var pool = [];
                                 for (var j = 0; j < number_pages; j++) {
-                                    pool.push(myclass.promiseGetEachRangePageOfTarget());
+                                    pool.push(myclass.promiseGetEachRangePageOfTarget(q));
                                 }
-                                if (pool.length == 0) {
+                                if (pool.length === 0) {
                                     var datapointempty = [];
                                     for (var tp in timeperiods) {
                                         datapointempty.push([0, tp]);
@@ -141,7 +143,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 }
                                 var k = 0;
                                 for (var fun in pool) {
-                                    if (k == 0) {
+                                    if (k === 0) {
                                         var prom = pool[k]([bksrv, urloptions, timeperiods, [], 0, alltargetresult]);
                                     }
                                     else {
@@ -149,13 +151,13 @@ System.register(["lodash"], function (exports_1, context_1) {
                                     }
                                     k += 1;
                                 }
-                                var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q);
+                                var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num);
                                 return prom.then(resultfunc);
                             }
                         });
                     };
                 };
-                GlpiAppDatasource.prototype.promiseGetEachRangePageOfTarget = function () {
+                GlpiAppDatasource.prototype.promiseGetEachRangePageOfTarget = function (q) {
                     return function (args) {
                         var bksrv = args[0];
                         var url2options = lodash_1.default.cloneDeep(args[1]);
@@ -163,48 +165,63 @@ System.register(["lodash"], function (exports_1, context_1) {
                         args[4] += 400;
                         return bksrv.datasourceRequest(url2options).then(function (response) {
                             if (response.status >= 200 && response.status < 300) {
-                                args[3].push(response.data["data"]);
+                                if (q.table == 'yes') {
+                                    args[3].push(response.data["data_html"]);
+                                }
+                                else {
+                                    args[3].push(response.data["data"]);
+                                }
                                 return [bksrv, args[1], args[2], args[3], args[4], args[5]];
                             }
                         });
                     };
                 };
-                GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q) {
+                GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q, current_target_num) {
                     return function (data) {
-                        console.log('hhhhh');
-                        var periods = {};
-                        for (var tp in timeperiods) {
-                            periods[tp] = 0;
+                        if (q.table == 'yes') {
+                            var columns = [];
+                            columns.push({ text: q.col_0_alias, type: "string" });
+                            columns.push({ text: q.col_1_alias, type: "string" });
+                            var rows = [];
+                            for (var idx in data[3]) {
+                                for (var kkey in data[3][idx]) {
+                                    rows.push([data[3][idx][kkey][q.cols[0]], data[3][idx][kkey][q.cols[1]]]);
+                                }
+                            }
+                            data[5].push({
+                                columns: columns,
+                                rows: rows,
+                                type: "table",
+                            });
                         }
-                        for (var idx in data[3]) {
-                            for (var kkey in data[3][idx]) {
-                                var date = new Date(data[3][idx][kkey][field_num]);
-                                var item_date = Math.round(date.getTime() / 1000);
-                                for (var tp in timeperiods) {
-                                    if (item_date >= Number(tp) && item_date < timeperiods[tp]) {
-                                        periods[tp] += 1;
-                                        break;
+                        else {
+                            var periods = {};
+                            for (var tp in timeperiods) {
+                                periods[tp] = 0;
+                            }
+                            for (var idx in data[3]) {
+                                for (var kkey in data[3][idx]) {
+                                    var date = new Date(data[3][idx][kkey][field_num]);
+                                    var item_date = Math.round(date.getTime() / 1000);
+                                    for (var tpd in timeperiods) {
+                                        if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                                            periods[tpd] += 1;
+                                            break;
+                                        }
                                     }
                                 }
                             }
+                            var datapoints = [];
+                            for (var tpp in periods) {
+                                datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
+                            }
+                            data[5].push({
+                                target: q.alias,
+                                datapoints: datapoints,
+                            });
                         }
-                        var datapoints = [];
-                        for (var tp in periods) {
-                            datapoints.unshift([periods[tp], Number(tp) * 1000]);
-                        }
-                        var ret = {
-                            data: [
-                                {
-                                    target: q.alias,
-                                    datapoints: datapoints,
-                                },
-                            ]
-                        };
-                        data[5].push({
-                            target: q.alias,
-                            datapoints: datapoints,
-                        });
-                        return [1, data[0], data[5]];
+                        current_target_num += 1;
+                        return [current_target_num, data[0], data[5]];
                     };
                 };
                 GlpiAppDatasource.prototype.testDatasource = function () {

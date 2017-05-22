@@ -1,5 +1,5 @@
 import { GlpiAppDatasource } from "./datasource";
-import { GlpiAppDatasourceQueryCtrl } from './query_ctrl';
+import { GlpiAppDatasourceQueryCtrl } from "./query_ctrl";
 export declare class GlpiAppDatasourceConfigCtrl {
     static templateUrl: string;
 }

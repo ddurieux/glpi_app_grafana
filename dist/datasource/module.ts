@@ -1,12 +1,12 @@
 import {GlpiAppDatasource} from "./datasource";
-import {GlpiAppDatasourceQueryCtrl} from './query_ctrl';
+import {GlpiAppDatasourceQueryCtrl} from "./query_ctrl";
 
 export class GlpiAppDatasourceConfigCtrl {
   static templateUrl = "datasource/partials/config.html";
 }
 
 class GlpiQueryOptionsCtrl {
-  static templateUrl = 'datasource/partials/query.options.html';
+  static templateUrl = "datasource/partials/query.options.html";
 }
 
 

@@ -34,6 +34,7 @@ export class GlpiAppDatasource {
     this.searchOptions = {};
   }
 
+  /** This will do the queries on GLPI and return datapoints results for panels */
   query(options) {
     var scopedVars = options.scopedVars;
     var targets = _.cloneDeep(options.targets);
@@ -63,39 +64,34 @@ export class GlpiAppDatasource {
         var target_pool = [];
         for (var q of queryTargets) {
           target_pool.push(this.promiseATarget(queryTargets, options, response, this));
-
-          var l = 0;
-          for (var funt in target_pool) {
-            if (l == 0) {
-              var promt = target_pool[l]([l, this.backendSrv, []]);
-            } else {
-              promt = promt.then(target_pool[l]);
-            }
-            l += 1;
-          }
-          var resultalltarget = function (data) {
-            console.log(data);
-          }
-          return promt.then(resultalltarget);
         }
+        var l = 0;
+        for (var funt in target_pool) {
+          if (l === 0) {
+            var promt = target_pool[l]([l, this.backendSrv, []]);
+          } else {
+            promt = promt.then(target_pool[l]);
+          }
+          l += 1;
+        }
+        var resultalltarget = function (data) {
+          var ret = {
+            data: data[2]
+          };
+          return ret;
+        };
+        return promt.then(resultalltarget);
       }
-/*
-Chain promises:
-* initsession
-* query
-* (sub...)
-
-*/
     });
   }
 
+  /** This will do the queries on GLPI of one of the different targets */
   promiseATarget(queryTargets, options, response, myclass) {
     return function(targetargs) {
       var current_target_num = targetargs[0];
       var bksrv = targetargs[1];
       var alltargetresult = targetargs[2];
       var q = queryTargets[current_target_num];
-      current_target_num += 1;
 
       q.query = decodeURI(q.query);
       var searchq = q.query.split(".php?");
@@ -109,10 +105,8 @@ Chain promises:
       var dateISO = new Date(interval_start * 1e3).toISOString();
       var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
       // field num for creation_date
-      var field_num = 15;
-      if (itemtype == 'computer') {
-        field_num = 19; //121;
-      }
+      var field_num = q.datefield;
+
       for (var i = 0; i < 50; i++) {
         if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
           searchq[1] += "&criteria[" + i + "][link]=AND&" +
@@ -123,6 +117,9 @@ Chain promises:
               "criteria[" + i + "][value]=" + url_start_date;
           break;
         }
+      }
+      if (q.table == 'yes') {
+        searchq[1] += "&giveItems=true";
       }
 
       // Get all count per range / timerange
@@ -144,12 +141,13 @@ Chain promises:
       urloptions.headers["App-Token"] = myclass.apptoken;
       urloptions.headers["Session-Token"] = response.data["session_token"];
 
-      var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass);
+      var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num);
       return to(bksrv, urloptions, timeperiods, alltargetresult);
     };
   }
 
-  promiseGetNumberElementsOfTarget(field_num, q, myclass) {
+  /** This will get the number of elements in GLPI to get */
+  promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num) {
     return function (bksrv, urloptions, timeperiods, alltargetresult) {
       return bksrv.datasourceRequest(urloptions).then(response => {
         if (response.status >= 200 && response.status < 300) {
@@ -159,10 +157,10 @@ Chain promises:
           // Create promises to request on API
           var pool = [];
           for (var j = 0; j < number_pages; j++) {
-            pool.push(myclass.promiseGetEachRangePageOfTarget());
+            pool.push(myclass.promiseGetEachRangePageOfTarget(q));
           }
           // protect when no elements
-          if (pool.length == 0) {
+          if (pool.length === 0) {
             var datapointempty = [];
             for (var tp in timeperiods) {
               datapointempty.push([0, tp]);
@@ -179,21 +177,22 @@ Chain promises:
 
           var k = 0;
           for (var fun in pool) {
-            if (k == 0) {
+            if (k === 0) {
               var prom = pool[k]([bksrv, urloptions, timeperiods, [], 0, alltargetresult]);
             } else {
               prom = prom.then(pool[k]);
             }
             k += 1;
           }
-          var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q);
+          var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num);
           return prom.then(resultfunc);
         }
       });
     };
   }
 
-  promiseGetEachRangePageOfTarget() {
+  /** This will get each ranges/pages in GLPI. Goal is to get all elements of GLPI here */
+  promiseGetEachRangePageOfTarget(q) {
     return function (args) {
       var bksrv = args[0];
       var url2options = _.cloneDeep(args[1]);
@@ -202,54 +201,69 @@ Chain promises:
       args[4] += 400;
       return bksrv.datasourceRequest(url2options).then(response => {
         if (response.status >= 200 && response.status < 300) {
-          args[3].push(response.data["data"]);
-
+          if (q.table == 'yes') {
+            args[3].push(response.data["data_html"]);
+          } else {
+            args[3].push(response.data["data"]);
+          }
           return [bksrv, args[1], args[2], args[3], args[4], args[5]];
         }
       });
     };
   }
 
-  promiseMergeTargetResult(timeperiods, field_num, q) {
+  /** This will merge all results/elements (all ranges/pages) into same array */
+  promiseMergeTargetResult(timeperiods, field_num, q, current_target_num) {
     return function(data) {
-      // Define all timeperiods
-      var periods = {};
-      for (var tp in timeperiods) {
-        periods[tp] = 0;
-      }
-      for (var idx in data[3]) {
-        for (var kkey in data[3][idx]) {
-          var date = new Date(data[3][idx][kkey][field_num]);
-          var item_date = Math.round(date.getTime() / 1000);
-          for (var tp in timeperiods) {
-            if (item_date >= Number(tp) && item_date < timeperiods[tp]) {
-              periods[tp] += 1;
-              break;
+      if (q.table == 'yes') {
+        var columns = [];
+        columns.push({text: q.col_0_alias, type: "string"});
+        columns.push({text: q.col_1_alias, type: "string"});
+        var rows = [];
+        for (var idx in data[3]) {
+          for (var kkey in data[3][idx]) {
+            rows.push([data[3][idx][kkey][q.cols[0]], data[3][idx][kkey][q.cols[1]]]);
+          }
+        }
+        data[5].push({
+          columns: columns,
+          rows: rows,
+          type: "table",
+        });
+      } else {
+        // it's datapoints
+
+        // Define all timeperiods
+        var periods = {};
+        for (var tp in timeperiods) {
+          periods[tp] = 0;
+        }
+        for (var idx in data[3]) {
+          for (var kkey in data[3][idx]) {
+            var date = new Date(data[3][idx][kkey][field_num]);
+            var item_date = Math.round(date.getTime() / 1000);
+            for (var tpd in timeperiods) {
+              if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                periods[tpd] += 1;
+                break;
+              }
             }
           }
         }
+
+        // We create the datapoints
+        var datapoints = [];
+        for (var tpp in periods) {
+          datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
+        }
+
+        data[5].push({
+          target: q.alias,
+          datapoints: datapoints,
+        });
       }
-
-      // We create the datapoints
-      var datapoints = [];
-      for (var tp in periods) {
-        datapoints.unshift([periods[tp], Number(tp) * 1000]);
-      }
-
-      var ret = {
-        data: [
-          {
-            target: q.alias,
-            datapoints: datapoints,
-          },
-        ]
-      };
-
-      data[5].push({
-        target: q.alias,
-        datapoints: datapoints,
-      });
-      return [1, data[0], data[5]];
+      current_target_num += 1;
+      return [current_target_num, data[0], data[5]];
     };
   }
 
@@ -278,11 +292,6 @@ Chain promises:
     options.headers["App-Token"] = this.apptoken;
 
     return this.backendSrv.datasourceRequest(options);
-//        .then(response => {
-//      if (response.status === 200) {
-//        return response.data;
-//      }
-//    });
   }
 
   getSearchOptions(itemtype) {
