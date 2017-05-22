@@ -42,6 +42,8 @@ System.register([], function (exports_1, context_1) {
                     if (this.target.cols == null) {
                         this.target.cols = {};
                     }
+                    this.list = [];
+                    this.getListOptionsFields('all').then(function (data) { $scope.ctrl.list = data; });
                 }
                 GlpiAppDatasourceQueryCtrl.prototype.refresh = function () {
                     this.panelCtrl.refresh();
@@ -58,6 +60,54 @@ System.register([], function (exports_1, context_1) {
                         text = "Make a search into GLPI interface and copy / paste the URL into 'query' field";
                     }
                     return text;
+                };
+                GlpiAppDatasourceQueryCtrl.prototype.getListOptionsFields = function (datatype) {
+                    var _this = this;
+                    var initsession = this.getSession();
+                    return initsession.then(function (response) {
+                        if (response.status === 200) {
+                            _this.target.query = decodeURI(_this.target.query);
+                            var searchq = _this.target.query.split(".php?");
+                            var url = searchq[0].split("/");
+                            var itemtype = url[url.length - 1];
+                            var urloptions = {
+                                method: "GET",
+                                url: _this.datasource.url + "/listSearchOptions/" + itemtype,
+                                transformResponse: [function (data) {
+                                        var regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
+                                        var m;
+                                        var mySelectFields = [];
+                                        mySelectFields.push({
+                                            number: "0",
+                                            label: "------",
+                                            group: "",
+                                        });
+                                        var groupname = '';
+                                        var parsed = JSON.parse(data);
+                                        while ((m = regex.exec(data)) !== null) {
+                                            if (m.index === regex.lastIndex) {
+                                                regex.lastIndex++;
+                                            }
+                                            if (typeof parsed[m[1]] === 'string') {
+                                                groupname = parsed[m[1]];
+                                            }
+                                            else {
+                                                mySelectFields.push({
+                                                    number: m[1],
+                                                    label: parsed[m[1]]["name"],
+                                                    group: groupname,
+                                                });
+                                            }
+                                        }
+                                        return mySelectFields;
+                                    }],
+                            };
+                            urloptions.headers = urloptions.headers || {};
+                            urloptions.headers["App-Token"] = _this.datasource.apptoken;
+                            urloptions.headers["Session-Token"] = response.data["session_token"];
+                            return _this.datasource.backendSrv.datasourceRequest(urloptions);
+                        }
+                    });
                 };
                 GlpiAppDatasourceQueryCtrl.prototype.getPolicySegments = function (datatype) {
                     var _this = this;

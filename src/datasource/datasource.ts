@@ -229,15 +229,19 @@ export class GlpiAppDatasource {
     return function(data) {
       if (q.table == "yes") {
         var columns = [];
-        for (var colNum=0; colNum < Object.keys(q.cols).length; colNum++) {
-          columns.push({text: eval("q.col_" + colNum + "_alias"), type: "string"});
+        var maxnum = 0;
+        for (var colNum=0; colNum <= 5 ; colNum++) {
+          if (eval("q.col_" + colNum)['number'] != '0') {
+            maxnum = _.cloneDeep(colNum);
+            columns.push({text: eval("q.col_" + colNum + "_alias"), type: "string"});
+          }
         }
         var rows = [];
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
             var myrow = [];
-            for (var colNum2=0; colNum2 < Object.keys(q.cols).length; colNum2++) {
-              var cleanedHTML = data[3][idx][kkey][q.cols[colNum2]].replace(/<div.+<\/div>/, "");
+            for (var colNum2=0; colNum2 <= maxnum; colNum2++) {
+              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)['number']].replace(/<div.+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
               myrow.push(cleanedHTML);

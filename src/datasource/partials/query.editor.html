@@ -1,4 +1,4 @@
-<query-editor-row query-ctrl="ctrl" can-collapse="true">
+/<query-editor-row query-ctrl="ctrl" can-collapse="true">
 
 	<div class="gf-form-inline">
 		<div class="gf-form gf-form--grow">
@@ -24,62 +24,64 @@
 		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column A</label>
-				<metric-segment segment="ctrl.tableColASegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('0', ctrl.tableColASegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_0" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column A</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_0_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
-
+		</div>
+		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column B</label>
-				<metric-segment segment="ctrl.tableColBSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('1', ctrl.tableColBSegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_1" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column B</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_1_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
 		</div>
 		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column C</label>
-				<metric-segment segment="ctrl.tableColCSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('2', ctrl.tableColCSegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_2" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column C</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_2_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
+		</div>
+		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column D</label>
-				<metric-segment segment="ctrl.tableColDSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('3', ctrl.tableColDSegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_3" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column D</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_3_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
 		</div>
 		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column E</label>
-				<metric-segment segment="ctrl.tableColESegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('4', ctrl.tableColESegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_4" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column E</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_4_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
-
+		</div>
+		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">
 				<label class="gf-form-label query-keyword width-12">Column F</label>
-				<metric-segment segment="ctrl.tableColFSegment" get-options="ctrl.getPolicySegments('all')" on-change="ctrl.tablecolChanged('5', ctrl.tableColFSegment)"></metric-segment>
+				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_5" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Alias column F</label>
+				<label class="gf-form-label query-keyword width-6">Alias</label>
 				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_5_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
 			</div>
 		</div>
-
 	</div>
-
 
 	<div ng-repeat="agg in ctrl.target.metrics">
 		<elastic-metric-agg

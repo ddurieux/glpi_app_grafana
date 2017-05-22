@@ -19,8 +19,10 @@ export class GlpiAppDatasourceQueryCtrl {
     tableColDSegment: any;
     tableColESegment: any;
     tableColFSegment: any;
+    list: any;
 
     constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
+
         this.panel = this.panelCtrl.panel;
         if (this.target.datefield === "") {
             this.target.datefield = "0";
@@ -54,6 +56,8 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.cols == null) {
             this.target.cols = {};
         }
+        this.list = [];
+        this.getListOptionsFields('all').then(data => {$scope.ctrl.list = data;});
     }
 
     refresh() {
@@ -75,6 +79,57 @@ export class GlpiAppDatasourceQueryCtrl {
             text = "Make a search into GLPI interface and copy / paste the URL into 'query' field";
         }
         return text;
+    }
+
+    getListOptionsFields(datatype) {
+        var initsession = this.getSession();
+        return initsession.then(response => {
+            if (response.status === 200) {
+                this.target.query = decodeURI(this.target.query);
+                var searchq = this.target.query.split(".php?");
+                var url = searchq[0].split("/");
+                var itemtype = url[url.length - 1];
+
+                var urloptions: any = {
+                    method: "GET",
+                    url: this.datasource.url + "/listSearchOptions/" + itemtype,
+                    transformResponse: [function (data) {
+                        const regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
+                        let m;
+                        var mySelectFields = [];
+                        mySelectFields.push({
+                            number: "0",
+                            label: "------",
+                            group: "",
+                        });
+                        var groupname = '';
+                        var parsed = JSON.parse(data);
+                        while ((m = regex.exec(data)) !== null) {
+                            // This is necessary to avoid infinite loops with zero-width matches
+                            if (m.index === regex.lastIndex) {
+                                regex.lastIndex++;
+                            }
+                            if (typeof parsed[m[1]] === 'string') {
+                                // it's the group name
+                                groupname = parsed[m[1]];
+                            } else {
+                                // it's the field
+                                mySelectFields.push({
+                                    number: m[1],
+                                    label: parsed[m[1]]["name"],
+                                    group: groupname,
+                                });
+                            }
+                        }
+                        return mySelectFields;
+                    }],
+                };
+                urloptions.headers = urloptions.headers || {};
+                urloptions.headers["App-Token"] = this.datasource.apptoken;
+                urloptions.headers["Session-Token"] = response.data["session_token"];
+                return this.datasource.backendSrv.datasourceRequest(urloptions);
+            }
+        });
     }
 
     getPolicySegments(datatype) {
