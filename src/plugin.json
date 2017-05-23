@@ -22,15 +22,16 @@
     },
     "links": [
       {"name": "Project site", "url": "https://github.com/ddurieux/glpi_app_grafana"},
-      {"name": "License & Terms", "url": "https://raw.githubusercontent.com/ddurieux/glpi_app_grafana/master/LICENSE"}
+      {"name": "License & Terms", "url": "https://raw.githubusercontent.com/ddurieux/glpi_app_grafana/master/LICENSE"},
+      {"name": "GLPI Project", "url": "http://glpi-project.org/"},
+      {"name": "DCS", "url": "https://www.dcsit-group.com/"}
     ],
     "version": "1.0.0",
-    "updated": "2017-04-11"
+    "updated": "2017-05-23"
   },
 
   "includes": [
     {"type": "dashboard", "name": "GLPI App Dashboard", "path": "dashboards/glpi_app_dashboard.json"},
-    {"type": "panel", "name": "GLPI App Panel"},
     {"type": "datasource", "name": "GLPI API"}
   ],
 
