@@ -253,7 +253,7 @@ export class GlpiAppDatasource {
           for (var kkey in data[3][idx]) {
             var myrow = [];
             for (var colNum2=0; colNum2 <= maxnum; colNum2++) {
-              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)['number']].replace(/<div.+<\/div>/, "");
+              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)['number']].replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
               myrow.push(cleanedHTML);
