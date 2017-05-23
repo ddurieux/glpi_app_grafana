@@ -21,7 +21,7 @@
       "large": "img/large_logo.png"
     },
     "links": [
-      {"name": "Project site", "url": "https://github.com/ddurieux/glpi_app_grafana"},
+      {"name": "Project site (github)", "url": "https://github.com/ddurieux/glpi_app_grafana"},
       {"name": "License & Terms", "url": "https://raw.githubusercontent.com/ddurieux/glpi_app_grafana/master/LICENSE"},
       {"name": "GLPI Project", "url": "http://glpi-project.org/"},
       {"name": "DCS", "url": "https://www.dcsit-group.com/"}
