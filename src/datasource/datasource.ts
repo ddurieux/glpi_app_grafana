@@ -283,7 +283,11 @@ export class GlpiAppDatasource {
             var item_date = Math.round(date.getTime() / 1000);
             for (var tpd in timeperiods) {
               if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                periods[tpd] += 1;
+                if (q.counter == 'yes') {
+                  periods[tpd] += 1;
+                } else {
+                  periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+                }
                 break;
               }
             }

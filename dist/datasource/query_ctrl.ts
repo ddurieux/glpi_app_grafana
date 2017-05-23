@@ -14,6 +14,7 @@ export class GlpiAppDatasourceQueryCtrl {
     table: any;
     list: any;
     listdate: any;
+    listnumber: any;
 
     constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
 
@@ -65,6 +66,13 @@ export class GlpiAppDatasourceQueryCtrl {
 
         this.listdate = [];
         this.getListOptionsFields('date').then(data => {$scope.ctrl.listdate = data;});
+
+        if (this.target.counter == null) {
+            this.target.counter = "yes";
+        }
+
+        this.listnumber = [];
+        this.getListOptionsFields('number').then(data => {$scope.ctrl.listnumber = data;});
 
     }
 
@@ -131,6 +139,17 @@ export class GlpiAppDatasourceQueryCtrl {
                                 // it's the field
                                 if (datatype == "date") {
                                     if (parsed[m[1]]["datatype"] == "datetime") {
+                                        mySelectFields.push({
+                                            number: m[1],
+                                            label: parsed[m[1]]["name"],
+                                            group: groupname,
+                                        });
+                                    }
+                                } else if (datatype == "number") {
+                                    if (parsed[m[1]]["datatype"] == "timestamp"
+                                        || parsed[m[1]]["datatype"] == "count"
+                                        || parsed[m[1]]["datatype"] == "number"
+                                        || parsed[m[1]]["datatype"] == "integer") {
                                         mySelectFields.push({
                                             number: m[1],
                                             label: parsed[m[1]]["name"],

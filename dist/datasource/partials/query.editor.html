@@ -16,6 +16,16 @@
 			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.datefield" ng-options="v.label group by v.group for v in ctrl.listdate.data track by v.number" ng-change="ctrl.refresh()"></select>
 		</div>
 		<div class="gf-form max-width-40">
+			<label class="gf-form-label query-keyword width-12">Count elements?</label>
+			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.counter" ng-options="v.value as v.name for v in ctrl.table"></select>
+		</div>
+		<div class="gf-form max-width-40" ng-if="ctrl.target.counter == 'no'">
+			<label class="gf-form-label query-keyword width-12">Field value to use</label>
+			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.nocounterval" ng-options="v.label group by v.group for v in ctrl.listnumber.data track by v.number" ng-change="ctrl.refresh()"></select>
+		</div>
+	</div>
+	<div class="gf-form-inline">
+		<div class="gf-form max-width-40">
 			<label class="gf-form-label query-keyword width-12">Is it a table?</label>
 			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.table" ng-options="v.value as v.name for v in ctrl.table"></select>
 		</div>

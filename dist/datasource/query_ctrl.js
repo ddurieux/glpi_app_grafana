@@ -56,6 +56,11 @@ System.register([], function (exports_1, context_1) {
                     }
                     this.listdate = [];
                     this.getListOptionsFields('date').then(function (data) { $scope.ctrl.listdate = data; });
+                    if (this.target.counter == null) {
+                        this.target.counter = "yes";
+                    }
+                    this.listnumber = [];
+                    this.getListOptionsFields('number').then(function (data) { $scope.ctrl.listnumber = data; });
                 }
                 GlpiAppDatasourceQueryCtrl.prototype.refresh = function () {
                     this.panelCtrl.refresh();
@@ -113,6 +118,18 @@ System.register([], function (exports_1, context_1) {
                                             else {
                                                 if (datatype == "date") {
                                                     if (parsed[m[1]]["datatype"] == "datetime") {
+                                                        mySelectFields.push({
+                                                            number: m[1],
+                                                            label: parsed[m[1]]["name"],
+                                                            group: groupname,
+                                                        });
+                                                    }
+                                                }
+                                                else if (datatype == "number") {
+                                                    if (parsed[m[1]]["datatype"] == "timestamp"
+                                                        || parsed[m[1]]["datatype"] == "count"
+                                                        || parsed[m[1]]["datatype"] == "number"
+                                                        || parsed[m[1]]["datatype"] == "integer") {
                                                         mySelectFields.push({
                                                             number: m[1],
                                                             label: parsed[m[1]]["name"],

@@ -14,6 +14,7 @@ export declare class GlpiAppDatasourceQueryCtrl {
     table: any;
     list: any;
     listdate: any;
+    listnumber: any;
     constructor($scope: any, $injector: any, templateSrv: any, $q: any, uiSegmentSrv: any);
     refresh(): void;
     getCollapsedText(): string;
