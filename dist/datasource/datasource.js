@@ -140,6 +140,9 @@ System.register(["lodash"], function (exports_1, context_1) {
                         return bksrv.datasourceRequest(urloptions).then(function (response) {
                             if (response.status >= 200 && response.status < 300) {
                                 var number_pages = Math.ceil(response.data["totalcount"] / 400);
+                                if (number_pages == 0) {
+                                    number_pages = 1;
+                                }
                                 var pool = [];
                                 for (var j = 0; j < number_pages; j++) {
                                     pool.push(myclass.promiseGetEachRangePageOfTarget(q));

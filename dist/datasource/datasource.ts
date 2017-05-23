@@ -173,6 +173,9 @@ export class GlpiAppDatasource {
         if (response.status >= 200 && response.status < 300) {
           // get totalcount
           var number_pages = Math.ceil(response.data["totalcount"] / 400);
+          if (number_pages == 0) {
+            number_pages = 1;
+          }
 
           // Create promises to request on API
           var pool = [];
