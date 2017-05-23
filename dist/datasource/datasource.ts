@@ -105,31 +105,32 @@ export class GlpiAppDatasource {
       var dateISO = new Date(interval_start * 1e3).toISOString();
       var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
       // field num for creation_date
-      var field_num = q.datefield;
+      var field_num = q.datefield['number'];
 
       var dateISOend = new Date(interval_end * 1e3).toISOString();
       var url_end_date = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
 
-      for (var i = 0; i < 50; i++) {
-        if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
-          searchq[1] += "&criteria[" + i + "][link]=AND&" +
-              "criteria[" + i + "][field]=" + field_num + "&" +
-              "criteria[" + i + "][searchtype]=morethan&" +
-              "_select_criteria[" + i + "][value]=0&" +
-              "_criteria[" + i + "][value]=" + interval_start + "&" +
-              "criteria[" + i + "][value]=" + url_start_date;
-          break;
+      if (field_num != "-1") {
+        for (var i = 0; i < 50; i++) {
+          if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
+            searchq[1] += "&criteria[" + i + "][link]=AND&" +
+                "criteria[" + i + "][field]=" + field_num + "&" +
+                "criteria[" + i + "][searchtype]=morethan&" +
+                "_select_criteria[" + i + "][value]=0&" +
+                "_criteria[" + i + "][value]=" + interval_start + "&" +
+                "criteria[" + i + "][value]=" + url_start_date;
+            break;
+          }
         }
+        // And the end date
+        i += 1;
+        searchq[1] += "&criteria[" + i + "][link]=AND&" +
+            "criteria[" + i + "][field]=" + field_num + "&" +
+            "criteria[" + i + "][searchtype]=lessthan&" +
+            "_select_criteria[" + i + "][value]=0&" +
+            "_criteria[" + i + "][value]=" + interval_end + "&" +
+            "criteria[" + i + "][value]=" + url_end_date;
       }
-      // And the end date
-      i += 1;
-      searchq[1] += "&criteria[" + i + "][link]=AND&" +
-          "criteria[" + i + "][field]=" + field_num + "&" +
-          "criteria[" + i + "][searchtype]=lessthan&" +
-          "_select_criteria[" + i + "][value]=0&" +
-          "_criteria[" + i + "][value]=" + interval_end + "&" +
-          "criteria[" + i + "][value]=" + url_end_date;
-
       searchq[1] += "&forcedisplay[0]=0";
       if (q.table == "yes") {
         searchq[1] += "&giveItems=true";

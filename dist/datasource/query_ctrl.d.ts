@@ -10,22 +10,13 @@ export declare class GlpiAppDatasourceQueryCtrl {
     datasource: any;
     panelCtrl: any;
     panel: any;
-    policySegment: any;
     datefield: any;
     table: any;
-    tableColASegment: any;
-    tableColBSegment: any;
-    tableColCSegment: any;
-    tableColDSegment: any;
-    tableColESegment: any;
-    tableColFSegment: any;
     list: any;
+    listdate: any;
     constructor($scope: any, $injector: any, templateSrv: any, $q: any, uiSegmentSrv: any);
     refresh(): void;
     getCollapsedText(): string;
     getListOptionsFields(datatype: any): any;
-    getPolicySegments(datatype: any): any;
-    policyChanged(): void;
-    tablecolChanged(colindex: any, colval: any): void;
     getSession(): any;
 }

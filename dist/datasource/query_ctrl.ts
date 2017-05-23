@@ -10,35 +10,14 @@ export class GlpiAppDatasourceQueryCtrl {
     datasource: any;
     panelCtrl: any;
     panel: any;
-    policySegment: any;
     datefield: any;
     table: any;
-    tableColASegment: any;
-    tableColBSegment: any;
-    tableColCSegment: any;
-    tableColDSegment: any;
-    tableColESegment: any;
-    tableColFSegment: any;
     list: any;
+    listdate: any;
 
     constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
 
         this.panel = this.panelCtrl.panel;
-        if (this.target.datefield === "") {
-            this.target.datefield = "0";
-        }
-        if (this.target.datefield == null) {
-            this.target.datefield = "0";
-        }
-        this.policySegment = uiSegmentSrv.newSegment(this.target.datefield);
-
-        // columns when it's a table
-        this.tableColASegment = uiSegmentSrv.newSegment(0);
-        this.tableColBSegment = uiSegmentSrv.newSegment(0);
-        this.tableColCSegment = uiSegmentSrv.newSegment(0);
-        this.tableColDSegment = uiSegmentSrv.newSegment(0);
-        this.tableColESegment = uiSegmentSrv.newSegment(0);
-        this.tableColFSegment = uiSegmentSrv.newSegment(0);
 
         this.table = [
             {
@@ -53,13 +32,10 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.table == null) {
             this.target.table = "no";
         }
-        if (this.target.cols == null) {
-            this.target.cols = {};
-        }
         var emptyValCol = {
             number: "0",
             label: "------",
-            group: "",
+            group: "Default",
         };
         if (this.target.col_0 == null) {
             this.target.col_0 = emptyValCol;
@@ -82,6 +58,14 @@ export class GlpiAppDatasourceQueryCtrl {
 
         this.list = [];
         this.getListOptionsFields('all').then(data => {$scope.ctrl.list = data;});
+
+        if (this.target.datefield == null) {
+            this.target.datefield = emptyValCol;
+        }
+
+        this.listdate = [];
+        this.getListOptionsFields('date').then(data => {$scope.ctrl.listdate = data;});
+
     }
 
     refresh() {
@@ -124,8 +108,15 @@ export class GlpiAppDatasourceQueryCtrl {
                         mySelectFields.push({
                             number: "0",
                             label: "------",
-                            group: "",
+                            group: "Default",
                         });
+                        if (datatype == "date") {
+                            mySelectFields.push({
+                                number: "-1",
+                                label: "Not use date, so get all data",
+                                group: "Special / be careful",
+                            });
+                        }
                         var groupname = '';
                         var parsed = JSON.parse(data);
                         while ((m = regex.exec(data)) !== null) {
@@ -138,11 +129,21 @@ export class GlpiAppDatasourceQueryCtrl {
                                 groupname = parsed[m[1]];
                             } else {
                                 // it's the field
-                                mySelectFields.push({
-                                    number: m[1],
-                                    label: parsed[m[1]]["name"],
-                                    group: groupname,
-                                });
+                                if (datatype == "date") {
+                                    if (parsed[m[1]]["datatype"] == "datetime") {
+                                        mySelectFields.push({
+                                            number: m[1],
+                                            label: parsed[m[1]]["name"],
+                                            group: groupname,
+                                        });
+                                    }
+                                } else {
+                                    mySelectFields.push({
+                                        number: m[1],
+                                        label: parsed[m[1]]["name"],
+                                        group: groupname,
+                                    });
+                                }
                             }
                         }
                         return mySelectFields;
@@ -154,60 +155,6 @@ export class GlpiAppDatasourceQueryCtrl {
                 return this.datasource.backendSrv.datasourceRequest(urloptions);
             }
         });
-    }
-
-    getPolicySegments(datatype) {
-        var initsession = this.getSession();
-        return initsession.then(response => {
-            if (response.status === 200) {
-                this.target.query = decodeURI(this.target.query);
-                var searchq = this.target.query.split(".php?");
-                var url = searchq[0].split("/");
-                var itemtype = url[url.length - 1];
-
-                var urloptions: any = {
-                    method: "GET",
-                    url: this.datasource.url + "/listSearchOptions/" + itemtype,
-                };
-                urloptions.headers = urloptions.headers || {};
-                urloptions.headers["App-Token"] = this.datasource.apptoken;
-                urloptions.headers["Session-Token"] = response.data["session_token"];
-
-                return this.datasource.backendSrv.datasourceRequest(urloptions).then(responselso => {
-                    if (responselso.status >= 200 && responselso.status < 300) {
-                        var dateFields = [];
-                        for (var num in responselso.data) {
-                            if (datatype == "date") {
-                                if (responselso.data[num]["datatype"] == "datetime") {
-                                    dateFields.push(this.uiSegmentSrv.newSegment({
-                                        html: num,
-                                        value: responselso.data[num]["name"],
-                                        expandable: false,
-                                    }));
-                                }
-                            } else {
-                                dateFields.push(this.uiSegmentSrv.newSegment({
-                                    html: num,
-                                    value: responselso.data[num]["name"],
-                                    expandable: false,
-                                }));
-                            }
-                        }
-                        return dateFields;
-                    }
-                });
-            }
-        });
-    }
-
-    policyChanged() {
-        this.target.datefield = this.policySegment.html;
-        this.panelCtrl.refresh();
-    }
-
-    tablecolChanged(colindex, colval) {
-        this.target.cols[colindex] = colval.html;
-        this.panelCtrl.refresh();
     }
 
     /** Need to have this in common file */

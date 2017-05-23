@@ -13,19 +13,6 @@ System.register([], function (exports_1, context_1) {
                     this.$q = $q;
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.panel = this.panelCtrl.panel;
-                    if (this.target.datefield === "") {
-                        this.target.datefield = "0";
-                    }
-                    if (this.target.datefield == null) {
-                        this.target.datefield = "0";
-                    }
-                    this.policySegment = uiSegmentSrv.newSegment(this.target.datefield);
-                    this.tableColASegment = uiSegmentSrv.newSegment(0);
-                    this.tableColBSegment = uiSegmentSrv.newSegment(0);
-                    this.tableColCSegment = uiSegmentSrv.newSegment(0);
-                    this.tableColDSegment = uiSegmentSrv.newSegment(0);
-                    this.tableColESegment = uiSegmentSrv.newSegment(0);
-                    this.tableColFSegment = uiSegmentSrv.newSegment(0);
                     this.table = [
                         {
                             name: "Yes",
@@ -39,13 +26,10 @@ System.register([], function (exports_1, context_1) {
                     if (this.target.table == null) {
                         this.target.table = "no";
                     }
-                    if (this.target.cols == null) {
-                        this.target.cols = {};
-                    }
                     var emptyValCol = {
                         number: "0",
                         label: "------",
-                        group: "",
+                        group: "Default",
                     };
                     if (this.target.col_0 == null) {
                         this.target.col_0 = emptyValCol;
@@ -67,6 +51,11 @@ System.register([], function (exports_1, context_1) {
                     }
                     this.list = [];
                     this.getListOptionsFields('all').then(function (data) { $scope.ctrl.list = data; });
+                    if (this.target.datefield == null) {
+                        this.target.datefield = emptyValCol;
+                    }
+                    this.listdate = [];
+                    this.getListOptionsFields('date').then(function (data) { $scope.ctrl.listdate = data; });
                 }
                 GlpiAppDatasourceQueryCtrl.prototype.refresh = function () {
                     this.panelCtrl.refresh();
@@ -103,8 +92,15 @@ System.register([], function (exports_1, context_1) {
                                         mySelectFields.push({
                                             number: "0",
                                             label: "------",
-                                            group: "",
+                                            group: "Default",
                                         });
+                                        if (datatype == "date") {
+                                            mySelectFields.push({
+                                                number: "-1",
+                                                label: "Not use date, so get all data",
+                                                group: "Special / be careful",
+                                            });
+                                        }
                                         var groupname = '';
                                         var parsed = JSON.parse(data);
                                         while ((m = regex.exec(data)) !== null) {
@@ -115,11 +111,22 @@ System.register([], function (exports_1, context_1) {
                                                 groupname = parsed[m[1]];
                                             }
                                             else {
-                                                mySelectFields.push({
-                                                    number: m[1],
-                                                    label: parsed[m[1]]["name"],
-                                                    group: groupname,
-                                                });
+                                                if (datatype == "date") {
+                                                    if (parsed[m[1]]["datatype"] == "datetime") {
+                                                        mySelectFields.push({
+                                                            number: m[1],
+                                                            label: parsed[m[1]]["name"],
+                                                            group: groupname,
+                                                        });
+                                                    }
+                                                }
+                                                else {
+                                                    mySelectFields.push({
+                                                        number: m[1],
+                                                        label: parsed[m[1]]["name"],
+                                                        group: groupname,
+                                                    });
+                                                }
                                             }
                                         }
                                         return mySelectFields;
@@ -131,57 +138,6 @@ System.register([], function (exports_1, context_1) {
                             return _this.datasource.backendSrv.datasourceRequest(urloptions);
                         }
                     });
-                };
-                GlpiAppDatasourceQueryCtrl.prototype.getPolicySegments = function (datatype) {
-                    var _this = this;
-                    var initsession = this.getSession();
-                    return initsession.then(function (response) {
-                        if (response.status === 200) {
-                            _this.target.query = decodeURI(_this.target.query);
-                            var searchq = _this.target.query.split(".php?");
-                            var url = searchq[0].split("/");
-                            var itemtype = url[url.length - 1];
-                            var urloptions = {
-                                method: "GET",
-                                url: _this.datasource.url + "/listSearchOptions/" + itemtype,
-                            };
-                            urloptions.headers = urloptions.headers || {};
-                            urloptions.headers["App-Token"] = _this.datasource.apptoken;
-                            urloptions.headers["Session-Token"] = response.data["session_token"];
-                            return _this.datasource.backendSrv.datasourceRequest(urloptions).then(function (responselso) {
-                                if (responselso.status >= 200 && responselso.status < 300) {
-                                    var dateFields = [];
-                                    for (var num in responselso.data) {
-                                        if (datatype == "date") {
-                                            if (responselso.data[num]["datatype"] == "datetime") {
-                                                dateFields.push(_this.uiSegmentSrv.newSegment({
-                                                    html: num,
-                                                    value: responselso.data[num]["name"],
-                                                    expandable: false,
-                                                }));
-                                            }
-                                        }
-                                        else {
-                                            dateFields.push(_this.uiSegmentSrv.newSegment({
-                                                html: num,
-                                                value: responselso.data[num]["name"],
-                                                expandable: false,
-                                            }));
-                                        }
-                                    }
-                                    return dateFields;
-                                }
-                            });
-                        }
-                    });
-                };
-                GlpiAppDatasourceQueryCtrl.prototype.policyChanged = function () {
-                    this.target.datefield = this.policySegment.html;
-                    this.panelCtrl.refresh();
-                };
-                GlpiAppDatasourceQueryCtrl.prototype.tablecolChanged = function (colindex, colval) {
-                    this.target.cols[colindex] = colval.html;
-                    this.panelCtrl.refresh();
                 };
                 GlpiAppDatasourceQueryCtrl.prototype.getSession = function () {
                     var options = {
