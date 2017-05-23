@@ -42,6 +42,29 @@ System.register([], function (exports_1, context_1) {
                     if (this.target.cols == null) {
                         this.target.cols = {};
                     }
+                    var emptyValCol = {
+                        number: "0",
+                        label: "------",
+                        group: "",
+                    };
+                    if (this.target.col_0 == null) {
+                        this.target.col_0 = emptyValCol;
+                    }
+                    if (this.target.col_1 == null) {
+                        this.target.col_1 = emptyValCol;
+                    }
+                    if (this.target.col_2 == null) {
+                        this.target.col_2 = emptyValCol;
+                    }
+                    if (this.target.col_3 == null) {
+                        this.target.col_3 = emptyValCol;
+                    }
+                    if (this.target.col_4 == null) {
+                        this.target.col_4 = emptyValCol;
+                    }
+                    if (this.target.col_5 == null) {
+                        this.target.col_5 = emptyValCol;
+                    }
                     this.list = [];
                     this.getListOptionsFields('all').then(function (data) { $scope.ctrl.list = data; });
                 }
