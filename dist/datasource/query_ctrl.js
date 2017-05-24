@@ -49,6 +49,9 @@ System.register([], function (exports_1, context_1) {
                     if (this.target.col_5 == null) {
                         this.target.col_5 = emptyValCol;
                     }
+                    if (this.target.dynamicsplit == null) {
+                        this.target.dynamicsplit = emptyValCol;
+                    }
                     this.list = [];
                     this.getListOptionsFields('all').then(function (data) { $scope.ctrl.list = data; });
                     if (this.target.datefield == null) {

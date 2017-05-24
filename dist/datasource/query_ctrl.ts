@@ -57,6 +57,10 @@ export class GlpiAppDatasourceQueryCtrl {
             this.target.col_5 = emptyValCol;
         }
 
+        if (this.target.dynamicsplit == null) {
+            this.target.dynamicsplit = emptyValCol;
+        }
+
         this.list = [];
         this.getListOptionsFields('all').then(data => {$scope.ctrl.list = data;});
 

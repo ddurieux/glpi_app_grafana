@@ -141,6 +141,9 @@ export class GlpiAppDatasource {
           }
         }
       }
+      if (q.dynamicsplit.number != "0") {
+        searchq[1] += "&forcedisplay[" + q.dynamicsplit.number + "]=" + q.dynamicsplit.number;
+      }
 
       // Get all count per range / timerange
       var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
@@ -271,39 +274,80 @@ export class GlpiAppDatasource {
         });
       } else {
         // it's datapoints
-
-        // Define all timeperiods
-        var periods = {};
-        for (var tp in timeperiods) {
-          periods[tp] = 0;
-        }
-        for (var idx2 in data[3]) {
-          for (var kkey2 in data[3][idx2]) {
-            var date = new Date(data[3][idx2][kkey2][field_num]);
-            var item_date = Math.round(date.getTime() / 1000);
-            for (var tpd in timeperiods) {
-              if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                if (q.counter == 'yes') {
-                  periods[tpd] += 1;
-                } else {
-                  periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+        if (q.dynamicsplit.number != "0") {
+          var periods = {};
+          for (var idx2 in data[3]) {
+            for (var kkey2 in data[3][idx2]) {
+              periods[data[3][idx2][kkey2][q.dynamicsplit.number]] = {};
+            }
+          }
+          for (var period in periods) {
+            for (var tp in timeperiods) {
+              periods[period][tp] = 0;
+            }
+          }
+          for (var idx2 in data[3]) {
+            for (var kkey2 in data[3][idx2]) {
+              var date = new Date(data[3][idx2][kkey2][field_num]);
+              var item_date = Math.round(date.getTime() / 1000);
+              for (var tpd in timeperiods) {
+                if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                  if (q.counter == 'yes') {
+                    periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
+                  } else {
+                    periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+                  }
+                  break;
                 }
-                break;
               }
             }
           }
-        }
+          for (var period in periods) {
+            // We create the datapoints
+            var datapoints = [];
+            for (var tpp in periods[period]) {
+              datapoints.unshift([periods[period][tpp], Number(tpp) * 1000]);
+            }
 
-        // We create the datapoints
-        var datapoints = [];
-        for (var tpp in periods) {
-          datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
-        }
+            data[5].push({
+              target: period,
+              datapoints: datapoints,
+            });
+          }
+        } else {
+          // Define all timeperiods
+          var periods = {};
+          for (var tp in timeperiods) {
+            periods[tp] = 0;
+          }
+          for (var idx2 in data[3]) {
+            for (var kkey2 in data[3][idx2]) {
+              var date = new Date(data[3][idx2][kkey2][field_num]);
+              var item_date = Math.round(date.getTime() / 1000);
+              for (var tpd in timeperiods) {
+                if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                  if (q.counter == 'yes') {
+                    periods[tpd] += 1;
+                  } else {
+                    periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+                  }
+                  break;
+                }
+              }
+            }
+          }
 
-        data[5].push({
-          target: q.alias,
-          datapoints: datapoints,
-        });
+          // We create the datapoints
+          var datapoints = [];
+          for (var tpp in periods) {
+            datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
+          }
+
+          data[5].push({
+            target: q.alias,
+            datapoints: datapoints,
+          });
+        }
       }
       current_target_num += 1;
       return [current_target_num, data[0], data[5]];
