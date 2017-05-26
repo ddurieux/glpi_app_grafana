@@ -27,9 +27,9 @@ System.register([], function (exports_1, context_1) {
                         this.target.table = "no";
                     }
                     var emptyValCol = {
-                        number: "0",
-                        label: "------",
                         group: "Default",
+                        label: "------",
+                        number: "0",
                     };
                     if (this.target.col_0 == null) {
                         this.target.col_0 = emptyValCol;
@@ -53,28 +53,41 @@ System.register([], function (exports_1, context_1) {
                         this.target.dynamicsplit = emptyValCol;
                     }
                     this.list = [];
-                    this.getListOptionsFields('all').then(function (data) { $scope.ctrl.list = data; });
+                    this.getListOptionsFields("all").then(function (data) { $scope.ctrl.list = data; });
                     if (this.target.datefield == null) {
                         this.target.datefield = emptyValCol;
                     }
                     this.listdate = [];
-                    this.getListOptionsFields('date').then(function (data) { $scope.ctrl.listdate = data; });
+                    this.getListOptionsFields("date").then(function (data) { $scope.ctrl.listdate = data; });
                     if (this.target.counter == null) {
                         this.target.counter = "yes";
                     }
                     this.listnumber = [];
-                    this.getListOptionsFields('number').then(function (data) { $scope.ctrl.listnumber = data; });
+                    this.getListOptionsFields("number").then(function (data) { $scope.ctrl.listnumber = data; });
+                    this.scope = $scope;
                 }
+                GlpiAppDatasourceQueryCtrl.prototype.newQueryRefresh = function () {
+                    var $scope = this.scope;
+                    this.getListOptionsFields("all").then(function (data) { $scope.ctrl.list = data; });
+                    this.getListOptionsFields("date").then(function (data) { $scope.ctrl.listdate = data; });
+                    this.getListOptionsFields("number").then(function (data) { $scope.ctrl.listnumber = data; });
+                    this.refresh();
+                };
                 GlpiAppDatasourceQueryCtrl.prototype.refresh = function () {
                     this.panelCtrl.refresh();
                 };
                 GlpiAppDatasourceQueryCtrl.prototype.getCollapsedText = function () {
                     var text = "";
                     if (this.target.query) {
-                        text += "Query: " + this.target.query + ", ";
+                        var squery = this.target.query.split(".php?");
+                        var squery2 = squery[0].split("/");
+                        text += "Query on " + squery2[(squery2.length - 1)] + ", ";
                     }
                     if (this.target.alias) {
-                        text += "Alias: " + this.target.alias;
+                        text += "with alias " + this.target.alias + ", ";
+                    }
+                    if (this.target.datefield.number != "0") {
+                        text += "with timerange based on " + this.target.datefield.label;
                     }
                     if (text == "") {
                         text = "Make a search into GLPI interface and copy / paste the URL into 'query' field";
@@ -92,39 +105,38 @@ System.register([], function (exports_1, context_1) {
                             var itemtype = url[url.length - 1];
                             var urloptions = {
                                 method: "GET",
-                                url: _this.datasource.url + "/listSearchOptions/" + itemtype,
                                 transformResponse: [function (data) {
                                         var regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
                                         var m;
                                         var mySelectFields = [];
                                         mySelectFields.push({
-                                            number: "0",
-                                            label: "------",
                                             group: "Default",
+                                            label: "------",
+                                            number: "0",
                                         });
                                         if (datatype == "date") {
                                             mySelectFields.push({
-                                                number: "-1",
-                                                label: "Not use date, so get all data",
                                                 group: "Special / be careful",
+                                                label: "Not use date, so get all data",
+                                                number: "-1",
                                             });
                                         }
-                                        var groupname = '';
+                                        var groupname = "";
                                         var parsed = JSON.parse(data);
                                         while ((m = regex.exec(data)) !== null) {
                                             if (m.index === regex.lastIndex) {
                                                 regex.lastIndex++;
                                             }
-                                            if (typeof parsed[m[1]] === 'string') {
+                                            if (typeof parsed[m[1]] === "string") {
                                                 groupname = parsed[m[1]];
                                             }
                                             else {
                                                 if (datatype == "date") {
                                                     if (parsed[m[1]]["datatype"] == "datetime") {
                                                         mySelectFields.push({
-                                                            number: m[1],
-                                                            label: parsed[m[1]]["name"],
                                                             group: groupname,
+                                                            label: parsed[m[1]]["name"],
+                                                            number: m[1],
                                                         });
                                                     }
                                                 }
@@ -134,23 +146,24 @@ System.register([], function (exports_1, context_1) {
                                                         || parsed[m[1]]["datatype"] == "number"
                                                         || parsed[m[1]]["datatype"] == "integer") {
                                                         mySelectFields.push({
-                                                            number: m[1],
-                                                            label: parsed[m[1]]["name"],
                                                             group: groupname,
+                                                            label: parsed[m[1]]["name"],
+                                                            number: m[1],
                                                         });
                                                     }
                                                 }
                                                 else {
                                                     mySelectFields.push({
-                                                        number: m[1],
-                                                        label: parsed[m[1]]["name"],
                                                         group: groupname,
+                                                        label: parsed[m[1]]["name"],
+                                                        number: m[1],
                                                     });
                                                 }
                                             }
                                         }
                                         return mySelectFields;
                                     }],
+                                url: _this.datasource.url + "/listSearchOptions/" + itemtype,
                             };
                             urloptions.headers = urloptions.headers || {};
                             urloptions.headers["App-Token"] = _this.datasource.apptoken;

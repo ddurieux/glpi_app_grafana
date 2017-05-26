@@ -1,8 +1,8 @@
 ///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
 
 import angular from "angular";
-import _ from "lodash";
 import GlpiAppDatasource from "datasource";
+import _ from "lodash";
 
 export class GlpiAppDatasourceQueryCtrl {
     static templateUrl = "datasource/partials/query.editor.html";
@@ -15,6 +15,7 @@ export class GlpiAppDatasourceQueryCtrl {
     list: any;
     listdate: any;
     listnumber: any;
+    scope: any;
 
     constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
 
@@ -34,9 +35,9 @@ export class GlpiAppDatasourceQueryCtrl {
             this.target.table = "no";
         }
         var emptyValCol = {
-            number: "0",
-            label: "------",
             group: "Default",
+            label: "------",
+            number: "0",
         };
         if (this.target.col_0 == null) {
             this.target.col_0 = emptyValCol;
@@ -62,22 +63,32 @@ export class GlpiAppDatasourceQueryCtrl {
         }
 
         this.list = [];
-        this.getListOptionsFields('all').then(data => {$scope.ctrl.list = data;});
+        this.getListOptionsFields("all").then(data => { $scope.ctrl.list = data; });
 
         if (this.target.datefield == null) {
             this.target.datefield = emptyValCol;
         }
 
         this.listdate = [];
-        this.getListOptionsFields('date').then(data => {$scope.ctrl.listdate = data;});
+        this.getListOptionsFields("date").then(data => { $scope.ctrl.listdate = data; });
 
         if (this.target.counter == null) {
             this.target.counter = "yes";
         }
 
         this.listnumber = [];
-        this.getListOptionsFields('number').then(data => {$scope.ctrl.listnumber = data;});
+        this.getListOptionsFields("number").then(data => { $scope.ctrl.listnumber = data; });
 
+        this.scope = $scope;
+    }
+
+    newQueryRefresh() {
+        // refresh all list when change query
+        var $scope = this.scope;
+        this.getListOptionsFields("all").then(data => { $scope.ctrl.list = data; });
+        this.getListOptionsFields("date").then(data => { $scope.ctrl.listdate = data; });
+        this.getListOptionsFields("number").then(data => { $scope.ctrl.listnumber = data; });
+        this.refresh();
     }
 
     refresh() {
@@ -88,11 +99,18 @@ export class GlpiAppDatasourceQueryCtrl {
         var text = "";
 
         if (this.target.query) {
-            text += "Query: " + this.target.query + ", ";
+            var squery = this.target.query.split(".php?");
+            var squery2 = squery[0].split("/");
+            // text += "Query on : " + this.target.query + ", ";
+            text += "Query on " + squery2[(squery2.length - 1)] + ", ";
         }
 
         if (this.target.alias) {
-            text += "Alias: " + this.target.alias;
+            text += "with alias " + this.target.alias + ", ";
+        }
+
+        if (this.target.datefield.number != "0") {
+            text += "with timerange based on " + this.target.datefield.label;
         }
 
         if (text == "") {
@@ -112,31 +130,30 @@ export class GlpiAppDatasourceQueryCtrl {
 
                 var urloptions: any = {
                     method: "GET",
-                    url: this.datasource.url + "/listSearchOptions/" + itemtype,
-                    transformResponse: [function (data) {
+                    transformResponse: [function(data) {
                         const regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
                         let m;
                         var mySelectFields = [];
                         mySelectFields.push({
-                            number: "0",
-                            label: "------",
                             group: "Default",
+                            label: "------",
+                            number: "0",
                         });
                         if (datatype == "date") {
                             mySelectFields.push({
-                                number: "-1",
-                                label: "Not use date, so get all data",
                                 group: "Special / be careful",
+                                label: "Not use date, so get all data",
+                                number: "-1",
                             });
                         }
-                        var groupname = '';
+                        var groupname = "";
                         var parsed = JSON.parse(data);
                         while ((m = regex.exec(data)) !== null) {
                             // This is necessary to avoid infinite loops with zero-width matches
                             if (m.index === regex.lastIndex) {
                                 regex.lastIndex++;
                             }
-                            if (typeof parsed[m[1]] === 'string') {
+                            if (typeof parsed[m[1]] === "string") {
                                 // it's the group name
                                 groupname = parsed[m[1]];
                             } else {
@@ -144,9 +161,9 @@ export class GlpiAppDatasourceQueryCtrl {
                                 if (datatype == "date") {
                                     if (parsed[m[1]]["datatype"] == "datetime") {
                                         mySelectFields.push({
-                                            number: m[1],
-                                            label: parsed[m[1]]["name"],
                                             group: groupname,
+                                            label: parsed[m[1]]["name"],
+                                            number: m[1],
                                         });
                                     }
                                 } else if (datatype == "number") {
@@ -155,22 +172,23 @@ export class GlpiAppDatasourceQueryCtrl {
                                         || parsed[m[1]]["datatype"] == "number"
                                         || parsed[m[1]]["datatype"] == "integer") {
                                         mySelectFields.push({
-                                            number: m[1],
-                                            label: parsed[m[1]]["name"],
                                             group: groupname,
+                                            label: parsed[m[1]]["name"],
+                                            number: m[1],
                                         });
                                     }
                                 } else {
                                     mySelectFields.push({
-                                        number: m[1],
-                                        label: parsed[m[1]]["name"],
                                         group: groupname,
+                                        label: parsed[m[1]]["name"],
+                                        number: m[1],
                                     });
                                 }
                             }
                         }
                         return mySelectFields;
                     }],
+                    url: this.datasource.url + "/listSearchOptions/" + itemtype,
                 };
                 urloptions.headers = urloptions.headers || {};
                 urloptions.headers["App-Token"] = this.datasource.apptoken;
