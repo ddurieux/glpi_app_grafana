@@ -13,16 +13,6 @@ System.register([], function (exports_1, context_1) {
                     this.$q = $q;
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.panel = this.panelCtrl.panel;
-                    this.table = [
-                        {
-                            name: "Yes",
-                            value: "yes",
-                        },
-                        {
-                            name: "No",
-                            value: "no",
-                        },
-                    ];
                     if (this.target.table == null) {
                         this.target.table = false;
                     }

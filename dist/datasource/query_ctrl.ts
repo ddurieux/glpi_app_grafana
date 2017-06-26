@@ -21,16 +21,6 @@ export class GlpiAppDatasourceQueryCtrl {
 
         this.panel = this.panelCtrl.panel;
 
-        this.table = [
-            {
-                name: "Yes",
-                value: "yes",
-            },
-            {
-                name: "No",
-                value: "no",
-            },
-        ];
         if (this.target.table == null) {
             this.target.table = false;
         }
