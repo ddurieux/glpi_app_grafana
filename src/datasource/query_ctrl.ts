@@ -211,5 +211,4 @@ export class GlpiAppDatasourceQueryCtrl {
 
         return this.datasource.backendSrv.datasourceRequest(options);
     }
-
 }
