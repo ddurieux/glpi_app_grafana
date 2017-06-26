@@ -132,7 +132,7 @@ export class GlpiAppDatasource {
             "criteria[" + i + "][value]=" + url_end_date;
       }
       searchq[1] += "&forcedisplay[0]=0";
-      if (q.table == "yes") {
+      if (q.table) {
         searchq[1] += "&giveItems=true";
 
         for (var colNum = 0; colNum <= 5 ; colNum++) {
@@ -227,7 +227,7 @@ export class GlpiAppDatasource {
       args[4] += 400;
       return bksrv.datasourceRequest(url2options).then(response => {
         if (response.status >= 200 && response.status < 300) {
-          if (q.table == "yes") {
+          if (q.table) {
             args[3].push(response.data["data_html"]);
           } else {
             args[3].push(response.data["data"]);
@@ -241,7 +241,7 @@ export class GlpiAppDatasource {
   /** This will merge all results/elements (all ranges/pages) into same array */
   promiseMergeTargetResult(timeperiods, field_num, q, current_target_num) {
     return function(data) {
-      if (q.table == "yes") {
+      if (q.table) {
         var columns = [];
         var maxnum = 0;
         for (var colNum = 0; colNum <= 5 ; colNum++) {
@@ -292,7 +292,7 @@ export class GlpiAppDatasource {
               var item_date = Math.round(date.getTime() / 1000);
               for (var tpd in timeperiods) {
                 if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                  if (q.counter == "yes") {
+                  if (q.counter) {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
                   } else {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += data[3][idx2][kkey2][q.nocounterval.number];
@@ -326,7 +326,7 @@ export class GlpiAppDatasource {
               var item_date = Math.round(date.getTime() / 1000);
               for (var tpd in timeperiods) {
                 if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                  if (q.counter == "yes") {
+                  if (q.counter) {
                     periods[tpd] += 1;
                   } else {
                     periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];

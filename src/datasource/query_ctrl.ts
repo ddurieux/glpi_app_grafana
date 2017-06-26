@@ -32,7 +32,7 @@ export class GlpiAppDatasourceQueryCtrl {
             },
         ];
         if (this.target.table == null) {
-            this.target.table = "no";
+            this.target.table = false;
         }
         var emptyValCol = {
             group: "Default",
@@ -73,7 +73,7 @@ export class GlpiAppDatasourceQueryCtrl {
         this.getListOptionsFields("date").then(data => { $scope.ctrl.listdate = data; });
 
         if (this.target.counter == null) {
-            this.target.counter = "yes";
+            this.target.counter = true;
         }
 
         this.listnumber = [];

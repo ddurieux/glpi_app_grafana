@@ -74,7 +74,7 @@ export class GlpiAppDatasource {
           }
           l += 1;
         }
-        var resultalltarget = function (data) {
+        var resultalltarget = function(data) {
           var ret = {
             data: data[2],
           };
@@ -98,14 +98,14 @@ export class GlpiAppDatasource {
       var url = searchq[0].split("/");
       var itemtype = url[url.length - 1];
       var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
-      var interval_start = Math.round(options.range.from.valueOf() / 1000);
-      var interval_end = Math.round(options.range.to.valueOf() / 1000);
+      var interval_start = Math.round(options.range.from.valueOf() / 1000) + 3600 + 3600;
+      var interval_end = Math.round(options.range.to.valueOf() / 1000) + 3600 + 3600;
 
       // add timerange
       var dateISO = new Date(interval_start * 1e3).toISOString();
       var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
       // field num for creation_date
-      var field_num = q.datefield['number'];
+      var field_num = q.datefield["number"];
 
       var dateISOend = new Date(interval_end * 1e3).toISOString();
       var url_end_date = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
@@ -132,12 +132,12 @@ export class GlpiAppDatasource {
             "criteria[" + i + "][value]=" + url_end_date;
       }
       searchq[1] += "&forcedisplay[0]=0";
-      if (q.table == "yes") {
+      if (q.table) {
         searchq[1] += "&giveItems=true";
 
-        for (var colNum=0; colNum <= 5 ; colNum++) {
-          if (eval("q.col_" + colNum)['number'] != '0') {
-            searchq[1] += "&forcedisplay[" + eval("q.col_" + colNum)['number'] + "]=" + eval("q.col_" + colNum)['number'];
+        for (var colNum = 0; colNum <= 5 ; colNum++) {
+          if (eval("q.col_" + colNum)["number"] != "0") {
+            searchq[1] += "&forcedisplay[" + eval("q.col_" + colNum)["number"] + "]=" + eval("q.col_" + colNum)["number"];
           }
         }
       }
@@ -171,7 +171,7 @@ export class GlpiAppDatasource {
 
   /** This will get the number of elements in GLPI to get */
   promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num) {
-    return function (bksrv, urloptions, timeperiods, alltargetresult) {
+    return function(bksrv, urloptions, timeperiods, alltargetresult) {
       return bksrv.datasourceRequest(urloptions).then(response => {
         if (response.status >= 200 && response.status < 300) {
           // get totalcount
@@ -219,7 +219,7 @@ export class GlpiAppDatasource {
 
   /** This will get each ranges/pages in GLPI. Goal is to get all elements of GLPI here */
   promiseGetEachRangePageOfTarget(q) {
-    return function (args) {
+    return function(args) {
       var bksrv = args[0];
       var url2options = _.cloneDeep(args[1]);
 
@@ -227,7 +227,7 @@ export class GlpiAppDatasource {
       args[4] += 400;
       return bksrv.datasourceRequest(url2options).then(response => {
         if (response.status >= 200 && response.status < 300) {
-          if (q.table == "yes") {
+          if (q.table) {
             args[3].push(response.data["data_html"]);
           } else {
             args[3].push(response.data["data"]);
@@ -241,14 +241,14 @@ export class GlpiAppDatasource {
   /** This will merge all results/elements (all ranges/pages) into same array */
   promiseMergeTargetResult(timeperiods, field_num, q, current_target_num) {
     return function(data) {
-      if (q.table == "yes") {
+      if (q.table) {
         var columns = [];
         var maxnum = 0;
-        for (var colNum=0; colNum <= 5 ; colNum++) {
-          if (eval("q.col_" + colNum)['number'] != '0') {
+        for (var colNum = 0; colNum <= 5 ; colNum++) {
+          if (eval("q.col_" + colNum)["number"] != "0") {
             maxnum = _.cloneDeep(colNum);
             if (eval("q.col_" + colNum + "_alias") == null ||  eval("q.col_" + colNum + "_alias") == "") {
-              columns.push({text: eval("q.col_" + colNum)['label'], type: "string"});
+              columns.push({text: eval("q.col_" + colNum)["label"], type: "string"});
             } else {
               columns.push({text: eval("q.col_" + colNum + "_alias"), type: "string"});
             }
@@ -258,8 +258,8 @@ export class GlpiAppDatasource {
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
             var myrow = [];
-            for (var colNum2=0; colNum2 <= maxnum; colNum2++) {
-              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)['number']].replace(/<div(.|\n|\r)+<\/div>/, "");
+            for (var colNum2 = 0; colNum2 <= maxnum; colNum2++) {
+              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]].replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
               myrow.push(cleanedHTML);
@@ -292,7 +292,7 @@ export class GlpiAppDatasource {
               var item_date = Math.round(date.getTime() / 1000);
               for (var tpd in timeperiods) {
                 if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                  if (q.counter == 'yes') {
+                  if (q.counter) {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
                   } else {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += data[3][idx2][kkey2][q.nocounterval.number];
@@ -326,7 +326,7 @@ export class GlpiAppDatasource {
               var item_date = Math.round(date.getTime() / 1000);
               for (var tpd in timeperiods) {
                 if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
-                  if (q.counter == 'yes') {
+                  if (q.counter) {
                     periods[tpd] += 1;
                   } else {
                     periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];

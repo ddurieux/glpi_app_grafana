@@ -24,7 +24,7 @@ System.register([], function (exports_1, context_1) {
                         },
                     ];
                     if (this.target.table == null) {
-                        this.target.table = "no";
+                        this.target.table = false;
                     }
                     var emptyValCol = {
                         group: "Default",
@@ -60,7 +60,7 @@ System.register([], function (exports_1, context_1) {
                     this.listdate = [];
                     this.getListOptionsFields("date").then(function (data) { $scope.ctrl.listdate = data; });
                     if (this.target.counter == null) {
-                        this.target.counter = "yes";
+                        this.target.counter = true;
                     }
                     this.listnumber = [];
                     this.getListOptionsFields("number").then(function (data) { $scope.ctrl.listnumber = data; });
