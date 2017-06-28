@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This application permit get information in GLPI (Gestion Libre de Parc Informatique) through the REST API added in
+This application get information in GLPI (Gestion Libre de Parc Informatique) through the REST API added in
 version 9.1. You will be able have graphs, singlestat, tables... of your data (tickets, devices, users...).
 
 ## screenshot
@@ -21,7 +21,7 @@ For the datasource GLPI, you will need:
 
 ## Dashboard
 
-There is an example of dashboard and you can install it.
+There is an example of dashboard. You can install and use it.
 
 Create a new panel and after edit it.
 Add a new Query with your GLPI datasource.
@@ -47,5 +47,7 @@ If you have bug or request features, you can open issues in the [github reposito
 
 ## Professional support
 
-If you need professional support or training, contact the DCS company / send a mail to [dcs.glpi@dcsit-group.com](mailto:dcs.glpi@dcsit-group.com)
+Do you need professional support, training, others?
+
+Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to [dcs.glpi@dcsit-group.com](mailto:dcs.glpi@dcsit-group.com)
 
