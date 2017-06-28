@@ -8,7 +8,7 @@
   "graphTooltip": 0,
   "hideControls": false,
   "links": [],
-  "refresh": false,
+  "refresh": "30s",
   "timezone": "browser",
   "title": "GLPI dashboard demo",
   "tags": [
