@@ -12,7 +12,7 @@
   "info": {
     "description": "GLPI app for Grafana",
     "author": {
-      "name": "David Durieux && DCS Easyware",
+      "name": "David Durieux && DCS",
       "url": "https://github.com/ddurieux/glpi_app_grafana"
     },
     "keywords": ["glpi app"],
