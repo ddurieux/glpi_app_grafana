@@ -1,5 +1,4 @@
 {
-  "id": null,
   "annotations": {
     "list": []
   },
@@ -7,14 +6,9 @@
   "gnetId": null,
   "graphTooltip": 0,
   "hideControls": false,
+  "id": null,
   "links": [],
-  "refresh": "30s",
-  "timezone": "browser",
-  "title": "GLPI dashboard demo",
-  "tags": [
-    "glpi-app",
-    "imported"
-  ],
+  "refresh": "1m",
   "rows": [
     {
       "collapse": false,
@@ -147,11 +141,15 @@
           "dashes": false,
           "datasource": "mon glpi",
           "fill": 1,
+          "hideTimeOverride": true,
           "id": 3,
           "interval": "2m",
           "legend": {
+            "alignAsTable": false,
             "avg": false,
             "current": false,
+            "hideEmpty": false,
+            "hideZero": false,
             "max": false,
             "min": false,
             "show": true,
@@ -161,7 +159,7 @@
           "lines": false,
           "linewidth": 1,
           "links": [],
-          "nullPointMode": "null",
+          "nullPointMode": "null as zero",
           "percentage": false,
           "percentagepoints": "55",
           "pointradius": 5,
@@ -274,7 +272,7 @@
           "timerangefield": "date_creation",
           "title": "Tickets",
           "tooltip": {
-            "shared": false,
+            "shared": true,
             "sort": 0,
             "value_type": "individual"
           },
@@ -430,7 +428,7 @@
           "valueMaps": [
             {
               "op": "=",
-              "text": "N/A",
+              "text": "0",
               "value": "null"
             }
           ],
@@ -469,7 +467,7 @@
           "colorValue": false,
           "colors": [
             "rgba(0, 0, 0, 0)",
-            "rgba(0, 0, 0, 0)",
+            "rgb(31, 29, 29)",
             "rgba(245, 54, 54, 0.9)"
           ],
           "datasource": "mon glpi",
@@ -740,6 +738,7 @@
             }
           ],
           "maxDataPoints": 100,
+          "minSpan": 3,
           "nullPointMode": "connected",
           "nullText": null,
           "postfix": "",
@@ -753,6 +752,7 @@
               "to": "null"
             }
           ],
+          "repeat": null,
           "span": 3,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
@@ -811,12 +811,13 @@
           ],
           "thresholds": "600,800",
           "title": "En cours",
+          "transparent": false,
           "type": "singlestat",
           "valueFontSize": "120%",
           "valueMaps": [
             {
               "op": "=",
-              "text": "N/A",
+              "text": "0",
               "value": "null"
             }
           ],
@@ -852,11 +853,7 @@
           "span": 12,
           "styles": [
             {
-              "dateFormat": "YYYY-MM-DD HH:mm:ss",
-              "pattern": "Time",
-              "type": "date"
-            },
-            {
+              "alias": "",
               "colorMode": null,
               "colors": [
                 "rgba(245, 54, 54, 0.9)",
@@ -865,7 +862,7 @@
               ],
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
               "decimals": 2,
-              "pattern": "/.*/",
+              "pattern": "Titre",
               "sanitize": true,
               "thresholds": [],
               "type": "string",
@@ -1054,26 +1051,19 @@
       "showTitle": false,
       "title": "Dashboard Row",
       "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": 250,
-      "panels": [],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
     }
   ],
   "schemaVersion": 14,
   "style": "dark",
+  "tags": [
+    "glpi-app",
+    "imported"
+  ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -1101,5 +1091,8 @@
       "7d",
       "30d"
     ]
-  }
+  },
+  "timezone": "browser",
+  "title": "GLPI dashboard demo",
+  "version": 25
 }
