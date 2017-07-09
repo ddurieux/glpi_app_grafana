@@ -372,6 +372,7 @@ export class GlpiAppDatasource {
     var options: any = {
       method: "GET",
       url: this.url + "/initSession",
+      data: null,
     };
     options.headers = options.headers || {};
     options.headers.Authorization = "user_token " + this.usertoken;
@@ -379,6 +380,15 @@ export class GlpiAppDatasource {
     return this.backendSrv.datasourceRequest(options).then((response) => {
       if (response.status === 200) {
         return { status: "success", message: "Data source is working", title: "Success" };
+      }
+    }, function(err) {
+      console.log(err);
+      if (err.status !== 0 || err.status >= 300) {
+        if (err.data && err.data.error) {
+          throw { message: 'GLPI API Error Response: ' + err.data.error, data: err.data, config: err.config };
+        } else {
+          throw { message: 'GLPI API Error: ' + err.message, data: err.data, config: err.config };
+        }
       }
     });
   }
