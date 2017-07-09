@@ -19,6 +19,8 @@
     "grunt-ts": "^6.0.0-beta.15",
     "load-grunt-tasks": "^3.5.2",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
     "tslint": "^5.1.0",
     "typescript": "^2.2.2"
   },

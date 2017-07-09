@@ -1,10 +1,12 @@
 ///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
 
 import _ from "lodash";
+import * as moment from '../vendor/public/builds/moment-timezone-with-data';
 
 export class GlpiAppDatasource {
   private usertoken: any;
   private apptoken: any;
+  private timezone: any;
   private name: string;
   private type: string;
 
@@ -22,6 +24,7 @@ export class GlpiAppDatasource {
     this.url = instanceSettings.url;
     this.apptoken = instanceSettings.jsonData.apptoken;
     this.usertoken = instanceSettings.jsonData.token;
+    this.timezone = instanceSettings.jsonData.timezone;
     this.name = instanceSettings.name;
 
     this.supportAnnotations = true;
@@ -40,7 +43,7 @@ export class GlpiAppDatasource {
     var targets = _.cloneDeep(options.targets);
     var queryTargets = [];
 
-    var allQueries = _.map(targets, target => {
+    var allQueries = _.map(targets, (target) => {
       if (target.hide) { return ""; }
 
       queryTargets.push(target);
@@ -58,7 +61,7 @@ export class GlpiAppDatasource {
     });
 
     var initsession = this.getSession();
-    return initsession.then(response => {
+    return initsession.then((response) => {
       if (response.status === 200) {
 
         var targetPool = [];
@@ -149,12 +152,11 @@ export class GlpiAppDatasource {
       var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
       var interval_start = Math.round(options.range.from.valueOf() / 1000);
       var interval_end = Math.round(options.range.to.valueOf() / 1000);
-      var range = _.range(interval_start, interval_end, interval_s);
+      var range = _.range(interval_end, interval_start, -interval_s);
       var timeperiods = {};
       for (var num in range) {
-        timeperiods[range[num]] = range[num] + interval_s; // ie timeperiod[start] = end
+        timeperiods[(range[num] * 1000)] = (range[num] - interval_s) * 1000; // ie timeperiod[start] = end
       }
-
       // URL options for GLPI API
       var urloptions: any = {
         method: "GET",
@@ -172,7 +174,7 @@ export class GlpiAppDatasource {
   /** This will get the number of elements in GLPI to get */
   promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num) {
     return function(bksrv, urloptions, timeperiods, alltargetresult) {
-      return bksrv.datasourceRequest(urloptions).then(response => {
+      return bksrv.datasourceRequest(urloptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
           // get totalcount
           var number_pages = Math.ceil(response.data["totalcount"] / 400);
@@ -210,7 +212,7 @@ export class GlpiAppDatasource {
             }
             k += 1;
           }
-          var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num);
+          var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass);
           return prom.then(resultfunc);
         }
       });
@@ -225,7 +227,7 @@ export class GlpiAppDatasource {
 
       url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 399);
       args[4] += 400;
-      return bksrv.datasourceRequest(url2options).then(response => {
+      return bksrv.datasourceRequest(url2options).then((response) => {
         if (response.status >= 200 && response.status < 300) {
           if (q.table) {
             args[3].push(response.data["data_html"]);
@@ -239,9 +241,10 @@ export class GlpiAppDatasource {
   }
 
   /** This will merge all results/elements (all ranges/pages) into same array */
-  promiseMergeTargetResult(timeperiods, field_num, q, current_target_num) {
+  promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass) {
     return function(data) {
       if (q.table) {
+        // TABLE part
         var columns = [];
         var maxnum = 0;
         for (var colNum = 0; colNum <= 5 ; colNum++) {
@@ -254,6 +257,10 @@ export class GlpiAppDatasource {
             }
           }
         }
+        // Prepare for recreate the GLPI url in links
+        var glpiurl = myclass.url;
+        var split_glpiurl = glpiurl.split("/");
+
         var rows = [];
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
@@ -262,6 +269,9 @@ export class GlpiAppDatasource {
               var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]].replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+              if (cleanedHTML.indexOf(' href="/') !== -1) {
+                cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + '//' + split_glpiurl[2] + '/');
+              }
               myrow.push(cleanedHTML);
             }
             rows.push(myrow);
@@ -288,10 +298,12 @@ export class GlpiAppDatasource {
           }
           for (var idx2 in data[3]) {
             for (var kkey2 in data[3][idx2]) {
-              var date = new Date(data[3][idx2][kkey2][field_num]);
-              var item_date = Math.round(date.getTime() / 1000);
+              var datestring = data[3][idx2][kkey2][field_num];
+              // convert date in ISO 8601 format
+              var date = new Date(moment.tz(datestring, myclass.timezone));
+              var item_date = Math.round(date.getTime());
               for (var tpd in timeperiods) {
-                if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
                   if (q.counter) {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
                   } else {
@@ -306,9 +318,8 @@ export class GlpiAppDatasource {
             // We create the datapoints
             var datapoints = [];
             for (var tpp in periods[period]) {
-              datapoints.unshift([periods[period][tpp], Number(tpp) * 1000]);
+              datapoints.unshift([periods[period][tpp], Number(tpp)]);
             }
-
             data[5].push({
               target: period,
               datapoints: datapoints,
@@ -320,12 +331,16 @@ export class GlpiAppDatasource {
           for (var tp in timeperiods) {
             periods[tp] = 0;
           }
+          var tototo = 0;
           for (var idx2 in data[3]) {
             for (var kkey2 in data[3][idx2]) {
-              var date = new Date(data[3][idx2][kkey2][field_num]);
-              var item_date = Math.round(date.getTime() / 1000);
+              var datestring = data[3][idx2][kkey2][field_num];
+              // convert date in ISO 8601 format
+              var date = new Date(moment.tz(datestring, myclass.timezone));
+              var item_date = Math.round(date.getTime());
+              tototo = item_date;
               for (var tpd in timeperiods) {
-                if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
                   if (q.counter) {
                     periods[tpd] += 1;
                   } else {
@@ -336,16 +351,15 @@ export class GlpiAppDatasource {
               }
             }
           }
-
           // We create the datapoints
           var datapoints = [];
           for (var tpp in periods) {
-            datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
+            datapoints.push([periods[tpp], Number(tpp)]);
           }
-
+          datapoints.pop();
           data[5].push({
             target: q.alias,
-            datapoints: datapoints,
+            datapoints: datapoints
           });
         }
       }
@@ -362,7 +376,7 @@ export class GlpiAppDatasource {
     options.headers = options.headers || {};
     options.headers.Authorization = "user_token " + this.usertoken;
     options.headers["App-Token"] = this.apptoken;
-    return this.backendSrv.datasourceRequest(options).then(response => {
+    return this.backendSrv.datasourceRequest(options).then((response) => {
       if (response.status === 200) {
         return { status: "success", message: "Data source is working", title: "Success" };
       }
@@ -390,7 +404,7 @@ export class GlpiAppDatasource {
       urloptions.headers = urloptions.headers || {};
       urloptions.headers["App-Token"] = this.apptoken;
       urloptions.headers["Session-Token"] = this.session;
-      var answer = this.backendSrv.datasourceRequest(urloptions).then(response => {
+      var answer = this.backendSrv.datasourceRequest(urloptions).then((response) => {
         if (response.status === 200) {
           return response.data;
         }

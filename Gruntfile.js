@@ -16,6 +16,12 @@ module.exports = function(grunt) {
         src: ['**/*', '!**/*.js', '!**/*.scss'],
         dest: 'dist'
       },
+      moment_timezone: {
+        cwd: 'node_modules/moment-timezone',
+        expand: true,
+        src: ['**/*.js'],
+        dest: 'dist/vendor/public'
+      },
       pluginDef: {
         expand: true,
         src: ['README.md'],
@@ -33,7 +39,7 @@ module.exports = function(grunt) {
 
     ts: {
         build: {
-            src: ["dist/**/*.ts", "!src/spec/**/*", "!**/*.d.ts"],
+            src: ["dist/**/*.ts", "!src/spec/**/*", "!**/*.d.ts", "!dist/vendor/**/*"],
             //dest: 'dist/',
             options: {
                 compile: true,
@@ -47,6 +53,8 @@ module.exports = function(grunt) {
                 fast: "never",
                 sourceRoot: '',
                 mapRoot: '',
+                moduleResolution: 'node',
+                allowJs: false,
             }
         },
         distTests: {

@@ -1,11 +1,14 @@
-System.register(["lodash"], function (exports_1, context_1) {
+System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var lodash_1, GlpiAppDatasource;
+    var lodash_1, moment, GlpiAppDatasource;
     return {
         setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
+            },
+            function (moment_1) {
+                moment = moment_1;
             }
         ],
         execute: function () {
@@ -14,6 +17,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                     this.url = instanceSettings.url;
                     this.apptoken = instanceSettings.jsonData.apptoken;
                     this.usertoken = instanceSettings.jsonData.token;
+                    this.timezone = instanceSettings.jsonData.timezone;
                     this.name = instanceSettings.name;
                     this.supportAnnotations = true;
                     this.supportMetrics = true;
@@ -122,10 +126,10 @@ System.register(["lodash"], function (exports_1, context_1) {
                         var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
                         var interval_start = Math.round(options.range.from.valueOf() / 1000);
                         var interval_end = Math.round(options.range.to.valueOf() / 1000);
-                        var range = lodash_1.default.range(interval_start, interval_end, interval_s);
+                        var range = lodash_1.default.range(interval_end, interval_start, -interval_s);
                         var timeperiods = {};
                         for (var num in range) {
-                            timeperiods[range[num]] = range[num] + interval_s;
+                            timeperiods[(range[num] * 1000)] = (range[num] - interval_s) * 1000;
                         }
                         var urloptions = {
                             method: "GET",
@@ -174,7 +178,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                     }
                                     k += 1;
                                 }
-                                var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num);
+                                var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass);
                                 return prom.then(resultfunc);
                             }
                         });
@@ -199,7 +203,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         });
                     };
                 };
-                GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q, current_target_num) {
+                GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q, current_target_num, myclass) {
                     return function (data) {
                         if (q.table) {
                             var columns = [];
@@ -215,6 +219,8 @@ System.register(["lodash"], function (exports_1, context_1) {
                                     }
                                 }
                             }
+                            var glpiurl = myclass.url;
+                            var split_glpiurl = glpiurl.split("/");
                             var rows = [];
                             for (var idx in data[3]) {
                                 for (var kkey in data[3][idx]) {
@@ -223,6 +229,9 @@ System.register(["lodash"], function (exports_1, context_1) {
                                         var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]].replace(/<div(.|\n|\r)+<\/div>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+                                        if (cleanedHTML.indexOf(' href="/') !== -1) {
+                                            cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + '//' + split_glpiurl[2] + '/');
+                                        }
                                         myrow.push(cleanedHTML);
                                     }
                                     rows.push(myrow);
@@ -249,10 +258,11 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 }
                                 for (var idx2 in data[3]) {
                                     for (var kkey2 in data[3][idx2]) {
-                                        var date = new Date(data[3][idx2][kkey2][field_num]);
-                                        var item_date = Math.round(date.getTime() / 1000);
+                                        var datestring = data[3][idx2][kkey2][field_num];
+                                        var date = new Date(moment.tz(datestring, myclass.timezone));
+                                        var item_date = Math.round(date.getTime());
                                         for (var tpd in timeperiods) {
-                                            if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                                            if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
                                                 if (q.counter) {
                                                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
                                                 }
@@ -267,7 +277,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 for (var period in periods) {
                                     var datapoints = [];
                                     for (var tpp in periods[period]) {
-                                        datapoints.unshift([periods[period][tpp], Number(tpp) * 1000]);
+                                        datapoints.unshift([periods[period][tpp], Number(tpp)]);
                                     }
                                     data[5].push({
                                         target: period,
@@ -280,12 +290,15 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 for (var tp in timeperiods) {
                                     periods[tp] = 0;
                                 }
+                                var tototo = 0;
                                 for (var idx2 in data[3]) {
                                     for (var kkey2 in data[3][idx2]) {
-                                        var date = new Date(data[3][idx2][kkey2][field_num]);
-                                        var item_date = Math.round(date.getTime() / 1000);
+                                        var datestring = data[3][idx2][kkey2][field_num];
+                                        var date = new Date(moment.tz(datestring, myclass.timezone));
+                                        var item_date = Math.round(date.getTime());
+                                        tototo = item_date;
                                         for (var tpd in timeperiods) {
-                                            if (item_date >= Number(tpd) && item_date < timeperiods[tpd]) {
+                                            if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
                                                 if (q.counter) {
                                                     periods[tpd] += 1;
                                                 }
@@ -299,11 +312,12 @@ System.register(["lodash"], function (exports_1, context_1) {
                                 }
                                 var datapoints = [];
                                 for (var tpp in periods) {
-                                    datapoints.unshift([periods[tpp], Number(tpp) * 1000]);
+                                    datapoints.push([periods[tpp], Number(tpp)]);
                                 }
+                                datapoints.pop();
                                 data[5].push({
                                     target: q.alias,
-                                    datapoints: datapoints,
+                                    datapoints: datapoints
                                 });
                             }
                         }

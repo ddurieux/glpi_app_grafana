@@ -1,7 +1,6 @@
 ///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
 
-import angular from "angular";
-import GlpiAppDatasource from "datasource";
+import GlpiAppDatasource from "./datasource";
 import _ from "lodash";
 
 export class GlpiAppDatasourceQueryCtrl {
@@ -24,7 +23,7 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.table == null) {
             this.target.table = false;
         }
-        var emptyValCol = {
+        const emptyValCol = {
             group: "Default",
             label: "------",
             number: "0",
@@ -53,21 +52,21 @@ export class GlpiAppDatasourceQueryCtrl {
         }
 
         this.list = [];
-        this.getListOptionsFields("all").then(data => { $scope.ctrl.list = data; });
+        this.getListOptionsFields("all").then((data) => { $scope.ctrl.list = data; });
 
         if (this.target.datefield == null) {
             this.target.datefield = emptyValCol;
         }
 
         this.listdate = [];
-        this.getListOptionsFields("date").then(data => { $scope.ctrl.listdate = data; });
+        this.getListOptionsFields("date").then((data) => { $scope.ctrl.listdate = data; });
 
         if (this.target.counter == null) {
             this.target.counter = true;
         }
 
         this.listnumber = [];
-        this.getListOptionsFields("number").then(data => { $scope.ctrl.listnumber = data; });
+        this.getListOptionsFields("number").then((data) => { $scope.ctrl.listnumber = data; });
 
         this.scope = $scope;
     }
@@ -75,9 +74,9 @@ export class GlpiAppDatasourceQueryCtrl {
     newQueryRefresh() {
         // refresh all list when change query
         var $scope = this.scope;
-        this.getListOptionsFields("all").then(data => { $scope.ctrl.list = data; });
-        this.getListOptionsFields("date").then(data => { $scope.ctrl.listdate = data; });
-        this.getListOptionsFields("number").then(data => { $scope.ctrl.listnumber = data; });
+        this.getListOptionsFields("all").then((data) => { $scope.ctrl.list = data; });
+        this.getListOptionsFields("date").then((data) => { $scope.ctrl.listdate = data; });
+        this.getListOptionsFields("number").then((data) => { $scope.ctrl.listnumber = data; });
         this.refresh();
     }
 
@@ -86,7 +85,7 @@ export class GlpiAppDatasourceQueryCtrl {
     }
 
     getCollapsedText() {
-        var text = "";
+        let text = "";
 
         if (this.target.query) {
             var squery = this.target.query.split(".php?");
@@ -111,7 +110,7 @@ export class GlpiAppDatasourceQueryCtrl {
 
     getListOptionsFields(datatype) {
         var initsession = this.getSession();
-        return initsession.then(response => {
+        return initsession.then((response) => {
             if (response.status === 200) {
                 this.target.query = decodeURI(this.target.query);
                 var searchq = this.target.query.split(".php?");
