@@ -146,6 +146,7 @@ export class GlpiAppDatasource {
       }
       if (q.dynamicsplit.number != "0") {
         searchq[1] += "&forcedisplay[" + q.dynamicsplit.number + "]=" + q.dynamicsplit.number;
+        searchq[1] += "&giveItems=true";
       }
 
       // Get all count per range / timerange
@@ -231,6 +232,17 @@ export class GlpiAppDatasource {
         if (response.status >= 200 && response.status < 300) {
           if (q.table) {
             args[3].push(response.data["data_html"]);
+          } else if (q.dynamicsplit.number != "0") {
+            // Parse all data and replace the data by data_html for the id of dynamicsplit
+            for (var rownum in response.data["data"]) {
+              var cleanedHTML = response.data["data_html"][rownum][q.dynamicsplit.number];
+              cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
+              cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+              cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
+              cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
+              response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
+            }
+            args[3].push(response.data["data"]);
           } else {
             args[3].push(response.data["data"]);
           }
