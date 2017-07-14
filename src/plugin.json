@@ -1,7 +1,7 @@
 {
   "type": "app",
   "name": "glpi",
-  "id": "grafana-glpi-app",
+  "id": "ddurieux-glpi-app",
 
   "pages": [
   ],

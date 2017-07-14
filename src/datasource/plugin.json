@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "GLPI API",
-  "id": "grafana-glpi-app-datasource",
+  "id": "ddurieux-glpi-datasource",
 
   "defaultMatchFormat": "regex values",
   "metrics": true,
