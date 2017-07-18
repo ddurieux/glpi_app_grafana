@@ -122,7 +122,8 @@ System.register([], function (exports_1, context_1) {
                                             }
                                             else {
                                                 if (datatype == "date") {
-                                                    if (parsed[m[1]]["datatype"] == "datetime") {
+                                                    if (parsed[m[1]]["datatype"] == "datetime"
+                                                        || parsed[m[1]]["datatype"] == "date") {
                                                         mySelectFields.push({
                                                             group: groupname,
                                                             label: parsed[m[1]]["name"],
