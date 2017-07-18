@@ -242,7 +242,7 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                         cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
                                         if (cleanedHTML.indexOf(' href="/') !== -1) {
-                                            cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + '//' + split_glpiurl[2] + '/');
+                                            cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
                                         }
                                         myrow.push(cleanedHTML);
                                     }
@@ -351,13 +351,12 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                             return { status: "success", message: "Data source is working", title: "Success" };
                         }
                     }, function (err) {
-                        console.log(err);
                         if (err.status !== 0 || err.status >= 300) {
                             if (err.data && err.data.error) {
-                                throw { message: 'GLPI API Error Response: ' + err.data.error, data: err.data, config: err.config };
+                                throw { message: "GLPI API Error Response: " + err.data.error, data: err.data, config: err.config };
                             }
                             else {
-                                throw { message: 'GLPI API Error: ' + err.message, data: err.data, config: err.config };
+                                throw { message: "GLPI API Error: " + err.message, data: err.data, config: err.config };
                             }
                         }
                     });

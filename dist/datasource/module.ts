@@ -1,6 +1,6 @@
 import {GlpiAppDatasource} from "./datasource";
 import {GlpiAppDatasourceQueryCtrl} from "./query_ctrl";
-import * as moment from '../vendor/public/builds/moment-timezone-with-data';
+import * as moment from "../vendor/public/builds/moment-timezone-with-data";
 
 export class GlpiAppDatasourceConfigCtrl {
   public timezone_list = moment.tz.names();
@@ -8,7 +8,7 @@ export class GlpiAppDatasourceConfigCtrl {
   current: any;
 
   constructor($scope) {
-    this.current.jsonData.timezone = this.current.jsonData.timezone || 'UTC';
+    this.current.jsonData.timezone = this.current.jsonData.timezone || "UTC";
   }
 
 }
