@@ -396,7 +396,17 @@ export class GlpiAppDatasource {
     }, function(err) {
       if (err.status !== 0 || err.status >= 300) {
         if (err.data && err.data.error) {
-          throw { message: "GLPI API Error Response: " + err.data.error, data: err.data, config: err.config };
+          throw {
+            message: "GLPI API Error Response: " + err.data.error
+          };
+        } else if (err.data) {
+          throw {
+            message: "GLPI API Error Response: " + err.data[1]
+          };
+        } else if (err.status == undefined) {
+          throw {
+            message: "Cross-Origin Request Blocked: add right headers in your apache/nginx like 'App-Token' and 'Session-Token'"
+          };
         } else {
           throw { message: "GLPI API Error: " + err.message, data: err.data, config: err.config };
         }
