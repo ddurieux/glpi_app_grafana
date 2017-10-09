@@ -324,9 +324,8 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                 }
                                 var datapoints = [];
                                 for (var tpp in periods) {
-                                    datapoints.push([periods[tpp], Number(tpp)]);
+                                    datapoints.unshift([periods[tpp], Number(tpp)]);
                                 }
-                                datapoints.pop();
                                 data[5].push({
                                     target: q.alias,
                                     datapoints: datapoints

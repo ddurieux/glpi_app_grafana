@@ -256,7 +256,7 @@ export class GlpiAppDatasource {
   promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass) {
     return function(data) {
       if (q.table) {
-        // TABLE part
+      ///// TABLE part
         var columns = [];
         var maxnum = 0;
         for (var colNum = 0; colNum <= 5 ; colNum++) {
@@ -295,7 +295,7 @@ export class GlpiAppDatasource {
           type: "table",
         });
       } else {
-        // it's datapoints
+      ///// it's datapoints
         if (q.dynamicsplit.number != "0") {
           var periods = {};
           for (var idx2 in data[3]) {
@@ -366,9 +366,8 @@ export class GlpiAppDatasource {
           // We create the datapoints
           var datapoints = [];
           for (var tpp in periods) {
-            datapoints.push([periods[tpp], Number(tpp)]);
+            datapoints.unshift([periods[tpp], Number(tpp)]);
           }
-          datapoints.pop();
           data[5].push({
             target: q.alias,
             datapoints: datapoints
