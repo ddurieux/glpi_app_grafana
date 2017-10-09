@@ -26,6 +26,10 @@ export class GlpiAppDatasourceQueryCtrl {
             this.target.dayhours = true;
         }
 
+        if (this.target.query == null) {
+            this.target.query = "http://127.0.0.1/glpi/front/ticket.php?is_deleted=0&criteria%5B0%5D%5Bfield%5D=2&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=&search=Rechercher&itemtype=Ticket&start=0";
+        }
+
         if (this.target.table == null) {
             this.target.table = false;
         }
