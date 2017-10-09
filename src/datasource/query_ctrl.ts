@@ -67,9 +67,14 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.datefield == null) {
             this.target.datefield = emptyValCol;
         }
-
         this.listdate = [];
-        this.getListOptionsFields("date").then((data) => { $scope.ctrl.listdate = data; });
+        this.getListOptionsFields("date")
+            .then((data) => {
+            $scope.ctrl.listdate = data;
+            if ($scope.ctrl.target.datefield['number'] == "0") {
+                $scope.ctrl.target.datefield = data.data[2];
+            }
+        });
 
         if (this.target.counter == null) {
             this.target.counter = true;

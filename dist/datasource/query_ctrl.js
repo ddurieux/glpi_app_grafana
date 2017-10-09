@@ -56,7 +56,13 @@ System.register([], function (exports_1, context_1) {
                         this.target.datefield = emptyValCol;
                     }
                     this.listdate = [];
-                    this.getListOptionsFields("date").then(function (data) { $scope.ctrl.listdate = data; });
+                    this.getListOptionsFields("date")
+                        .then(function (data) {
+                        $scope.ctrl.listdate = data;
+                        if ($scope.ctrl.target.datefield['number'] == "0") {
+                            $scope.ctrl.target.datefield = data.data[2];
+                        }
+                    });
                     if (this.target.counter == null) {
                         this.target.counter = true;
                     }
