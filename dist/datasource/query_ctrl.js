@@ -96,7 +96,7 @@ System.register([], function (exports_1, context_1) {
                             var urloptions = {
                                 method: "GET",
                                 transformResponse: [function (data) {
-                                        var regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
+                                        var regex = /"((?!name|table|field|datatype|nosearch|nodisplay|available_searchtypes|uid)[\d|\w]+)"[:]/g;
                                         var m;
                                         var mySelectFields = [];
                                         mySelectFields.push({

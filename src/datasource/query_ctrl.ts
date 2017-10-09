@@ -120,7 +120,7 @@ export class GlpiAppDatasourceQueryCtrl {
                 var urloptions: any = {
                     method: "GET",
                     transformResponse: [function(data) {
-                        const regex = /"((?!name|table|field|datatype|available_searchtypes|uid)[\d|\w]+)"[:]/g;
+                        const regex = /"((?!name|table|field|datatype|nosearch|nodisplay|available_searchtypes|uid)[\d|\w]+)"[:]/g;
                         let m;
                         var mySelectFields = [];
                         mySelectFields.push({
