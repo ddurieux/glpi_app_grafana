@@ -333,7 +333,6 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                     }
                                 }
                                 else {
-                                    console.log('on pass ici');
                                     for (var tpp in periods) {
                                         datapoints.unshift([periods[tpp], Number(tpp)]);
                                     }

@@ -129,34 +129,39 @@ System.register([], function (exports_1, context_1) {
                                                 groupname = parsed[m[1]];
                                             }
                                             else {
-                                                if (datatype == "date") {
-                                                    if (parsed[m[1]]["datatype"] == "datetime"
-                                                        || parsed[m[1]]["datatype"] == "date") {
-                                                        mySelectFields.push({
-                                                            group: groupname,
-                                                            label: parsed[m[1]]["name"],
-                                                            number: m[1],
-                                                        });
-                                                    }
-                                                }
-                                                else if (datatype == "number") {
-                                                    if (parsed[m[1]]["datatype"] == "timestamp"
-                                                        || parsed[m[1]]["datatype"] == "count"
-                                                        || parsed[m[1]]["datatype"] == "number"
-                                                        || parsed[m[1]]["datatype"] == "integer") {
-                                                        mySelectFields.push({
-                                                            group: groupname,
-                                                            label: parsed[m[1]]["name"],
-                                                            number: m[1],
-                                                        });
-                                                    }
+                                                if (!("table" in parsed[m[1]])) {
+                                                    groupname = parsed[m[1]]["name"];
                                                 }
                                                 else {
-                                                    mySelectFields.push({
-                                                        group: groupname,
-                                                        label: parsed[m[1]]["name"],
-                                                        number: m[1],
-                                                    });
+                                                    if (datatype == "date") {
+                                                        if (parsed[m[1]]["datatype"] == "datetime"
+                                                            || parsed[m[1]]["datatype"] == "date") {
+                                                            mySelectFields.push({
+                                                                group: groupname,
+                                                                label: parsed[m[1]]["name"],
+                                                                number: m[1],
+                                                            });
+                                                        }
+                                                    }
+                                                    else if (datatype == "number") {
+                                                        if (parsed[m[1]]["datatype"] == "timestamp"
+                                                            || parsed[m[1]]["datatype"] == "count"
+                                                            || parsed[m[1]]["datatype"] == "number"
+                                                            || parsed[m[1]]["datatype"] == "integer") {
+                                                            mySelectFields.push({
+                                                                group: groupname,
+                                                                label: parsed[m[1]]["name"],
+                                                                number: m[1],
+                                                            });
+                                                        }
+                                                    }
+                                                    else {
+                                                        mySelectFields.push({
+                                                            group: groupname,
+                                                            label: parsed[m[1]]["name"],
+                                                            number: m[1],
+                                                        });
+                                                    }
                                                 }
                                             }
                                         }

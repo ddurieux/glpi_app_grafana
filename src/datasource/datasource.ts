@@ -375,7 +375,6 @@ export class GlpiAppDatasource {
                   }
               }
           } else {
-            console.log('on pass ici');
               for (var tpp in periods) {
                   datapoints.unshift([periods[tpp], Number(tpp)]);
               }

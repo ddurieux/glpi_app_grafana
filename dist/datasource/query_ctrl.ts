@@ -154,36 +154,41 @@ export class GlpiAppDatasourceQueryCtrl {
                                 regex.lastIndex++;
                             }
                             if (typeof parsed[m[1]] === "string") {
-                                // it's the group name
+                                // it's the group name (compat 9.1 only)
                                 groupname = parsed[m[1]];
                             } else {
-                                // it's the field
-                                if (datatype == "date") {
-                                    if (parsed[m[1]]["datatype"] == "datetime"
-                                        || parsed[m[1]]["datatype"] == "date") {
-                                        mySelectFields.push({
-                                            group: groupname,
-                                            label: parsed[m[1]]["name"],
-                                            number: m[1],
-                                        });
-                                    }
-                                } else if (datatype == "number") {
-                                    if (parsed[m[1]]["datatype"] == "timestamp"
-                                        || parsed[m[1]]["datatype"] == "count"
-                                        || parsed[m[1]]["datatype"] == "number"
-                                        || parsed[m[1]]["datatype"] == "integer") {
-                                        mySelectFields.push({
-                                            group: groupname,
-                                            label: parsed[m[1]]["name"],
-                                            number: m[1],
-                                        });
-                                    }
+                                if (!("table" in parsed[m[1]])) {
+                                    // it's the group name (compat 9.2)
+                                    groupname = parsed[m[1]]["name"];
                                 } else {
-                                    mySelectFields.push({
-                                        group: groupname,
-                                        label: parsed[m[1]]["name"],
-                                        number: m[1],
-                                    });
+                                    // it's the field
+                                    if (datatype == "date") {
+                                        if (parsed[m[1]]["datatype"] == "datetime"
+                                            || parsed[m[1]]["datatype"] == "date") {
+                                            mySelectFields.push({
+                                                group: groupname,
+                                                label: parsed[m[1]]["name"],
+                                                number: m[1],
+                                            });
+                                        }
+                                    } else if (datatype == "number") {
+                                        if (parsed[m[1]]["datatype"] == "timestamp"
+                                            || parsed[m[1]]["datatype"] == "count"
+                                            || parsed[m[1]]["datatype"] == "number"
+                                            || parsed[m[1]]["datatype"] == "integer") {
+                                            mySelectFields.push({
+                                                group: groupname,
+                                                label: parsed[m[1]]["name"],
+                                                number: m[1],
+                                            });
+                                        }
+                                    } else {
+                                        mySelectFields.push({
+                                            group: groupname,
+                                            label: parsed[m[1]]["name"],
+                                            number: m[1],
+                                        });
+                                    }
                                 }
                             }
                         }
