@@ -20,6 +20,12 @@ export class GlpiAppDatasourceQueryCtrl {
 
         this.panel = this.panelCtrl.panel;
 
+        this.target.histogram = false;
+        if (this.panel.type == 'mtanda-histogram-panel') {
+            this.target.histogram = true;
+            this.target.dayhours = true;
+        }
+
         if (this.target.table == null) {
             this.target.table = false;
         }
@@ -64,6 +70,11 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.counter == null) {
             this.target.counter = true;
         }
+
+        if (this.target.dayhours == null) {
+            this.target.dayhours = false;
+        }
+
 
         this.listnumber = [];
         this.getListOptionsFields("number").then((data) => { $scope.ctrl.listnumber = data; });

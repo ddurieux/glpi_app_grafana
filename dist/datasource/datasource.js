@@ -323,8 +323,20 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                     }
                                 }
                                 var datapoints = [];
-                                for (var tpp in periods) {
-                                    datapoints.unshift([periods[tpp], Number(tpp)]);
+                                if (q.dayhours) {
+                                    for (var tpp in periods) {
+                                        var d = new Date(Number(tpp));
+                                        var n = d.getHours();
+                                        for (var num = 1; num <= periods[tpp]; num++) {
+                                            datapoints.unshift([n, 1]);
+                                        }
+                                    }
+                                }
+                                else {
+                                    console.log('on pass ici');
+                                    for (var tpp in periods) {
+                                        datapoints.unshift([periods[tpp], Number(tpp)]);
+                                    }
                                 }
                                 data[5].push({
                                     target: q.alias,
