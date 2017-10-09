@@ -51,3 +51,18 @@ Do you need professional support, training, others?
 
 Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to [dcs.glpi@dcsit-group.com](mailto:dcs.glpi@dcsit-group.com)
 
+
+## Changelog
+
+### 1.1.0
+
+* compatibility with GLPI 9.2
+* autofill the field `Timerange based on` in the query
+* when add new query, add by default a ticket query instead `undefined`
+* get values right in tooltip when have mouse over the graph
+* enhance erreor message when define the datasource
+* add the possibility to have the count of elements by hour of the day with the panel `histogram`
+
+### 1.0.0
+
+First version
