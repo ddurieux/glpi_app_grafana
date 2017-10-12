@@ -239,6 +239,7 @@ export class GlpiAppDatasource {
               cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
+              cleanedHTML = cleanedHTML.replace(/<a id='(.|\n|\r)+' href/, "");
               cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
               response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
             }
