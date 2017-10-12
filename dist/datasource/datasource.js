@@ -202,7 +202,8 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                         cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
-                                        cleanedHTML = cleanedHTML.replace(/<a id='(\W)+' href/, "<a href");
+                                        cleanedHTML = cleanedHTML.replace(/id='tooltiplink(\d)+'/, "");
+                                        cleanedHTML = cleanedHTML.replace(/id='tooltip(\d)+'/, "");
                                         cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
                                         response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
                                     }
