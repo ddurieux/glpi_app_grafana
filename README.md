@@ -2,8 +2,8 @@
 
 ## Introduction
 
-This application get information in GLPI (Gestion Libre de Parc Informatique) through the REST API added in
-version 9.1. You will be able have graphs, singlestat, tables... of your data (tickets, devices, users...).
+This application gets information in GLPI (Gestion Libre de Parc Informatique) thanks to the REST API added in
+version 9.1. You will be able to have graphs, singlestat, tables... of your data (tickets, devices, users...).
 
 ## screenshot
 
@@ -13,37 +13,41 @@ This is an example:
 
 ## Datasource
 
-For the datasource GLPI, you will need:
+For the GLPI datasource, you will need:
 
-* URL of the GLPI API (like http://127.0.0.1/glpi/apirest.php)
+* the URL of the GLPI API (like http://127.0.0.1/glpi/apirest.php)
 * the App-token, you can generate and get it in GLPI in the menu Setup > General > API
-* the User token, you can generate and get it in your account/preferences page in GLPI
+* the User token, you can generate and get it in the user account/preferences panel in GLPI
 
 ## Dashboard
 
-There is an example of dashboard. You can install and use it.
+It exists an example dashboard. You can install and use it.
 
-Create a new panel and after edit it.
-Add a new Query with your GLPI datasource.
+## Table panel
+
+Create a new Table panel and then edit the panel.
+Select the GLPI datasource and add a new Query in the panel Metrics.
 
 The configuration will require:
 
 * Query: do a search into GLPI and copy paste the URL here
 * Alias: the alias name of this query, it will appear in the panel
-* Timerange based on: define on what GLPI date field you will get the data. This field is used by the timerange defined in top of grafana
-* Is it a table?: if the panel is a Table, select yes, otherwise keep to no
+* Timerange based on: define on which GLPI date field you will get the data. This field is used by the timerange defined in top of grafana
+* Count element: if the panel is a Table, select yes, otherwise keep to no
+* Is it a table?: to display the query result as a Table, check this option else uncheck.
 
-If it's a table, you can define the columns to get:
+When *Is it a table* is checked, the query result will be displayed as a table and you can define up to 6 columns to be displayed. 
+For each column in the table, select the query result field and the name of the column. 
 
-* Column A: the GLPI field/column to have
-* Column A alias: the name of the column if don't want the name get from GLPI
+When *Is it a table* is not checked, the query result is considered as a usual Grafana timeseries and it will displayed as is. See Grafana table panel for more information.
+     
+## Single stat panel
 
-same for column B, C, D, E and F
 
 
 ## Bugs / features
 
-If you have bug or request features, you can open issues in the [github repository](https://github.com/ddurieux/glpi_app_grafana)
+If you have a bug repoort or request feature, you can open issues in the [github repository](https://github.com/ddurieux/glpi_app_grafana)
 
 ## Professional support
 
@@ -54,13 +58,21 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 
 ## Changelog
 
+### 1.2.0
+
+* allow to get a query count without selecting a date field
+* fix #16: no more need to force grunt for rebuilding
+* fix #17: fix error when receiving integer values not formated in strings
+* fix some typos
+* dev: allow to set/unset browser console log
+
 ### 1.1.0
 
 * compatibility with GLPI 9.2
 * autofill the field `Timerange based on` in the query
-* when add new query, add by default a ticket query instead `undefined`
-* get values right in tooltip when have mouse over the graph
-* enhance erreor message when define the datasource
+* when adding a new query, add by default a ticket query instead `undefined`
+* get correct values in the tooltip when the mouse is hovering the graph
+* enhance error message when defining the datasource
 * add the possibility to have the count of elements by hour of the day with the panel `histogram`
 
 ### 1.0.0

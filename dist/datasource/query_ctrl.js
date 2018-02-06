@@ -24,6 +24,9 @@ System.register([], function (exports_1, context_1) {
                     if (this.target.table == null) {
                         this.target.table = false;
                     }
+                    if (this.target.console == null) {
+                        this.target.console = false;
+                    }
                     var emptyValCol = {
                         group: "Default",
                         label: "------",
@@ -51,12 +54,12 @@ System.register([], function (exports_1, context_1) {
                         this.target.dynamicsplit = emptyValCol;
                     }
                     this.list = [];
-                    this.getListOptionsFields("all").then(function (data) { $scope.ctrl.list = data; });
+                    this.getListOptionsFields("all", this.target.console).then(function (data) { $scope.ctrl.list = data; });
                     if (this.target.datefield == null) {
                         this.target.datefield = emptyValCol;
                     }
                     this.listdate = [];
-                    this.getListOptionsFields("date")
+                    this.getListOptionsFields("date", this.target.console)
                         .then(function (data) {
                         $scope.ctrl.listdate = data;
                         if ($scope.ctrl.target.datefield['number'] == "0") {
@@ -70,14 +73,14 @@ System.register([], function (exports_1, context_1) {
                         this.target.dayhours = false;
                     }
                     this.listnumber = [];
-                    this.getListOptionsFields("number").then(function (data) { $scope.ctrl.listnumber = data; });
+                    this.getListOptionsFields("number", this.target.console).then(function (data) { $scope.ctrl.listnumber = data; });
                     this.scope = $scope;
                 }
                 GlpiAppDatasourceQueryCtrl.prototype.newQueryRefresh = function () {
                     var $scope = this.scope;
-                    this.getListOptionsFields("all").then(function (data) { $scope.ctrl.list = data; });
-                    this.getListOptionsFields("date").then(function (data) { $scope.ctrl.listdate = data; });
-                    this.getListOptionsFields("number").then(function (data) { $scope.ctrl.listnumber = data; });
+                    this.getListOptionsFields("all", this.target.console).then(function (data) { $scope.ctrl.list = data; });
+                    this.getListOptionsFields("date", this.target.console).then(function (data) { $scope.ctrl.listdate = data; });
+                    this.getListOptionsFields("number", this.target.console).then(function (data) { $scope.ctrl.listnumber = data; });
                     this.refresh();
                 };
                 GlpiAppDatasourceQueryCtrl.prototype.refresh = function () {
@@ -101,9 +104,10 @@ System.register([], function (exports_1, context_1) {
                     }
                     return text;
                 };
-                GlpiAppDatasourceQueryCtrl.prototype.getListOptionsFields = function (datatype) {
+                GlpiAppDatasourceQueryCtrl.prototype.getListOptionsFields = function (datatype, console) {
                     var _this = this;
                     var initsession = this.getSession();
+                    var debug = console;
                     return initsession.then(function (response) {
                         if (response.status === 200) {
                             _this.target.query = decodeURI(_this.target.query);
@@ -124,12 +128,14 @@ System.register([], function (exports_1, context_1) {
                                         if (datatype == "date") {
                                             mySelectFields.push({
                                                 group: "Special / be careful",
-                                                label: "Not use date, so get all data",
+                                                label: "Do not use date search (get all data)",
                                                 number: "-1",
                                             });
                                         }
                                         var groupname = "";
                                         var parsed = JSON.parse(data);
+                                        if (debug)
+                                            console.debug(parsed);
                                         while ((m = regex.exec(data)) !== null) {
                                             if (m.index === regex.lastIndex) {
                                                 regex.lastIndex++;
@@ -142,6 +148,8 @@ System.register([], function (exports_1, context_1) {
                                                     groupname = parsed[m[1]]["name"];
                                                 }
                                                 else {
+                                                    if (debug)
+                                                        console.debug("field:", parsed[m[1]]);
                                                     if (datatype == "date") {
                                                         if (parsed[m[1]]["datatype"] == "datetime"
                                                             || parsed[m[1]]["datatype"] == "date") {
@@ -174,6 +182,8 @@ System.register([], function (exports_1, context_1) {
                                                 }
                                             }
                                         }
+                                        if (debug)
+                                            console.debug("Fields; ", datatype, mySelectFields);
                                         return mySelectFields;
                                     }],
                                 url: _this.datasource.url + "/listSearchOptions/" + itemtype,
@@ -195,9 +205,9 @@ System.register([], function (exports_1, context_1) {
                     options.headers["App-Token"] = this.datasource.apptoken;
                     return this.datasource.backendSrv.datasourceRequest(options);
                 };
+                GlpiAppDatasourceQueryCtrl.templateUrl = "datasource/partials/query.editor.html";
                 return GlpiAppDatasourceQueryCtrl;
             }());
-            GlpiAppDatasourceQueryCtrl.templateUrl = "datasource/partials/query.editor.html";
             exports_1("GlpiAppDatasourceQueryCtrl", GlpiAppDatasourceQueryCtrl);
         }
     };

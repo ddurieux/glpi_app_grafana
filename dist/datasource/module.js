@@ -22,17 +22,17 @@ System.register(["./datasource", "./query_ctrl", "../vendor/public/builds/moment
                     this.timezone_list = moment.tz.names();
                     this.current.jsonData.timezone = this.current.jsonData.timezone || "UTC";
                 }
+                GlpiAppDatasourceConfigCtrl.templateUrl = "datasource/partials/config.html";
                 return GlpiAppDatasourceConfigCtrl;
             }());
-            GlpiAppDatasourceConfigCtrl.templateUrl = "datasource/partials/config.html";
             exports_1("GlpiAppDatasourceConfigCtrl", GlpiAppDatasourceConfigCtrl);
             exports_1("ConfigCtrl", GlpiAppDatasourceConfigCtrl);
             GlpiQueryOptionsCtrl = (function () {
                 function GlpiQueryOptionsCtrl() {
                 }
+                GlpiQueryOptionsCtrl.templateUrl = "datasource/partials/query.options.html";
                 return GlpiQueryOptionsCtrl;
             }());
-            GlpiQueryOptionsCtrl.templateUrl = "datasource/partials/query.options.html";
             exports_1("QueryOptionsCtrl", GlpiQueryOptionsCtrl);
         }
     };

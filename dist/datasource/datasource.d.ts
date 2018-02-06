@@ -1,4 +1,3 @@
-/// <reference path="../../../../../../../usr/local/share/grafana/public/app/headers/common.d.ts" />
 export declare class GlpiAppDatasource {
     private usertoken;
     private apptoken;

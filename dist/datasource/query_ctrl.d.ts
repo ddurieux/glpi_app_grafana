@@ -1,4 +1,3 @@
-/// <reference path="../../../../../../../usr/local/share/grafana/public/app/headers/common.d.ts" />
 export declare class GlpiAppDatasourceQueryCtrl {
     $scope: any;
     private $injector;
@@ -20,6 +19,6 @@ export declare class GlpiAppDatasourceQueryCtrl {
     newQueryRefresh(): void;
     refresh(): void;
     getCollapsedText(): string;
-    getListOptionsFields(datatype: any): any;
+    getListOptionsFields(datatype: any, console: any): any;
     getSession(): any;
 }

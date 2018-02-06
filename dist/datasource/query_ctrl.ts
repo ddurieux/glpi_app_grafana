@@ -1,7 +1,5 @@
-///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
-
-import GlpiAppDatasource from "./datasource";
 import _ from "lodash";
+import {GlpiAppDatasource} from "./datasource";
 
 export class GlpiAppDatasourceQueryCtrl {
     static templateUrl = "datasource/partials/query.editor.html";
@@ -33,6 +31,9 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.table == null) {
             this.target.table = false;
         }
+        if (this.target.console == null) {
+            this.target.console = false;
+        }
         const emptyValCol = {
             group: "Default",
             label: "------",
@@ -62,13 +63,13 @@ export class GlpiAppDatasourceQueryCtrl {
         }
 
         this.list = [];
-        this.getListOptionsFields("all").then((data) => { $scope.ctrl.list = data; });
+        this.getListOptionsFields("all", this.target.console).then((data) => { $scope.ctrl.list = data; });
 
         if (this.target.datefield == null) {
             this.target.datefield = emptyValCol;
         }
         this.listdate = [];
-        this.getListOptionsFields("date")
+        this.getListOptionsFields("date", this.target.console)
             .then((data) => {
             $scope.ctrl.listdate = data;
             if ($scope.ctrl.target.datefield['number'] == "0") {
@@ -86,7 +87,7 @@ export class GlpiAppDatasourceQueryCtrl {
 
 
         this.listnumber = [];
-        this.getListOptionsFields("number").then((data) => { $scope.ctrl.listnumber = data; });
+        this.getListOptionsFields("number", this.target.console).then((data) => { $scope.ctrl.listnumber = data; });
 
         this.scope = $scope;
     }
@@ -94,9 +95,9 @@ export class GlpiAppDatasourceQueryCtrl {
     newQueryRefresh() {
         // refresh all list when change query
         var $scope = this.scope;
-        this.getListOptionsFields("all").then((data) => { $scope.ctrl.list = data; });
-        this.getListOptionsFields("date").then((data) => { $scope.ctrl.listdate = data; });
-        this.getListOptionsFields("number").then((data) => { $scope.ctrl.listnumber = data; });
+        this.getListOptionsFields("all", this.target.console).then((data) => { $scope.ctrl.list = data; });
+        this.getListOptionsFields("date", this.target.console).then((data) => { $scope.ctrl.listdate = data; });
+        this.getListOptionsFields("number", this.target.console).then((data) => { $scope.ctrl.listnumber = data; });
         this.refresh();
     }
 
@@ -128,8 +129,9 @@ export class GlpiAppDatasourceQueryCtrl {
         return text;
     }
 
-    getListOptionsFields(datatype) {
+    getListOptionsFields(datatype, console) {
         var initsession = this.getSession();
+        var debug = console;
         return initsession.then((response) => {
             if (response.status === 200) {
                 this.target.query = decodeURI(this.target.query);
@@ -151,12 +153,13 @@ export class GlpiAppDatasourceQueryCtrl {
                         if (datatype == "date") {
                             mySelectFields.push({
                                 group: "Special / be careful",
-                                label: "Not use date, so get all data",
+                                label: "Do not use date search (get all data)",
                                 number: "-1",
                             });
                         }
                         var groupname = "";
                         var parsed = JSON.parse(data);
+                        if (debug) console.debug(parsed);
                         while ((m = regex.exec(data)) !== null) {
                             // This is necessary to avoid infinite loops with zero-width matches
                             if (m.index === regex.lastIndex) {
@@ -170,8 +173,10 @@ export class GlpiAppDatasourceQueryCtrl {
                                     // it's the group name (compat 9.2)
                                     groupname = parsed[m[1]]["name"];
                                 } else {
+                                    if (debug) console.debug("field:", parsed[m[1]]);
                                     // it's the field
                                     if (datatype == "date") {
+                                        // Only get the fields that are possible dates
                                         if (parsed[m[1]]["datatype"] == "datetime"
                                             || parsed[m[1]]["datatype"] == "date") {
                                             mySelectFields.push({
@@ -181,6 +186,7 @@ export class GlpiAppDatasourceQueryCtrl {
                                             });
                                         }
                                     } else if (datatype == "number") {
+                                        // Only get the fields that are possible numbers
                                         if (parsed[m[1]]["datatype"] == "timestamp"
                                             || parsed[m[1]]["datatype"] == "count"
                                             || parsed[m[1]]["datatype"] == "number"
@@ -192,6 +198,7 @@ export class GlpiAppDatasourceQueryCtrl {
                                             });
                                         }
                                     } else {
+                                        // Get all fields
                                         mySelectFields.push({
                                             group: groupname,
                                             label: parsed[m[1]]["name"],
@@ -201,6 +208,7 @@ export class GlpiAppDatasourceQueryCtrl {
                                 }
                             }
                         }
+                        if (debug) console.debug("Fields; ", datatype, mySelectFields);
                         return mySelectFields;
                     }],
                     url: this.datasource.url + "/listSearchOptions/" + itemtype,

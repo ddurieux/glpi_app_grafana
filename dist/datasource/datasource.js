@@ -219,7 +219,14 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                 };
                 GlpiAppDatasource.prototype.promiseMergeTargetResult = function (timeperiods, field_num, q, current_target_num, myclass) {
                     return function (data) {
+                        var debug = q.console;
+                        if (debug)
+                            console.debug("q:", q);
+                        if (debug)
+                            console.debug("data:", data);
                         if (q.table) {
+                            if (debug)
+                                console.debug("Parsing a table result...");
                             var columns = [];
                             var maxnum = 0;
                             for (var colNum = 0; colNum <= 5; colNum++) {
@@ -233,24 +240,36 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                     }
                                 }
                             }
+                            if (debug)
+                                console.debug("columns: ", columns);
                             var glpiurl = myclass.url;
                             var split_glpiurl = glpiurl.split("/");
                             var rows = [];
                             for (var idx in data[3]) {
                                 for (var kkey in data[3][idx]) {
                                     var myrow = [];
+                                    if (debug)
+                                        console.debug("-> ", data[3][idx][kkey]);
                                     for (var colNum2 = 0; colNum2 <= maxnum; colNum2++) {
-                                        var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]].replace(/<div(.|\n|\r)+<\/div>/, "");
-                                        cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
-                                        cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
-                                        if (cleanedHTML.indexOf(' href="/') !== -1) {
-                                            cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
+                                        var value = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]];
+                                        if (debug)
+                                            console.debug("-> value: ", value);
+                                        if (typeof value === "string") {
+                                            var cleanedHTML = value.replace(/<div(.|\n|\r)+<\/div>/, "");
+                                            cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+                                            cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+                                            if (cleanedHTML.indexOf(' href="/') !== -1) {
+                                                cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
+                                            }
+                                            value = cleanedHTML;
                                         }
-                                        myrow.push(cleanedHTML);
+                                        myrow.push(value);
                                     }
                                     rows.push(myrow);
                                 }
                             }
+                            if (debug)
+                                console.debug("rows: ", rows);
                             data[5].push({
                                 columns: columns,
                                 rows: rows,
@@ -258,7 +277,11 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                             });
                         }
                         else {
+                            if (debug)
+                                console.debug("Parsing a datapoints result...");
                             if (q.dynamicsplit.number != "0") {
+                                if (debug)
+                                    console.debug(" - split, field: ", q.dynamicsplit.number);
                                 var periods = {};
                                 for (var idx2 in data[3]) {
                                     for (var kkey2 in data[3][idx2]) {
@@ -293,6 +316,10 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                     for (var tpp in periods[period]) {
                                         datapoints.unshift([periods[period][tpp], Number(tpp)]);
                                     }
+                                    if (debug)
+                                        console.debug(" - period: ", period);
+                                    if (debug)
+                                        console.debug(" - datapoints: ", datapoints);
                                     data[5].push({
                                         target: period,
                                         datapoints: datapoints,
@@ -300,45 +327,62 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data"],
                                 }
                             }
                             else {
+                                if (debug)
+                                    console.debug(" - not split, selected date field: ", field_num);
                                 var periods = {};
                                 for (var tp in timeperiods) {
                                     periods[tp] = 0;
                                 }
-                                var tototo = 0;
-                                for (var idx2 in data[3]) {
-                                    for (var kkey2 in data[3][idx2]) {
-                                        var datestring = data[3][idx2][kkey2][field_num];
-                                        var date = new Date(moment.tz(datestring, myclass.timezone));
-                                        var item_date = Math.round(date.getTime());
-                                        tototo = item_date;
-                                        for (var tpd in timeperiods) {
-                                            if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
-                                                if (q.counter) {
-                                                    periods[tpd] += 1;
-                                                }
-                                                else {
-                                                    periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                var datapoints = [];
-                                if (q.dayhours) {
-                                    for (var tpp in periods) {
-                                        var d = new Date(Number(tpp));
-                                        var n = d.getHours();
-                                        for (var num = 1; num <= periods[tpp]; num++) {
-                                            datapoints.unshift([n, 1]);
-                                        }
-                                    }
-                                }
-                                else {
+                                if (field_num === "-1") {
+                                    var datapoints = [];
                                     for (var tpp in periods) {
                                         datapoints.unshift([periods[tpp], Number(tpp)]);
                                     }
+                                    if (debug)
+                                        console.debug(" - setting the query count as the last TS value: ", data[3].length);
+                                    datapoints[Object.keys(periods).length] = [data[3].length, Number(tpp)];
                                 }
+                                else {
+                                    var tototo = 0;
+                                    for (var idx2 in data[3]) {
+                                        for (var kkey2 in data[3][idx2]) {
+                                            var datestring = data[3][idx2][kkey2][field_num];
+                                            var date = new Date(moment.tz(datestring, myclass.timezone));
+                                            var item_date = Math.round(date.getTime());
+                                            tototo = item_date;
+                                            for (var tpd in timeperiods) {
+                                                if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
+                                                    if (q.counter) {
+                                                        periods[tpd] += 1;
+                                                    }
+                                                    else {
+                                                        periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var datapoints = [];
+                                    if (q.dayhours) {
+                                        for (var tpp in periods) {
+                                            var d = new Date(Number(tpp));
+                                            var n = d.getHours();
+                                            for (var num = 1; num <= periods[tpp]; num++) {
+                                                datapoints.unshift([n, 1]);
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (var tpp in periods) {
+                                            datapoints.unshift([periods[tpp], Number(tpp)]);
+                                        }
+                                    }
+                                }
+                                if (debug)
+                                    console.debug(" - target: ", q.alias);
+                                if (debug)
+                                    console.debug(" - datapoints: ", datapoints);
                                 data[5].push({
                                     target: q.alias,
                                     datapoints: datapoints
