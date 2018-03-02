@@ -1,5 +1,3 @@
-///<reference path="/usr/local/share/grafana/public/app/headers/common.d.ts" />
-
 import _ from "lodash";
 import * as moment from "../vendor/public/builds/moment-timezone-with-data";
 
@@ -257,8 +255,13 @@ export class GlpiAppDatasource {
   /** This will merge all results/elements (all ranges/pages) into same array */
   promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass) {
     return function(data) {
+      var debug = q.console;
+      if (debug) console.debug("q:", q);
+      if (debug) console.debug("data:", data);
+
       if (q.table) {
-      ///// TABLE part
+        ///// TABLE part
+        if (debug) console.debug("Parsing a table result...");
         var columns = [];
         var maxnum = 0;
         for (var colNum = 0; colNum <= 5 ; colNum++) {
@@ -271,6 +274,7 @@ export class GlpiAppDatasource {
             }
           }
         }
+        if (debug) console.debug("columns: ", columns);
         // Prepare for recreate the GLPI url in links
         var glpiurl = myclass.url;
         var split_glpiurl = glpiurl.split("/");
@@ -279,26 +283,36 @@ export class GlpiAppDatasource {
         for (var idx in data[3]) {
           for (var kkey in data[3][idx]) {
             var myrow = [];
+            if (debug) console.debug("-> ", data[3][idx][kkey]);
+
             for (var colNum2 = 0; colNum2 <= maxnum; colNum2++) {
-              var cleanedHTML = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]].replace(/<div(.|\n|\r)+<\/div>/, "");
-              cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
-              cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
-              if (cleanedHTML.indexOf(' href="/') !== -1) {
-                cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
+              var value = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]];
+              if (debug) console.debug("-> value: ", value);
+              if (typeof value === "string") {
+                var cleanedHTML = value.replace(/<div(.|\n|\r)+<\/div>/, "");
+                cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
+                cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
+                if (cleanedHTML.indexOf(' href="/') !== -1) {
+                  cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
+                }
+                value = cleanedHTML;
               }
-              myrow.push(cleanedHTML);
+              myrow.push(value);
             }
             rows.push(myrow);
           }
         }
+        if (debug) console.debug("rows: ", rows);
         data[5].push({
           columns: columns,
           rows: rows,
           type: "table",
         });
       } else {
-      ///// it's datapoints
+        if (debug) console.debug("Parsing a datapoints result...");
+        ///// it's datapoints
         if (q.dynamicsplit.number != "0") {
+          if (debug) console.debug(" - split, field: ", q.dynamicsplit.number);
           var periods = {};
           for (var idx2 in data[3]) {
             for (var kkey2 in data[3][idx2]) {
@@ -334,53 +348,69 @@ export class GlpiAppDatasource {
             for (var tpp in periods[period]) {
               datapoints.unshift([periods[period][tpp], Number(tpp)]);
             }
+            if (debug) console.debug(" - period: ", period);
+            if (debug) console.debug(" - datapoints: ", datapoints);
             data[5].push({
               target: period,
               datapoints: datapoints,
             });
           }
         } else {
+          if (debug) console.debug(" - not split, selected date field: ", field_num);
           // Define all timeperiods
           var periods = {};
           for (var tp in timeperiods) {
             periods[tp] = 0;
           }
-          var tototo = 0;
-          for (var idx2 in data[3]) {
-            for (var kkey2 in data[3][idx2]) {
-              var datestring = data[3][idx2][kkey2][field_num];
-              // convert date in ISO 8601 format
-              var date = new Date(moment.tz(datestring, myclass.timezone));
-              var item_date = Math.round(date.getTime());
-              tototo = item_date;
-              for (var tpd in timeperiods) {
-                if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
-                  if (q.counter) {
-                    periods[tpd] += 1;
-                  } else {
-                    periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
-                  }
-                  break;
-                }
-              }
+          if (field_num === "-1") {
+            // No date field selected in the options
+            var datapoints = [];
+            for (var tpp in periods) {
+              datapoints.unshift([periods[tpp], Number(tpp)]);
             }
-          }
-          // We create the datapoints
-          var datapoints = [];
-          if (q.dayhours) {
-            // We get data with all hours of days
-              for (var tpp in periods) {
-                  var d = new Date(Number(tpp));
-                  var n = d.getHours();
-                  for (var num=1; num <= periods[tpp]; num++) {
-                      datapoints.unshift([n, 1]);
+            // Set the last TS value as the query count
+            if (debug) console.debug(" - setting the query count as the last TS value: ", data[3].length);
+            datapoints[Object.keys(periods).length] = [data[3].length, Number(tpp)];
+          } else {
+              var tototo = 0;
+              for (var idx2 in data[3]) {
+                  for (var kkey2 in data[3][idx2]) {
+                      var datestring = data[3][idx2][kkey2][field_num];
+                      // convert date in ISO 8601 format
+                      var date = new Date(moment.tz(datestring, myclass.timezone));
+                      var item_date = Math.round(date.getTime());
+                      tototo = item_date;
+                      for (var tpd in timeperiods) {
+                          if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
+                              if (q.counter) {
+                                  periods[tpd] += 1;
+                              } else {
+                                  periods[tpd] += data[3][idx2][kkey2][q.nocounterval.number];
+                              }
+                              break;
+                          }
+                      }
                   }
               }
-          } else {
-              for (var tpp in periods) {
-                  datapoints.unshift([periods[tpp], Number(tpp)]);
+              // We create the datapoints
+              var datapoints = [];
+              if (q.dayhours) {
+                  // We get data with all hours of days
+                  for (var tpp in periods) {
+                      var d = new Date(Number(tpp));
+                      var n = d.getHours();
+                      for (var num=1; num <= periods[tpp]; num++) {
+                          datapoints.unshift([n, 1]);
+                      }
+                  }
+              } else {
+                  for (var tpp in periods) {
+                      datapoints.unshift([periods[tpp], Number(tpp)]);
+                  }
               }
           }
+          if (debug) console.debug(" - target: ", q.alias);
+          if (debug) console.debug(" - datapoints: ", datapoints);
           data[5].push({
             target: q.alias,
             datapoints: datapoints

@@ -33,6 +33,13 @@
 			<editor-checkbox text="Is it a table" model="ctrl.target.table"></editor-checkbox>
 		</div>
 	</div>
+	<!-- Uncomment this part to have an option check box taht allows to activate the debug log to the browser console
+	<div class="gf-form-inline" ng-if="!ctrl.target.histogram">
+		<div class="gf-form max-width-40">
+			<editor-checkbox text="Console log" model="ctrl.target.console"></editor-checkbox>
+		</div>
+	</div>
+	-->
 	<div ng-if="ctrl.target.table">
 		<div class="gf-form-inline">
 			<div class="gf-form max-width-40">

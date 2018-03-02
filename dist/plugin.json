@@ -26,8 +26,8 @@
       {"name": "GLPI Project", "url": "http://glpi-project.org/"},
       {"name": "DCS", "url": "https://www.dcsit-group.com/"}
     ],
-    "version": "1.1.0",
-    "updated": "2017-10-09"
+    "version": "1.2.0",
+    "updated": "2018-02-06"
   },
 
   "includes": [
