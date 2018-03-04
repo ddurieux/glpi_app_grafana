@@ -15,9 +15,9 @@ export declare class GlpiAppDatasource {
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any);
     query(options: any): any;
     promiseATarget(queryTargets: any, options: any, response: any, myclass: any): (targetargs: any) => any;
-    promiseGetNumberElementsOfTarget(field_num: any, q: any, myclass: any, current_target_num: any): (bksrv: any, urloptions: any, timeperiods: any, alltargetresult: any) => any;
+    promiseGetNumberElementsOfTarget(fieldNum: any, q: any, myclass: any, currentTargetNum: any): (bksrv: any, urloptions: any, timeperiods: any, alltargetresult: any) => any;
     promiseGetEachRangePageOfTarget(q: any): (args: any) => any;
-    promiseMergeTargetResult(timeperiods: any, field_num: any, q: any, current_target_num: any, myclass: any): (data: any) => any[];
+    promiseMergeTargetResult(timeperiods: any, fieldNum: any, q: any, currentTargetNum: any, myclass: any): (data: any) => any[];
     testDatasource(): any;
     getSession(): any;
     getSearchOptions(itemtype: any): void;

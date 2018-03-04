@@ -1,31 +1,30 @@
-import _ from "lodash";
-import {GlpiAppDatasource} from "./datasource";
-
 export class GlpiAppDatasourceQueryCtrl {
-    static templateUrl = "datasource/partials/query.editor.html";
-    target: any;
-    datasource: any;
-    panelCtrl: any;
-    panel: any;
-    datefield: any;
-    table: any;
-    list: any;
-    listdate: any;
-    listnumber: any;
-    scope: any;
+    public static templateUrl = "datasource/partials/query.editor.html";
+    public target: any;
+    public datasource: any;
+    public panelCtrl: any;
+    public panel: any;
+    public datefield: any;
+    public table: any;
+    public list: any;
+    public listdate: any;
+    public listnumber: any;
+    public scope: any;
 
     constructor(public $scope, private $injector, private templateSrv, private $q, private uiSegmentSrv) {
 
         this.panel = this.panelCtrl.panel;
 
         this.target.histogram = false;
-        if (this.panel.type == 'mtanda-histogram-panel') {
+        if (this.panel.type === "mtanda-histogram-panel") {
             this.target.histogram = true;
             this.target.dayhours = true;
         }
 
         if (this.target.query == null) {
-            this.target.query = "http://127.0.0.1/glpi/front/ticket.php?is_deleted=0&criteria%5B0%5D%5Bfield%5D=2&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=&search=Rechercher&itemtype=Ticket&start=0";
+            this.target.query = "http://127.0.0.1/glpi/front/ticket.php?is_deleted=0&criteria%5B0%5D%5Bfield%5D=2&" +
+                "criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=&search=Rechercher&itemtype=" +
+                "Ticket&start=0";
         }
 
         if (this.target.table == null) {
@@ -72,7 +71,7 @@ export class GlpiAppDatasourceQueryCtrl {
         this.getListOptionsFields("date", this.target.console)
             .then((data) => {
             $scope.ctrl.listdate = data;
-            if ($scope.ctrl.target.datefield['number'] == "0") {
+            if ($scope.ctrl.target.datefield.number === "0") {
                 $scope.ctrl.target.datefield = data.data[2];
             }
         });
@@ -85,32 +84,31 @@ export class GlpiAppDatasourceQueryCtrl {
             this.target.dayhours = false;
         }
 
-
         this.listnumber = [];
         this.getListOptionsFields("number", this.target.console).then((data) => { $scope.ctrl.listnumber = data; });
 
         this.scope = $scope;
     }
 
-    newQueryRefresh() {
+    public newQueryRefresh() {
         // refresh all list when change query
-        var $scope = this.scope;
+        const $scope = this.scope;
         this.getListOptionsFields("all", this.target.console).then((data) => { $scope.ctrl.list = data; });
         this.getListOptionsFields("date", this.target.console).then((data) => { $scope.ctrl.listdate = data; });
         this.getListOptionsFields("number", this.target.console).then((data) => { $scope.ctrl.listnumber = data; });
         this.refresh();
     }
 
-    refresh() {
+    public refresh() {
         this.panelCtrl.refresh();
     }
 
-    getCollapsedText() {
+    public getCollapsedText() {
         let text = "";
 
         if (this.target.query) {
-            var squery = this.target.query.split(".php?");
-            var squery2 = squery[0].split("/");
+            const squery = this.target.query.split(".php?");
+            const squery2 = squery[0].split("/");
             // text += "Query on : " + this.target.query + ", ";
             text += "Query on " + squery2[(squery2.length - 1)] + ", ";
         }
@@ -119,47 +117,49 @@ export class GlpiAppDatasourceQueryCtrl {
             text += "with alias " + this.target.alias + ", ";
         }
 
-        if (this.target.datefield.number != "0") {
+        if (this.target.datefield.number !== "0") {
             text += "with timerange based on " + this.target.datefield.label;
         }
 
-        if (text == "") {
+        if (text === "") {
             text = "Make a search into GLPI interface and copy / paste the URL into 'query' field";
         }
         return text;
     }
 
-    getListOptionsFields(datatype, console) {
-        var initsession = this.getSession();
-        var debug = console;
+    public getListOptionsFields(datatype, console) {
+        const initsession = this.getSession();
+        const debug = console;
         return initsession.then((response) => {
             if (response.status === 200) {
                 this.target.query = decodeURI(this.target.query);
-                var searchq = this.target.query.split(".php?");
-                var url = searchq[0].split("/");
-                var itemtype = url[url.length - 1];
+                const searchq = this.target.query.split(".php?");
+                const url = searchq[0].split("/");
+                const itemtype = url[url.length - 1];
 
-                var urloptions: any = {
+                const urloptions: any = {
                     method: "GET",
-                    transformResponse: [function(data) {
+                    transformResponse: [(data) => {
                         const regex = /"((?!name|table|field|datatype|nosearch|nodisplay|available_searchtypes|uid)[\d|\w]+)"[:]/g;
                         let m;
-                        var mySelectFields = [];
+                        const mySelectFields = [];
                         mySelectFields.push({
                             group: "Default",
                             label: "------",
                             number: "0",
                         });
-                        if (datatype == "date") {
+                        if (datatype === "date") {
                             mySelectFields.push({
                                 group: "Special / be careful",
                                 label: "Do not use date search (get all data)",
                                 number: "-1",
                             });
                         }
-                        var groupname = "";
-                        var parsed = JSON.parse(data);
-                        if (debug) console.debug(parsed);
+                        let groupname = "";
+                        const parsed = JSON.parse(data);
+                        if (debug) {
+                            console.debug(parsed);
+                        }
                         while ((m = regex.exec(data)) !== null) {
                             // This is necessary to avoid infinite loops with zero-width matches
                             if (m.index === regex.lastIndex) {
@@ -171,26 +171,28 @@ export class GlpiAppDatasourceQueryCtrl {
                             } else {
                                 if (!("table" in parsed[m[1]])) {
                                     // it's the group name (compat 9.2)
-                                    groupname = parsed[m[1]]["name"];
+                                    groupname = parsed[m[1]].name;
                                 } else {
-                                    if (debug) console.debug("field:", parsed[m[1]]);
+                                    if (debug) {
+                                        console.debug("field:", parsed[m[1]]);
+                                    }
                                     // it's the field
-                                    if (datatype == "date") {
+                                    if (datatype === "date") {
                                         // Only get the fields that are possible dates
-                                        if (parsed[m[1]]["datatype"] == "datetime"
-                                            || parsed[m[1]]["datatype"] == "date") {
+                                        if (parsed[m[1]]["datatype"] === "datetime"
+                                            || parsed[m[1]]["datatype"] === "date") {
                                             mySelectFields.push({
                                                 group: groupname,
                                                 label: parsed[m[1]]["name"],
                                                 number: m[1],
                                             });
                                         }
-                                    } else if (datatype == "number") {
+                                    } else if (datatype === "number") {
                                         // Only get the fields that are possible numbers
-                                        if (parsed[m[1]]["datatype"] == "timestamp"
-                                            || parsed[m[1]]["datatype"] == "count"
-                                            || parsed[m[1]]["datatype"] == "number"
-                                            || parsed[m[1]]["datatype"] == "integer") {
+                                        if (parsed[m[1]]["datatype"] === "timestamp"
+                                            || parsed[m[1]]["datatype"] === "count"
+                                            || parsed[m[1]]["datatype"] === "number"
+                                            || parsed[m[1]]["datatype"] === "integer") {
                                             mySelectFields.push({
                                                 group: groupname,
                                                 label: parsed[m[1]]["name"],
@@ -208,14 +210,16 @@ export class GlpiAppDatasourceQueryCtrl {
                                 }
                             }
                         }
-                        if (debug) console.debug("Fields; ", datatype, mySelectFields);
+                        if (debug) {
+                            console.debug("Fields; ", datatype, mySelectFields);
+                        }
                         return mySelectFields;
                     }],
                     url: this.datasource.url + "/listSearchOptions/" + itemtype,
                 };
                 urloptions.headers = urloptions.headers || {};
                 urloptions.headers["App-Token"] = this.datasource.apptoken;
-                urloptions.headers["Session-Token"] = response.data["session_token"];
+                urloptions.headers["Session-Token"] = response.data.session_token;
                 return this.datasource.backendSrv.datasourceRequest(urloptions);
             }
         });
@@ -223,8 +227,8 @@ export class GlpiAppDatasourceQueryCtrl {
 
     /** Need to have this in common file */
 
-    getSession() {
-        var options: any = {
+    public getSession() {
+        const options: any = {
             method: "GET",
             url: this.datasource.url + "/initSession",
         };

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as moment from "../vendor/public/builds/moment-timezone-with-data";
+import * as moment from "../vendor/public/builds/moment-timezone-with-data.js";
 
 export class GlpiAppDatasource {
   private usertoken: any;
@@ -37,12 +37,14 @@ export class GlpiAppDatasource {
 
   /** This will do the queries on GLPI and return datapoints results for panels */
   query(options) {
-    var scopedVars = options.scopedVars;
-    var targets = _.cloneDeep(options.targets);
-    var queryTargets = [];
+    const scopedVars = options.scopedVars;
+    const targets = _.cloneDeep(options.targets);
+    const queryTargets = [];
 
-    var allQueries = _.map(targets, (target) => {
-      if (target.hide) { return ""; }
+    const allQueries = _.map(targets, (target) => {
+      if (target.hasOwnProperty("hide")) {
+        return "";
+      }
 
       queryTargets.push(target);
 
@@ -58,16 +60,16 @@ export class GlpiAppDatasource {
       return acc;
     });
 
-    var initsession = this.getSession();
+    const initsession = this.getSession();
     return initsession.then((response) => {
       if (response.status === 200) {
 
-        var targetPool = [];
-        for (var q of queryTargets) {
+        const targetPool = [];
+        for (const q of queryTargets) {
           targetPool.push(this.promiseATarget(queryTargets, options, response, this));
         }
-        var l = 0;
-        for (var funt in targetPool) {
+        let l = 0;
+        for (const funt of Object.keys(targetPool)) {
           if (l === 0) {
             var promt = targetPool[l]([l, this.backendSrv, []]);
           } else {
@@ -75,8 +77,8 @@ export class GlpiAppDatasource {
           }
           l += 1;
         }
-        var resultalltarget = function(data) {
-          var ret = {
+        const resultalltarget = (data) => {
+          const ret = {
             data: data[2],
           };
           return ret;
@@ -88,76 +90,78 @@ export class GlpiAppDatasource {
 
   /** This will do the queries on GLPI of one of the different targets */
   promiseATarget(queryTargets, options, response, myclass) {
-    return function(targetargs) {
-      var currentTargetNum = targetargs[0];
-      var bksrv = targetargs[1];
-      var alltargetresult = targetargs[2];
-      var q = queryTargets[currentTargetNum];
+    return (targetargs) => {
+      const currentTargetNum = targetargs[0];
+      const bksrv = targetargs[1];
+      const alltargetresult = targetargs[2];
+      const q = queryTargets[currentTargetNum];
 
       q.query = decodeURI(q.query);
-      var searchq = q.query.split(".php?");
-      var url = searchq[0].split("/");
-      var itemtype = url[url.length - 1];
-      var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
-      var interval_start = Math.round(options.range.from.valueOf() / 1000) + 3600 + 3600;
-      var interval_end = Math.round(options.range.to.valueOf() / 1000) + 3600 + 3600;
+      const searchq = q.query.split(".php?");
+      const url = searchq[0].split("/");
+      const itemtype = url[url.length - 1];
+      let intervalS = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+      let intervalStart = Math.round(options.range.from.valueOf() / 1000) + 3600 + 3600;
+      let intervalEnd = Math.round(options.range.to.valueOf() / 1000) + 3600 + 3600;
 
       // add timerange
-      var dateISO = new Date(interval_start * 1e3).toISOString();
-      var url_start_date = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
+      const dateISO = new Date(intervalStart * 1e3).toISOString();
+      const urlStartDate = dateISO.slice(0, -14) + " " + dateISO.slice(-13, -5);
       // field num for creation_date
-      var field_num = q.datefield["number"];
+      const fieldNum = q.datefield["number"];
 
-      var dateISOend = new Date(interval_end * 1e3).toISOString();
-      var url_end_date = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
+      const dateISOend = new Date(intervalEnd * 1e3).toISOString();
+      const urlEndDate = dateISOend.slice(0, -14) + " " + dateISOend.slice(-13, -5);
 
-      if (field_num != "-1") {
-        for (var i = 0; i < 50; i++) {
+      if (fieldNum !== "-1") {
+        let iend = 0;
+        for (let i = 0; i < 50; i++) {
+          iend = i;
           if (searchq[1].indexOf("criteria[" + i + "]") < 0) {
             searchq[1] += "&criteria[" + i + "][link]=AND&" +
-                "criteria[" + i + "][field]=" + field_num + "&" +
+                "criteria[" + i + "][field]=" + fieldNum + "&" +
                 "criteria[" + i + "][searchtype]=morethan&" +
                 "_select_criteria[" + i + "][value]=0&" +
-                "_criteria[" + i + "][value]=" + interval_start + "&" +
-                "criteria[" + i + "][value]=" + url_start_date;
+                "_criteria[" + i + "][value]=" + intervalStart + "&" +
+                "criteria[" + i + "][value]=" + urlStartDate;
             break;
           }
         }
         // And the end date
-        i += 1;
-        searchq[1] += "&criteria[" + i + "][link]=AND&" +
-            "criteria[" + i + "][field]=" + field_num + "&" +
-            "criteria[" + i + "][searchtype]=lessthan&" +
-            "_select_criteria[" + i + "][value]=0&" +
-            "_criteria[" + i + "][value]=" + interval_end + "&" +
-            "criteria[" + i + "][value]=" + url_end_date;
+        iend += 1;
+        searchq[1] += "&criteria[" + iend + "][link]=AND&" +
+            "criteria[" + iend + "][field]=" + fieldNum + "&" +
+            "criteria[" + iend + "][searchtype]=lessthan&" +
+            "_select_criteria[" + iend + "][value]=0&" +
+            "_criteria[" + iend + "][value]=" + intervalEnd + "&" +
+            "criteria[" + iend + "][value]=" + urlEndDate;
       }
       searchq[1] += "&forcedisplay[0]=0";
       if (q.table) {
         searchq[1] += "&giveItems=true";
 
-        for (var colNum = 0; colNum <= 5 ; colNum++) {
-          if (eval("q.col_" + colNum)["number"] != "0") {
+        for (let colNum = 0; colNum <= 5 ; colNum++) {
+          if (eval("q.col_" + colNum)["number"] !== "0") {
             searchq[1] += "&forcedisplay[" + eval("q.col_" + colNum)["number"] + "]=" + eval("q.col_" + colNum)["number"];
           }
         }
       }
-      if (q.dynamicsplit.number != "0") {
+      if (q.dynamicsplit.number !== "0") {
         searchq[1] += "&forcedisplay[" + q.dynamicsplit.number + "]=" + q.dynamicsplit.number;
         searchq[1] += "&giveItems=true";
       }
 
       // Get all count per range / timerange
-      var interval_s = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
-      var interval_start = Math.round(options.range.from.valueOf() / 1000);
-      var interval_end = Math.round(options.range.to.valueOf() / 1000);
-      var range = _.range(interval_end, interval_start, -interval_s);
-      var timeperiods = {};
-      for (var num in range) {
-        timeperiods[(range[num] * 1000)] = (range[num] - interval_s) * 1000; // ie timeperiod[start] = end
+      intervalS = Math.round(options.scopedVars.__interval_ms["value"] / 1000);
+      intervalStart = Math.round(options.range.from.valueOf() / 1000);
+      intervalEnd = Math.round(options.range.to.valueOf() / 1000);
+      const myrange = _.range(intervalEnd, intervalStart, -intervalS);
+      const timeperiods = {};
+      for (const num of Object.keys(myrange)) {
+        timeperiods[(myrange[num] * 1000)] = (myrange[num] - intervalS) * 1000; // ie timeperiod[start] = end
       }
       // URL options for GLPI API
-      var urloptions: any = {
+      const urloptions: any = {
         method: "GET",
         url: myclass.url + "/search/" + itemtype + "?" + searchq[1],
       };
@@ -165,53 +169,54 @@ export class GlpiAppDatasource {
       urloptions.headers["App-Token"] = myclass.apptoken;
       urloptions.headers["Session-Token"] = response.data["session_token"];
 
-      var to = myclass.promiseGetNumberElementsOfTarget(field_num, q, myclass, currentTargetNum);
+      const to = myclass.promiseGetNumberElementsOfTarget(fieldNum, q, myclass, currentTargetNum);
       return to(bksrv, urloptions, timeperiods, alltargetresult);
     };
   }
 
   /** This will get the number of elements in GLPI to get */
-  promiseGetNumberElementsOfTarget(field_num, q, myclass, current_target_num) {
-    return function(bksrv, urloptions, timeperiods, alltargetresult) {
+  promiseGetNumberElementsOfTarget(fieldNum, q, myclass, currentTargetNum) {
+    return (bksrv, urloptions, timeperiods, alltargetresult) => {
       return bksrv.datasourceRequest(urloptions).then((response) => {
         if (response.status >= 200 && response.status < 300) {
           // get totalcount
-          var number_pages = Math.ceil(response.data["totalcount"] / 400);
-          if (number_pages == 0) {
-            number_pages = 1;
+          let numberPages = Math.ceil(response.data["totalcount"] / 400);
+          if (numberPages === 0) {
+            numberPages = 1;
           }
 
           // Create promises to request on API
-          var pool = [];
-          for (var j = 0; j < number_pages; j++) {
+          const pool = [];
+          for (let j = 0; j < numberPages; j++) {
             pool.push(myclass.promiseGetEachRangePageOfTarget(q));
           }
           // protect when no elements
           if (pool.length === 0) {
-            var datapointempty = [];
-            for (var tp in timeperiods) {
+            const datapointempty = [];
+            for (const tp of Object.keys(timeperiods)) {
               datapointempty.push([0, tp]);
             }
             return {
               data: [
                 {
-                  target: "tickets",
                   datapoints: datapointempty,
+                  target: "tickets",
                 },
               ],
             };
           }
 
-          var k = 0;
-          for (var fun in pool) {
+          let k = 0;
+          let prom;
+          for (const fun of Object.keys(pool)) {
             if (k === 0) {
-              var prom = pool[k]([bksrv, urloptions, timeperiods, [], 0, alltargetresult]);
+              prom = pool[k]([bksrv, urloptions, timeperiods, [], 0, alltargetresult]);
             } else {
               prom = prom.then(pool[k]);
             }
             k += 1;
           }
-          var resultfunc = myclass.promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass);
+          const resultfunc = myclass.promiseMergeTargetResult(timeperiods, fieldNum, q, currentTargetNum, myclass);
           return prom.then(resultfunc);
         }
       });
@@ -220,9 +225,9 @@ export class GlpiAppDatasource {
 
   /** This will get each ranges/pages in GLPI. Goal is to get all elements of GLPI here */
   promiseGetEachRangePageOfTarget(q) {
-    return function(args) {
-      var bksrv = args[0];
-      var url2options = _.cloneDeep(args[1]);
+    return (args) => {
+      const bksrv = args[0];
+      const url2options = _.cloneDeep(args[1]);
 
       url2options["url"] += "&range=" + args[4] + "-" + (args[4] + 399);
       args[4] += 400;
@@ -230,15 +235,15 @@ export class GlpiAppDatasource {
         if (response.status >= 200 && response.status < 300) {
           if (q.table) {
             args[3].push(response.data["data_html"]);
-          } else if (q.dynamicsplit.number != "0") {
+          } else if (q.dynamicsplit.number !== "0") {
             // Parse all data and replace the data by data_html for the id of dynamicsplit
-            for (var rownum in response.data["data"]) {
-              var cleanedHTML = response.data["data_html"][rownum][q.dynamicsplit.number];
+            for (const rownum of Object.keys(response.data["data"])) {
+              let cleanedHTML = response.data["data_html"][rownum][q.dynamicsplit.number];
               cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
               cleanedHTML = cleanedHTML.replace(/id='tooltiplink(\d)+'/, "");
-                cleanedHTML = cleanedHTML.replace(/id='tooltip(\d)+'/, "");
+              cleanedHTML = cleanedHTML.replace(/id='tooltip(\d)+'/, "");
               cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
               response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
             }
@@ -253,47 +258,59 @@ export class GlpiAppDatasource {
   }
 
   /** This will merge all results/elements (all ranges/pages) into same array */
-  promiseMergeTargetResult(timeperiods, field_num, q, current_target_num, myclass) {
-    return function(data) {
-      var debug = q.console;
-      if (debug) console.debug("q:", q);
-      if (debug) console.debug("data:", data);
+  promiseMergeTargetResult(timeperiods, fieldNum, q, currentTargetNum, myclass) {
+    return (data) => {
+      const debug = q.console;
+      if (debug) {
+        console.debug("q:", q);
+      }
+      if (debug) {
+        console.debug("data:", data);
+      }
 
       if (q.table) {
         ///// TABLE part
-        if (debug) console.debug("Parsing a table result...");
-        var columns = [];
-        var maxnum = 0;
-        for (var colNum = 0; colNum <= 5 ; colNum++) {
-          if (eval("q.col_" + colNum)["number"] != "0") {
+        if (debug) {
+          console.debug("Parsing a table result...");
+        }
+        const columns = [];
+        let maxnum = 0;
+        for (let colNum = 0; colNum <= 5 ; colNum++) {
+          if (eval("q.col_" + colNum)["number"] !== "0") {
             maxnum = _.cloneDeep(colNum);
-            if (eval("q.col_" + colNum + "_alias") == null ||  eval("q.col_" + colNum + "_alias") == "") {
+            if (eval("q.col_" + colNum + "_alias") == null ||  eval("q.col_" + colNum + "_alias") === "") {
               columns.push({text: eval("q.col_" + colNum)["label"], type: "string"});
             } else {
               columns.push({text: eval("q.col_" + colNum + "_alias"), type: "string"});
             }
           }
         }
-        if (debug) console.debug("columns: ", columns);
+        if (debug) {
+          console.debug("columns: ", columns);
+        }
         // Prepare for recreate the GLPI url in links
-        var glpiurl = myclass.url;
-        var split_glpiurl = glpiurl.split("/");
+        const glpiurl = myclass.url;
+        const splitGlpiurl = glpiurl.split("/");
 
-        var rows = [];
-        for (var idx in data[3]) {
-          for (var kkey in data[3][idx]) {
-            var myrow = [];
-            if (debug) console.debug("-> ", data[3][idx][kkey]);
+        const rows = [];
+        for (const idx of Object.keys(data[3])) {
+          for (const kkey of Object.keys(data[3][idx])) {
+            const myrow = [];
+            if (debug) {
+              console.debug("-> ", data[3][idx][kkey]);
+            }
 
-            for (var colNum2 = 0; colNum2 <= maxnum; colNum2++) {
-              var value = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]];
-              if (debug) console.debug("-> value: ", value);
+            for (let colNum2 = 0; colNum2 <= maxnum; colNum2++) {
+              let value = data[3][idx][kkey][eval("q.col_" + colNum2)["number"]];
+              if (debug) {
+                console.debug("-> value: ", value);
+              }
               if (typeof value === "string") {
-                var cleanedHTML = value.replace(/<div(.|\n|\r)+<\/div>/, "");
+                let cleanedHTML = value.replace(/<div(.|\n|\r)+<\/div>/, "");
                 cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
                 cleanedHTML = cleanedHTML.replace(/<img.+class='pointer'>/, "");
                 if (cleanedHTML.indexOf(' href="/') !== -1) {
-                  cleanedHTML = cleanedHTML.replace('href="/', 'href="' + split_glpiurl[0] + "//" + split_glpiurl[2] + "/");
+                  cleanedHTML = cleanedHTML.replace('href="/', 'href="' + splitGlpiurl[0] + "//" + splitGlpiurl[2] + "/");
                 }
                 value = cleanedHTML;
               }
@@ -302,36 +319,42 @@ export class GlpiAppDatasource {
             rows.push(myrow);
           }
         }
-        if (debug) console.debug("rows: ", rows);
+        if (debug) {
+          console.debug("rows: ", rows);
+        }
         data[5].push({
-          columns: columns,
-          rows: rows,
+          columns,
+          rows,
           type: "table",
         });
       } else {
-        if (debug) console.debug("Parsing a datapoints result...");
+        if (debug) {
+          console.debug("Parsing a datapoints result...");
+        }
         ///// it's datapoints
-        if (q.dynamicsplit.number != "0") {
-          if (debug) console.debug(" - split, field: ", q.dynamicsplit.number);
-          var periods = {};
-          for (var idx2 in data[3]) {
-            for (var kkey2 in data[3][idx2]) {
+        if (q.dynamicsplit.number !== "0") {
+          if (debug) {
+            console.debug(" - split, field: ", q.dynamicsplit.number);
+          }
+          const periods = {};
+          for (const idx2 of Object.keys(data[3])) {
+            for (const kkey2 of Object.keys(data[3][idx2])) {
               periods[data[3][idx2][kkey2][q.dynamicsplit.number]] = {};
             }
           }
-          for (var period in periods) {
-            for (var tp in timeperiods) {
+          for (const period of Object.keys(periods)) {
+            for (const tp of Object.keys(timeperiods)) {
               periods[period][tp] = 0;
             }
           }
-          for (var idx2 in data[3]) {
-            for (var kkey2 in data[3][idx2]) {
-              var datestring = data[3][idx2][kkey2][field_num];
+          for (const idx2 of Object.keys(data[3])) {
+            for (const kkey2 of Object.keys(data[3][idx2])) {
+              const datestring = data[3][idx2][kkey2][fieldNum];
               // convert date in ISO 8601 format
-              var date = new Date(moment.tz(datestring, myclass.timezone));
-              var item_date = Math.round(date.getTime());
-              for (var tpd in timeperiods) {
-                if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
+              const date = new Date(moment.tz(datestring, myclass.timezone));
+              const itemDate = Math.round(date.getTime());
+              for (const tpd of Object.keys(timeperiods)) {
+                if (itemDate < Number(tpd) && itemDate >= timeperiods[tpd]) {
                   if (q.counter) {
                     periods[data[3][idx2][kkey2][q.dynamicsplit.number]][tpd] += 1;
                   } else {
@@ -342,46 +365,54 @@ export class GlpiAppDatasource {
               }
             }
           }
-          for (var period in periods) {
+          for (const period of Object.keys(periods)) {
             // We create the datapoints
-            var datapoints = [];
-            for (var tpp in periods[period]) {
+            const datapoints = [];
+            for (const tpp of Object.keys(periods[period])) {
               datapoints.unshift([periods[period][tpp], Number(tpp)]);
             }
-            if (debug) console.debug(" - period: ", period);
-            if (debug) console.debug(" - datapoints: ", datapoints);
+            if (debug) {
+              console.debug(" - period: ", period);
+            }
+            if (debug) {
+              console.debug(" - datapoints: ", datapoints);
+            }
             data[5].push({
+              datapoints,
               target: period,
-              datapoints: datapoints,
             });
           }
         } else {
-          if (debug) console.debug(" - not split, selected date field: ", field_num);
+          if (debug) {
+            console.debug(" - not split, selected date field: ", fieldNum);
+          }
           // Define all timeperiods
-          var periods = {};
-          for (var tp in timeperiods) {
+          const periods = {};
+          for (const tp of Object.keys(timeperiods)) {
             periods[tp] = 0;
           }
-          if (field_num === "-1") {
+          const datapoints = [];
+          if (fieldNum === "-1") {
             // No date field selected in the options
-            var datapoints = [];
-            for (var tpp in periods) {
+            let lastTpp = "";
+            for (const tpp of Object.keys(periods)) {
               datapoints.unshift([periods[tpp], Number(tpp)]);
+              lastTpp = tpp;
             }
             // Set the last TS value as the query count
-            if (debug) console.debug(" - setting the query count as the last TS value: ", data[3].length);
-            datapoints[Object.keys(periods).length] = [data[3].length, Number(tpp)];
+            if (debug) {
+              console.debug(" - setting the query count as the last TS value: ", data[3].length);
+            }
+            datapoints[Object.keys(periods).length] = [data[3].length, Number(lastTpp)];
           } else {
-              var tototo = 0;
-              for (var idx2 in data[3]) {
-                  for (var kkey2 in data[3][idx2]) {
-                      var datestring = data[3][idx2][kkey2][field_num];
+              for (const idx2 of Object.keys(data[3])) {
+                  for (const kkey2 of Object.keys(data[3][idx2])) {
+                      const datestring = data[3][idx2][kkey2][fieldNum];
                       // convert date in ISO 8601 format
-                      var date = new Date(moment.tz(datestring, myclass.timezone));
-                      var item_date = Math.round(date.getTime());
-                      tototo = item_date;
-                      for (var tpd in timeperiods) {
-                          if (item_date < Number(tpd) && item_date >= timeperiods[tpd]) {
+                      const date = new Date(moment.tz(datestring, myclass.timezone));
+                      const itemDate = Math.round(date.getTime());
+                      for (const tpd of Object.keys(timeperiods)) {
+                          if (itemDate < Number(tpd) && itemDate >= timeperiods[tpd]) {
                               if (q.counter) {
                                   periods[tpd] += 1;
                               } else {
@@ -393,40 +424,43 @@ export class GlpiAppDatasource {
                   }
               }
               // We create the datapoints
-              var datapoints = [];
               if (q.dayhours) {
                   // We get data with all hours of days
-                  for (var tpp in periods) {
-                      var d = new Date(Number(tpp));
-                      var n = d.getHours();
-                      for (var num=1; num <= periods[tpp]; num++) {
+                  for (const tpp of Object.keys(periods)) {
+                      const d = new Date(Number(tpp));
+                      const n = d.getHours();
+                      for (let num = 1; num <= periods[tpp]; num++) {
                           datapoints.unshift([n, 1]);
                       }
                   }
               } else {
-                  for (var tpp in periods) {
+                  for (const tpp of Object.keys(periods)) {
                       datapoints.unshift([periods[tpp], Number(tpp)]);
                   }
               }
           }
-          if (debug) console.debug(" - target: ", q.alias);
-          if (debug) console.debug(" - datapoints: ", datapoints);
+          if (debug) {
+            console.debug(" - target: ", q.alias);
+          }
+          if (debug) {
+            console.debug(" - datapoints: ", datapoints);
+          }
           data[5].push({
+            datapoints,
             target: q.alias,
-            datapoints: datapoints
           });
         }
       }
-      current_target_num += 1;
-      return [current_target_num, data[0], data[5]];
+      currentTargetNum += 1;
+      return [currentTargetNum, data[0], data[5]];
     };
   }
 
   testDatasource() {
-    var options: any = {
+    const options: any = {
+      data: null,
       method: "GET",
       url: this.url + "/initSession",
-      data: null,
     };
     options.headers = options.headers || {};
     options.headers.Authorization = "user_token " + this.usertoken;
@@ -435,19 +469,20 @@ export class GlpiAppDatasource {
       if (response.status === 200) {
         return { status: "success", message: "Data source is working", title: "Success" };
       }
-    }, function(err) {
+    }, (err) => {
       if (err.status !== 0 || err.status >= 300) {
         if (err.data && err.data.error) {
           throw {
-            message: "GLPI API Error Response: " + err.data.error
+            message: "GLPI API Error Response: " + err.data.error,
           };
         } else if (err.data) {
           throw {
-            message: "GLPI API Error Response: " + err.data[1]
+            message: "GLPI API Error Response: " + err.data[1],
           };
-        } else if (err.status == undefined) {
+        } else if (err.status === undefined) {
           throw {
-            message: "Cross-Origin Request Blocked: add right headers in your apache/nginx like 'App-Token' and 'Session-Token'"
+            message: "Cross-Origin Request Blocked: add right headers in your apache/nginx " +
+            "like 'App-Token' and 'Session-Token'",
           };
         } else {
           throw { message: "GLPI API Error: " + err.message, data: err.data, config: err.config };
@@ -457,7 +492,7 @@ export class GlpiAppDatasource {
   }
 
   getSession() {
-    var options: any = {
+    const options: any = {
       method: "GET",
       url: this.url + "/initSession",
     };
@@ -470,14 +505,14 @@ export class GlpiAppDatasource {
 
   getSearchOptions(itemtype) {
     if (!(itemtype in this.searchOptions)) {
-      var urloptions: any = {
+      const urloptions: any = {
         method: "GET",
         url: this.url + "/listSearchOptions/" + itemtype,
       };
       urloptions.headers = urloptions.headers || {};
       urloptions.headers["App-Token"] = this.apptoken;
       urloptions.headers["Session-Token"] = this.session;
-      var answer = this.backendSrv.datasourceRequest(urloptions).then((response) => {
+      const answer = this.backendSrv.datasourceRequest(urloptions).then((response) => {
         if (response.status === 200) {
           return response.data;
         }

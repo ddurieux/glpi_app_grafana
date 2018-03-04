@@ -21,24 +21,28 @@ For the GLPI datasource, you will need:
 
 ## Dashboard
 
-It exists an example for dashboard. You can install and use it.
+It exists an example dashboard. You can install and use it.
 
-Create a new panel and then edit it.
-Add a new Query with your GLPI datasource.
+## Table panel
+
+Create a new Table panel and then edit the panel.
+Select the GLPI datasource and add a new Query in the panel Metrics.
 
 The configuration will require:
 
 * Query: do a search into GLPI and copy paste the URL here
 * Alias: the alias name of this query, it will appear in the panel
-* Timerange based on: define on what GLPI date field you will get the data. This field is used by the timerange defined in top of grafana
-* Is it a table?: if the panel is a Table, select yes, otherwise keep to no
+* Timerange based on: define on which GLPI date field you will get the data. This field is used by the timerange defined in top of grafana
+* Count element: if the panel is a Table, select yes, otherwise keep to no
+* Is it a table?: to display the query result as a Table, check this option else uncheck.
 
-If it's a table, you can define the columns to get:
+When *Is it a table* is checked, the query result will be displayed as a table and you can define up to 6 columns to be displayed. 
+For each column in the table, select the query result field and the name of the column. 
 
-* Column A: the GLPI field/column to have
-* Column A alias: the name of the column if don't want the name get from GLPI
+When *Is it a table* is not checked, the query result is considered as a usual Grafana timeseries and it will displayed as is. See Grafana table panel for more information.
+     
+## Single stat panel
 
-same for column B, C, D, E and F
 
 
 ## Bugs / features
@@ -56,6 +60,7 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 
 ### 1.2.0
 
+* allow to get a query count without selecting a date field
 * fix #16: no more need to force grunt for rebuilding
 * fix #17: fix error when receiving integer values not formated in strings
 * fix some typos
