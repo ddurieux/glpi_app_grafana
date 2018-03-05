@@ -210,8 +210,8 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                                         cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
                                         cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
-                                        cleanedHTML = cleanedHTML.replace(/id='tooltiplink(\d)+'/, "");
-                                        cleanedHTML = cleanedHTML.replace(/id='tooltip(\d)+'/, "");
+                                        cleanedHTML = cleanedHTML.replace(/id=['"]tooltiplink(\d)+['"]/, "");
+                                        cleanedHTML = cleanedHTML.replace(/id=['"]tooltip(\d)+['"]/, "");
                                         cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
                                         response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
                                     }
@@ -376,7 +376,7 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                                     if (debug) {
                                         console.debug(" - setting the query count as the last TS value: ", data[3].length);
                                     }
-                                    datapoints[Object.keys(periods).length] = [data[3].length, Number(lastTpp)];
+                                    datapoints[Object.keys(periods).length] = [data[3][0].length, Number(lastTpp)];
                                 }
                                 else {
                                     for (var _1 = 0, _2 = Object.keys(data[3]); _1 < _2.length; _1++) {

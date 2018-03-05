@@ -242,8 +242,8 @@ export class GlpiAppDatasource {
               cleanedHTML = cleanedHTML.replace(/<div(.|\n|\r)+<\/div>/, "");
               cleanedHTML = cleanedHTML.replace(/<script(.|\n|\r)+<\/script>/, "");
               cleanedHTML = cleanedHTML.replace(/<img(.|\n|\r|\t)+>/, "");
-              cleanedHTML = cleanedHTML.replace(/id='tooltiplink(\d)+'/, "");
-              cleanedHTML = cleanedHTML.replace(/id='tooltip(\d)+'/, "");
+              cleanedHTML = cleanedHTML.replace(/id=['"]tooltiplink(\d)+['"]/, "");
+              cleanedHTML = cleanedHTML.replace(/id=['"]tooltip(\d)+['"]/, "");
               cleanedHTML = cleanedHTML.replace(/^&nbsp;/, "");
               response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
             }
@@ -403,7 +403,7 @@ export class GlpiAppDatasource {
             if (debug) {
               console.debug(" - setting the query count as the last TS value: ", data[3].length);
             }
-            datapoints[Object.keys(periods).length] = [data[3].length, Number(lastTpp)];
+            datapoints[Object.keys(periods).length] = [data[3][0].length, Number(lastTpp)];
           } else {
               for (const idx2 of Object.keys(data[3])) {
                   for (const kkey2 of Object.keys(data[3][idx2])) {
