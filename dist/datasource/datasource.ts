@@ -235,7 +235,7 @@ export class GlpiAppDatasource {
         if (response.status >= 200 && response.status < 300) {
           if (q.table) {
             args[3].push(response.data["data_html"]);
-          } else if (q.dynamicsplit.number !== "0") {
+          } else if (q.dynamicsplit.number !== "0" && response.data["data"] !== undefined) {
             // Parse all data and replace the data by data_html for the id of dynamicsplit
             for (const rownum of Object.keys(response.data["data"])) {
               let cleanedHTML = response.data["data_html"][rownum][q.dynamicsplit.number];
@@ -248,7 +248,7 @@ export class GlpiAppDatasource {
               response.data["data"][rownum][q.dynamicsplit.number] = cleanedHTML;
             }
             args[3].push(response.data["data"]);
-          } else {
+          } else if (response.data["data"] !== undefined) {
             args[3].push(response.data["data"]);
           }
           return [bksrv, args[1], args[2], args[3], args[4], args[5]];
