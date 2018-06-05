@@ -56,6 +56,24 @@ export class GlpiAppDatasourceQueryCtrl {
         if (this.target.col_5 == null) {
             this.target.col_5 = emptyValCol;
         }
+        if (this.target.col_6 == null) {
+            this.target.col_6 = emptyValCol;
+        }
+        if (this.target.col_7 == null) {
+            this.target.col_7 = emptyValCol;
+        }
+        if (this.target.col_8 == null) {
+            this.target.col_8 = emptyValCol;
+        }
+        if (this.target.col_9 == null) {
+            this.target.col_9 = emptyValCol;
+        }
+        if (this.target.col_10 == null) {
+            this.target.col_10 = emptyValCol;
+        }
+        if (this.target.col_11 == null) {
+            this.target.col_11 = emptyValCol;
+        }
 
         if (this.target.dynamicsplit == null) {
             this.target.dynamicsplit = emptyValCol;

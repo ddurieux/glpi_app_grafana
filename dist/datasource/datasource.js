@@ -117,7 +117,7 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                         searchq[1] += "&forcedisplay[0]=0";
                         if (q.table) {
                             searchq[1] += "&giveItems=true";
-                            for (var colNum = 0; colNum <= 5; colNum++) {
+                            for (var colNum = 0; colNum <= 11; colNum++) {
                                 if (eval("q.col_" + colNum)["number"] !== "0") {
                                     searchq[1] += "&forcedisplay[" + eval("q.col_" + colNum)["number"] + "]=" + eval("q.col_" + colNum)["number"];
                                 }
@@ -240,7 +240,7 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                             }
                             var columns = [];
                             var maxnum = 0;
-                            for (var colNum = 0; colNum <= 5; colNum++) {
+                            for (var colNum = 0; colNum <= 11; colNum++) {
                                 if (eval("q.col_" + colNum)["number"] !== "0") {
                                     maxnum = lodash_1.default.cloneDeep(colNum);
                                     if (eval("q.col_" + colNum + "_alias") == null || eval("q.col_" + colNum + "_alias") === "") {

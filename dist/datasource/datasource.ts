@@ -140,7 +140,7 @@ export class GlpiAppDatasource {
       if (q.table) {
         searchq[1] += "&giveItems=true";
 
-        for (let colNum = 0; colNum <= 5 ; colNum++) {
+        for (let colNum = 0; colNum <= 11 ; colNum++) {
           if (eval("q.col_" + colNum)["number"] !== "0") {
             searchq[1] += "&forcedisplay[" + eval("q.col_" + colNum)["number"] + "]=" + eval("q.col_" + colNum)["number"];
           }
@@ -275,7 +275,7 @@ export class GlpiAppDatasource {
         }
         const columns = [];
         let maxnum = 0;
-        for (let colNum = 0; colNum <= 5 ; colNum++) {
+        for (let colNum = 0; colNum <= 11 ; colNum++) {
           if (eval("q.col_" + colNum)["number"] !== "0") {
             maxnum = _.cloneDeep(colNum);
             if (eval("q.col_" + colNum + "_alias") == null ||  eval("q.col_" + colNum + "_alias") === "") {
