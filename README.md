@@ -89,6 +89,7 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 * fix #17: fix error when receiving integer values not formated in strings
 * fix some typos
 * dev: allow to set/unset browser console log
+*
 
 ### 1.1.0
 

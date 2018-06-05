@@ -19,6 +19,30 @@ For the GLPI datasource, you will need:
 * the App-token, you can generate and get it in GLPI in the menu Setup > General > API
 * the User token, you can generate and get it in the user account/preferences panel in GLPI
 
+## GLPI Webserver
+
+On your GLPI webserver, you need active the CORS.
+Documentation about [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
+
+### Apache
+
+```
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+Header set Access-Control-Allow-Credentials true
+Header set Access-Control-Allow-Headers "X-Requested-With, Content-Type, Origin, Authorization, Accept, Client-Security-Token, Accept-Encoding, App-Token, Session-Token"
+```
+
+### NGINX
+
+```
+more_set_headers 'Access-Control-Allow-Origin: *';
+more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE';
+more_set_headers 'Access-Control-Allow-Credentials: true';
+more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization,App-Token,Session-Token';
+```
+
+
 ## Dashboard
 
 It exists an example dashboard. You can install and use it.
@@ -65,6 +89,7 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 * fix #17: fix error when receiving integer values not formated in strings
 * fix some typos
 * dev: allow to set/unset browser console log
+*
 
 ### 1.1.0
 
