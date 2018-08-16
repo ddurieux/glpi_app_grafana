@@ -46,7 +46,9 @@ more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Autho
 
 ## Dashboard
 
-It exists an example dashboard. You can install and use it.
+You can get a simple dashboard here https://grafana.com/dashboards/7568
+
+![screenshot1](https://user-images.githubusercontent.com/13823969/44227185-4b92a900-a192-11e8-838e-ee06ed9e7d34.png)
 
 ## Table panel
 
