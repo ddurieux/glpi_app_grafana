@@ -17,7 +17,8 @@ For the GLPI datasource, you will need:
 
 * the URL of the GLPI API (like http://127.0.0.1/glpi/apirest.php)
 * the App-token, you can generate and get it in GLPI in the menu Setup > General > API
-* the User token, you can generate and get it in the user account/preferences panel in GLPI
+* the User token, you can generate and get it in the user account/preferences panel in GLPI (named API Token)
+* In the menu Setup > General > API, **Enable Rest API** and **Enable login with external**
 
 ## GLPI Webserver
 
