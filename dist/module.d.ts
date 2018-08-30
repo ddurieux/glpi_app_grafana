@@ -1,3 +1,3 @@
 export declare class GlpiAppConfigCtrl {
 }
-export { GlpiAppConfigCtrl as ConfigCtrl };
+export { GlpiAppConfigCtrl as ConfigCtrl, };

@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
-    var __moduleName = context_1 && context_1.id;
     var GlpiAppDatasourceQueryCtrl;
+    var __moduleName = context_1 && context_1.id;
     return {
         setters: [],
         execute: function () {
@@ -228,9 +228,9 @@ System.register([], function (exports_1, context_1) {
                     options.headers["App-Token"] = this.datasource.apptoken;
                     return this.datasource.backendSrv.datasourceRequest(options);
                 };
+                GlpiAppDatasourceQueryCtrl.templateUrl = "datasource/partials/query.editor.html";
                 return GlpiAppDatasourceQueryCtrl;
             }());
-            GlpiAppDatasourceQueryCtrl.templateUrl = "datasource/partials/query.editor.html";
             exports_1("GlpiAppDatasourceQueryCtrl", GlpiAppDatasourceQueryCtrl);
         }
     };

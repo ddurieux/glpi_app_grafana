@@ -6,4 +6,4 @@ export declare class GlpiAppDatasourceConfigCtrl {
     current: any;
     constructor($scope: any);
 }
-export { GlpiAppDatasource as Datasource, GlpiAppDatasourceConfigCtrl as ConfigCtrl, GlpiAppDatasourceQueryCtrl as QueryCtrl };
+export { GlpiAppDatasource as Datasource, GlpiAppDatasourceConfigCtrl as ConfigCtrl, GlpiAppDatasourceQueryCtrl as QueryCtrl, };

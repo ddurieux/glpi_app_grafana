@@ -1,7 +1,7 @@
 System.register(["../vendor/public/builds/moment-timezone-with-data", "./datasource", "./query_ctrl"], function (exports_1, context_1) {
     "use strict";
-    var __moduleName = context_1 && context_1.id;
     var moment, datasource_1, query_ctrl_1, GlpiAppDatasourceConfigCtrl;
+    var __moduleName = context_1 && context_1.id;
     return {
         setters: [
             function (moment_1) {
@@ -22,9 +22,9 @@ System.register(["../vendor/public/builds/moment-timezone-with-data", "./datasou
                     this.timezoneList = moment.tz.names();
                     this.current.jsonData.timezone = this.current.jsonData.timezone || "UTC";
                 }
+                GlpiAppDatasourceConfigCtrl.templateUrl = "datasource/partials/config.html";
                 return GlpiAppDatasourceConfigCtrl;
             }());
-            GlpiAppDatasourceConfigCtrl.templateUrl = "datasource/partials/config.html";
             exports_1("GlpiAppDatasourceConfigCtrl", GlpiAppDatasourceConfigCtrl);
             exports_1("ConfigCtrl", GlpiAppDatasourceConfigCtrl);
         }
