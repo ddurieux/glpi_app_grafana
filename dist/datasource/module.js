@@ -19,7 +19,7 @@ System.register(["../vendor/public/builds/moment-timezone-with-data", "./datasou
             exports_1("QueryCtrl", query_ctrl_1.GlpiAppDatasourceQueryCtrl);
             GlpiAppDatasourceConfigCtrl = (function () {
                 function GlpiAppDatasourceConfigCtrl($scope) {
-                    this.timezoneLst = moment.tz.names();
+                    this.timezoneList = moment.tz.names();
                     this.current.jsonData.timezone = this.current.jsonData.timezone || "UTC";
                 }
                 return GlpiAppDatasourceConfigCtrl;

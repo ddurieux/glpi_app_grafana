@@ -1,7 +1,7 @@
 import { GlpiAppDatasource } from "./datasource";
 import { GlpiAppDatasourceQueryCtrl } from "./query_ctrl";
 export declare class GlpiAppDatasourceConfigCtrl {
-    timezoneLst: any;
+    timezoneList: any;
     static templateUrl: string;
     current: any;
     constructor($scope: any);

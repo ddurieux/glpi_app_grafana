@@ -3,7 +3,7 @@ import {GlpiAppDatasource} from "./datasource";
 import {GlpiAppDatasourceQueryCtrl} from "./query_ctrl";
 
 export class GlpiAppDatasourceConfigCtrl {
-  public timezoneLst = moment.tz.names();
+  public timezoneList = moment.tz.names();
   static templateUrl = "datasource/partials/config.html";
   current: any;
 
