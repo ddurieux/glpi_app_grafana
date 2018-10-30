@@ -376,18 +376,23 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                                     if (debug) {
                                         console.debug(" - setting the query count as the last TS value: ", data[3].length);
                                     }
-                                    datapoints[Object.keys(periods).length] = [data[3][0].length, Number(lastTpp)];
+                                    var totalcount = 0;
+                                    for (var _1 = 0, _2 = Object.keys(data[3]); _1 < _2.length; _1++) {
+                                        var index = _2[_1];
+                                        totalcount += data[3][index].length;
+                                    }
+                                    datapoints[Object.keys(periods).length] = [totalcount, Number(lastTpp)];
                                 }
                                 else {
-                                    for (var _1 = 0, _2 = Object.keys(data[3]); _1 < _2.length; _1++) {
-                                        var idx2 = _2[_1];
-                                        for (var _3 = 0, _4 = Object.keys(data[3][idx2]); _3 < _4.length; _3++) {
-                                            var kkey2 = _4[_3];
+                                    for (var _3 = 0, _4 = Object.keys(data[3]); _3 < _4.length; _3++) {
+                                        var idx2 = _4[_3];
+                                        for (var _5 = 0, _6 = Object.keys(data[3][idx2]); _5 < _6.length; _5++) {
+                                            var kkey2 = _6[_5];
                                             var datestring = data[3][idx2][kkey2][fieldNum];
                                             var date = new Date(moment.tz(datestring, myclass.timezone));
                                             var itemDate = Math.round(date.getTime());
-                                            for (var _5 = 0, _6 = Object.keys(timeperiods); _5 < _6.length; _5++) {
-                                                var tpd = _6[_5];
+                                            for (var _7 = 0, _8 = Object.keys(timeperiods); _7 < _8.length; _7++) {
+                                                var tpd = _8[_7];
                                                 if (itemDate < Number(tpd) && itemDate >= timeperiods[tpd]) {
                                                     if (q.counter) {
                                                         periods[tpd] += 1;
@@ -401,8 +406,8 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                                         }
                                     }
                                     if (q.dayhours) {
-                                        for (var _7 = 0, _8 = Object.keys(periods); _7 < _8.length; _7++) {
-                                            var tpp = _8[_7];
+                                        for (var _9 = 0, _10 = Object.keys(periods); _9 < _10.length; _9++) {
+                                            var tpp = _10[_9];
                                             var d = new Date(Number(tpp));
                                             var n = d.getHours();
                                             for (var num = 1; num <= periods[tpp]; num++) {
@@ -411,8 +416,8 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                                         }
                                     }
                                     else {
-                                        for (var _9 = 0, _10 = Object.keys(periods); _9 < _10.length; _9++) {
-                                            var tpp = _10[_9];
+                                        for (var _11 = 0, _12 = Object.keys(periods); _11 < _12.length; _11++) {
+                                            var tpp = _12[_11];
                                             datapoints.unshift([periods[tpp], Number(tpp)]);
                                         }
                                     }

@@ -403,7 +403,11 @@ export class GlpiAppDatasource {
             if (debug) {
               console.debug(" - setting the query count as the last TS value: ", data[3].length);
             }
-            datapoints[Object.keys(periods).length] = [data[3][0].length, Number(lastTpp)];
+            let totalcount = 0;
+            for (const index of Object.keys(data[3])) {
+              totalcount += data[3][index].length;
+            }
+            datapoints[Object.keys(periods).length] = [totalcount, Number(lastTpp)];
           } else {
               for (const idx2 of Object.keys(data[3])) {
                   for (const kkey2 of Object.keys(data[3][idx2])) {
