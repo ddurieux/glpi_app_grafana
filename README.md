@@ -46,7 +46,7 @@ more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Autho
 
 ## Dashboard
 
-You can get a simple dashboard here https://grafana.com/dashboards/7568
+You can get a [simple dashboard here](https://grafana.com/dashboards/7568)
 
 ![screenshot1](https://user-images.githubusercontent.com/13823969/44227185-4b92a900-a192-11e8-838e-ee06ed9e7d34.png)
 
@@ -107,6 +107,16 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 
 ## Changelog
 
+### 1.3.0
+
+* add Apache / NGINX configuration in the readme
+* add more instructions in the readme to configure API into GLPI
+* add link of a user dashboard in the readme 
+* add the patch of GLPI in the readme when use the datasource in mode `server`
+* fix PHP timezone in the datasource
+* update dependencies (and so fix some vulnerabilities)
+* fix a bug in number elements displayed in the singlestat panel
+
 ### 1.2.0
 
 * allow to get a query count without selecting a date field
@@ -114,7 +124,6 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 * fix #17: fix error when receiving integer values not formated in strings
 * fix some typos
 * dev: allow to set/unset browser console log
-*
 
 ### 1.1.0
 
