@@ -17,7 +17,8 @@ For the GLPI datasource, you will need:
 
 * the URL of the GLPI API (like http://127.0.0.1/glpi/apirest.php)
 * the App-token, you can generate and get it in GLPI in the menu Setup > General > API
-* the User token, you can generate and get it in the user account/preferences panel in GLPI
+* the User token, you can generate and get it in the user account/preferences panel in GLPI (named API Token)
+* In the menu Setup > General > API, **Enable Rest API** and **Enable login with external**
 
 ## GLPI Webserver
 
@@ -45,7 +46,9 @@ more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Autho
 
 ## Dashboard
 
-It exists an example dashboard. You can install and use it.
+You can get a simple dashboard here https://grafana.com/dashboards/7568
+
+![screenshot1](https://user-images.githubusercontent.com/13823969/44227185-4b92a900-a192-11e8-838e-ee06ed9e7d34.png)
 
 ## Table panel
 
@@ -67,6 +70,28 @@ When *Is it a table* is not checked, the query result is considered as a usual G
      
 ## Single stat panel
 
+
+## Problem with server access
+
+If you have the message: `There isn't an active API client matching your IP address in the configuration (ip, ip)` where you have 2 IPs and the same, you need apply a patch into GLPI: 
+
+```
+diff --git a/inc/api.class.php b/inc/api.class.php
+index 3ae2966ce..a4a18dc9e 100644
+--- a/inc/api.class.php
++++ b/inc/api.class.php
+@@ -105,6 +105,10 @@ abstract class API extends CommonGLPI {
+
+       // retrieve ip of client
+       $this->iptxt = Toolbox::getRemoteIpAddress();
++      $spl = explode(',', $this->iptxt);
++      if (count($spl) > 1) {
++         $this->iptxt = $spl[0];
++      }
+       $this->ipnum = (strstr($this->iptxt, ':')===false ? ip2long($this->iptxt) : '');
+
+       // check ip access
+```
 
 
 ## Bugs / features

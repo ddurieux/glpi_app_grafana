@@ -71,6 +71,28 @@ When *Is it a table* is not checked, the query result is considered as a usual G
 ## Single stat panel
 
 
+## Problem with server access
+
+If you have the message: `There isn't an active API client matching your IP address in the configuration (ip, ip)` where you have 2 IPs and the same, you need apply a patch into GLPI: 
+
+```
+diff --git a/inc/api.class.php b/inc/api.class.php
+index 3ae2966ce..a4a18dc9e 100644
+--- a/inc/api.class.php
++++ b/inc/api.class.php
+@@ -105,6 +105,10 @@ abstract class API extends CommonGLPI {
+
+       // retrieve ip of client
+       $this->iptxt = Toolbox::getRemoteIpAddress();
++      $spl = explode(',', $this->iptxt);
++      if (count($spl) > 1) {
++         $this->iptxt = $spl[0];
++      }
+       $this->ipnum = (strstr($this->iptxt, ':')===false ? ip2long($this->iptxt) : '');
+
+       // check ip access
+```
+
 
 ## Bugs / features
 
