@@ -46,6 +46,11 @@ export class GlpiAppDatasource {
         return "";
       }
 
+      for (let tplvar of this.templateSrv.variables) {
+        let regex = new RegExp("\\[\\[" + tplvar.name + "\\]\\]", "g");
+        target.query = target.query.replace(regex, tplvar.current.value);
+      }
+
       queryTargets.push(target);
 
       // backward compatability
@@ -523,5 +528,47 @@ export class GlpiAppDatasource {
       });
       this.searchOptions[itemtype] = answer;
     }
+  }
+
+
+  metricFindQuery(query) {
+    if (!query) {
+      return this.q.when([]);
+    }
+
+    const options1: any = {
+        method: "GET",
+        url: this.url + "/initSession",
+    };
+    options1.headers = options1.headers || {};
+    options1.headers.Authorization = "user_token " + this.usertoken;
+    options1.headers["App-Token"] = this.apptoken;
+
+    query = decodeURI(query);
+    const searchq = query.split(".php?");
+    const url = searchq[0].split("/");
+    const itemtype = url[url.length - 1];
+    searchq[1] += "&forcedisplay[0]=1";
+    searchq[1] += "&forcedisplay[1]=2";
+
+    return this.backendSrv.datasourceRequest(options1).then(res1 => {
+      const options: any = {
+        data: null,
+        method: "GET",
+        url: this.url + "/search/" + itemtype + "?" + searchq[1],
+      };
+      options.headers = options.headers || {};
+      options.headers["App-Token"] = this.apptoken;
+      options.headers["Session-Token"] = res1.data.session_token;
+
+      return this.backendSrv.datasourceRequest(options).then(res => {
+        return _.map(res.data.data, vals => {
+          return {
+            text: vals[1], 
+            value: vals[2]
+          };
+        });
+      });
+    });
   }
 }

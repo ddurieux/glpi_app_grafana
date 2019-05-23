@@ -21,4 +21,5 @@ export declare class GlpiAppDatasource {
     testDatasource(): any;
     getSession(): any;
     getSearchOptions(itemtype: any): void;
+    metricFindQuery(query: any): any;
 }

@@ -107,6 +107,10 @@ Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to 
 
 ## Changelog
 
+### 1.4.0
+* manage variables for GLPI datasource (use the variable name with `[[]]` like `[[myvar]]` in the query)
+* add type _query_ in the variable with copy / paste search like for standard queries (it use the name + id of item)
+
 ### 1.3.0
 
 * add Apache / NGINX configuration in the readme
