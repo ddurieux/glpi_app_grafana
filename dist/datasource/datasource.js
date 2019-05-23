@@ -36,6 +36,11 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                         if (target.hasOwnProperty("hide")) {
                             return "";
                         }
+                        for (var _i = 0, _a = _this.templateSrv.variables; _i < _a.length; _i++) {
+                            var tplvar = _a[_i];
+                            var regex = new RegExp("\\[\\[" + tplvar.name + "\\]\\]", "g");
+                            target.query = target.query.replace(regex, tplvar.current.value);
+                        }
                         queryTargets.push(target);
                         scopedVars.interval = scopedVars.__interval;
                         return queryTargets;
@@ -501,6 +506,43 @@ System.register(["lodash", "../vendor/public/builds/moment-timezone-with-data.js
                         });
                         this.searchOptions[itemtype] = answer;
                     }
+                };
+                GlpiAppDatasource.prototype.metricFindQuery = function (query) {
+                    var _this = this;
+                    if (!query) {
+                        return this.q.when([]);
+                    }
+                    var options1 = {
+                        method: "GET",
+                        url: this.url + "/initSession",
+                    };
+                    options1.headers = options1.headers || {};
+                    options1.headers.Authorization = "user_token " + this.usertoken;
+                    options1.headers["App-Token"] = this.apptoken;
+                    query = decodeURI(query);
+                    var searchq = query.split(".php?");
+                    var url = searchq[0].split("/");
+                    var itemtype = url[url.length - 1];
+                    searchq[1] += "&forcedisplay[0]=1";
+                    searchq[1] += "&forcedisplay[1]=2";
+                    return this.backendSrv.datasourceRequest(options1).then(function (res1) {
+                        var options = {
+                            data: null,
+                            method: "GET",
+                            url: _this.url + "/search/" + itemtype + "?" + searchq[1],
+                        };
+                        options.headers = options.headers || {};
+                        options.headers["App-Token"] = _this.apptoken;
+                        options.headers["Session-Token"] = res1.data.session_token;
+                        return _this.backendSrv.datasourceRequest(options).then(function (res) {
+                            return lodash_1.default.map(res.data.data, function (vals) {
+                                return {
+                                    text: vals[1],
+                                    value: vals[2]
+                                };
+                            });
+                        });
+                    });
                 };
                 return GlpiAppDatasource;
             }());
