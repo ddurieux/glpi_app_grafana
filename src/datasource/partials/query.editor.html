@@ -1,185 +1,185 @@
 <query-editor-row query-ctrl="ctrl" can-collapse="true">
-	<div class="gf-form-inline">
-		<div class="gf-form gf-form--grow">
-			<label class="gf-form-label query-keyword width-7">Query</label>
-			<input type="text" class="gf-form-input" ng-model="ctrl.target.query" spellcheck='false' placeholder="GLPI search query link" ng-blur="ctrl.newQueryRefresh()">
-		</div>
-		<div class="gf-form max-width-15">
-			<label class="gf-form-label query-keyword">Alias</label>
-			<input type="text" class="gf-form-input" ng-model="ctrl.target.alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-		</div>
-	</div>
-	<div class="gf-form-inline">
-		<div class="gf-form max-width-40">
-			<label class="gf-form-label query-keyword width-12">Timerange based on</label>
-			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.datefield" ng-options="v.label group by v.group for v in ctrl.listdate.data track by v.number" ng-change="ctrl.refresh()"></select>
-		</div>
-		<div class="gf-form max-width-150" ng-if="!ctrl.target.histogram">
-			<label class="gf-form-label query-keyword width-30">Dynamic split this query by a query per each values of the field</label>
-			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.dynamicsplit" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-		</div>
-	</div>
-	<div class="gf-form-inline" ng-if="!ctrl.target.histogram">
-		<div class="gf-form max-width-40">
-			<editor-checkbox text="Count elements" model="ctrl.target.counter"></editor-checkbox>
-		</div>
-		<div class="gf-form max-width-40" ng-if="!ctrl.target.counter">
-			<label class="gf-form-label query-keyword width-12">Field value to use</label>
-			<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.nocounterval" ng-options="v.label group by v.group for v in ctrl.listnumber.data track by v.number" ng-change="ctrl.refresh()"></select>
-		</div>
-	</div>
-	<div class="gf-form-inline" ng-if="!ctrl.target.histogram">
-		<div class="gf-form max-width-40">
-			<editor-checkbox text="Is it a table" model="ctrl.target.table"></editor-checkbox>
-		</div>
-	</div>
-	<!-- Uncomment this part to have an option check box taht allows to activate the debug log to the browser console
-	<div class="gf-form-inline" ng-if="!ctrl.target.histogram">
-		<div class="gf-form max-width-40">
-			<editor-checkbox text="Console log" model="ctrl.target.console"></editor-checkbox>
-		</div>
-	</div>
-	-->
-	<div ng-if="ctrl.target.table">
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column A</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_0" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_0_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column B</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_1" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_1_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column C</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_2" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_2_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column D</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_3" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_3_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column E</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_4" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_4_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column F</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_5" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_5_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
+  <div class="gf-form-inline">
+    <div class="gf-form gf-form--grow">
+      <label class="gf-form-label query-keyword width-7">Query</label>
+      <input type="text" class="gf-form-input" ng-model="ctrl.target.query" spellcheck='false' placeholder="GLPI search query link" ng-blur="ctrl.newQueryRefresh()">
+    </div>
+    <div class="gf-form max-width-15">
+      <label class="gf-form-label query-keyword">Alias</label>
+      <input type="text" class="gf-form-input" ng-model="ctrl.target.alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+    </div>
+  </div>
+  <div class="gf-form-inline">
+    <div class="gf-form max-width-40">
+      <label class="gf-form-label query-keyword width-12">Timerange based on</label>
+      <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.datefield" ng-options="v.label group by v.group for v in ctrl.listdate.data track by v.number" ng-change="ctrl.refresh()"></select>
+    </div>
+    <div class="gf-form max-width-150" ng-if="!ctrl.target.histogram">
+      <label class="gf-form-label query-keyword width-30">Dynamic split this query by a query per each values of the field</label>
+      <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.dynamicsplit" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+    </div>
+  </div>
+  <div class="gf-form-inline" ng-if="!ctrl.target.histogram">
+    <div class="gf-form max-width-40">
+      <editor-checkbox text="Count elements" model="ctrl.target.counter"></editor-checkbox>
+    </div>
+    <div class="gf-form max-width-40" ng-if="!ctrl.target.counter">
+      <label class="gf-form-label query-keyword width-12">Field value to use</label>
+      <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.nocounterval" ng-options="v.label group by v.group for v in ctrl.listnumber.data track by v.number" ng-change="ctrl.refresh()"></select>
+    </div>
+  </div>
+  <div class="gf-form-inline" ng-if="!ctrl.target.histogram">
+    <div class="gf-form max-width-40">
+      <editor-checkbox text="Is it a table" model="ctrl.target.table"></editor-checkbox>
+    </div>
+  </div>
+  <!-- Uncomment this part to have an option check box taht allows to activate the debug log to the browser console
+  <div class="gf-form-inline" ng-if="!ctrl.target.histogram">
+    <div class="gf-form max-width-40">
+      <editor-checkbox text="Console log" model="ctrl.target.console"></editor-checkbox>
+    </div>
+  </div>
+  -->
+  <div ng-if="ctrl.target.table">
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column A</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_0" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_0_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column B</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_1" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_1_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column C</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_2" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_2_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column D</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_3" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_3_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column E</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_4" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_4_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column F</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_5" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_5_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
 
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column G</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_6" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_6_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column H</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_7" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_7_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column I</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_8" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_8_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column J</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_9" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_9_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column K</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_10" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_10_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
-		<div class="gf-form-inline">
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-12">Column L</label>
-				<select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_11" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
-			</div>
-			<div class="gf-form max-width-40">
-				<label class="gf-form-label query-keyword width-6">Alias</label>
-				<input type="text" class="gf-form-input" ng-model="ctrl.target.col_11_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
-			</div>
-		</div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column G</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_6" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_6_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column H</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_7" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_7_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column I</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_8" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_8_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column J</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_9" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_9_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column K</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_10" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_10_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
+    <div class="gf-form-inline">
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-12">Column L</label>
+        <select class="gf-form-input gf-size-auto" ng-model="ctrl.target.col_11" ng-options="v.label group by v.group for v in ctrl.list.data track by v.number" ng-change="ctrl.refresh()"></select>
+      </div>
+      <div class="gf-form max-width-40">
+        <label class="gf-form-label query-keyword width-6">Alias</label>
+        <input type="text" class="gf-form-input" ng-model="ctrl.target.col_11_alias" spellcheck='false' placeholder="alias patterns" ng-blur="ctrl.refresh()">
+      </div>
+    </div>
 
-	</div>
+  </div>
 
-	<div ng-repeat="agg in ctrl.target.metrics">
-		<elastic-metric-agg
-			target="ctrl.target" index="$index"
-			get-fields="ctrl.getFields($fieldType)"
-			on-change="ctrl.queryUpdated()"
-			es-version="ctrl.esVersion">
-		</elastic-metric-agg>
-	</div>
+  <div ng-repeat="agg in ctrl.target.metrics">
+    <elastic-metric-agg
+      target="ctrl.target" index="$index"
+      get-fields="ctrl.getFields($fieldType)"
+      on-change="ctrl.queryUpdated()"
+      es-version="ctrl.esVersion">
+    </elastic-metric-agg>
+  </div>
 
-	<div ng-repeat="agg in ctrl.target.bucketAggs">
-		<elastic-bucket-agg
-			target="ctrl.target" index="$index"
-			get-fields="ctrl.getFields($fieldType)"
-			on-change="ctrl.queryUpdated()">
-		</elastic-bucket-agg>
-	</div>
+  <div ng-repeat="agg in ctrl.target.bucketAggs">
+    <elastic-bucket-agg
+      target="ctrl.target" index="$index"
+      get-fields="ctrl.getFields($fieldType)"
+      on-change="ctrl.queryUpdated()">
+    </elastic-bucket-agg>
+  </div>
 
 </query-editor-row>
