@@ -1,42 +1,64 @@
 {
-  "type": "app",
-  "name": "glpi",
-  "id": "ddurieux-glpi-app",
-
-  "pages": [
-  ],
-
-  "css": {
-  },
-
+  "type": "datasource",
+  "name": "glpi2",
+  "id": "glpi-glpi",
+  "metrics": true,
   "info": {
-    "description": "GLPI app for Grafana",
+    "description": "Plugin GLPI description",
     "author": {
-      "name": "David Durieux && DCS",
-      "url": "https://github.com/ddurieux/glpi_app_grafana"
+      "name": "David Durieux",
+      "url": "http://nothing"
     },
-    "keywords": ["glpi app"],
+    "keywords": [
+      "glpi"
+    ],
     "logos": {
-      "small": "img/small_logo.png",
-      "large": "img/large_logo.png"
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
     },
     "links": [
-      {"name": "Project site (github)", "url": "https://github.com/ddurieux/glpi_app_grafana"},
-      {"name": "License & Terms", "url": "https://raw.githubusercontent.com/ddurieux/glpi_app_grafana/master/LICENSE"},
-      {"name": "GLPI Project", "url": "http://glpi-project.org/"},
-      {"name": "DCS", "url": "https://www.dcsit-group.com/"}
+      {
+        "name": "Website",
+        "url": "https://github.com/grafana/simple-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/simple-datasource/blob/master/LICENSE"
+      }
     ],
-    "version": "1.3.0",
-    "updated": "2018-11-02"
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2020-10-06"
   },
-
-  "includes": [
-    {"type": "dashboard", "name": "GLPI App Dashboard", "path": "dashboards/glpi_app_dashboard.json"},
-    {"type": "datasource", "name": "GLPI API"}
-  ],
-
   "dependencies": {
-    "grafanaVersion": "5.x.x",
+    "grafanaVersion": "6.5.x",
     "plugins": []
-  }
+  },
+  "routes": [
+    {
+      "path": "initSession",
+      "url": "{{ .JsonData.url }}/initSession",
+      "headers": [
+        {
+          "name": "App-Token",
+          "content": "{{ .SecureJsonData.appToken }}"
+        },
+        {
+          "name": "Authorization",
+          "content": "user_token {{ .SecureJsonData.userToken }}"
+        }
+      ]
+    },
+    {
+      "path": "query",
+      "url": "{{ .JsonData.url }}",
+      "headers": [
+        {
+          "name": "App-Token",
+          "content": "{{ .SecureJsonData.appToken }}"
+        }
+      ]
+    }
+  ]
+  
 }
