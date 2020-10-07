@@ -4,6 +4,8 @@
   "description": "",
   "main": "Gruntfile.js",
   "dependencies": {
+    "@grafana/toolkit": "^7.2.0",
+    "@grafana/ui": "^7.2.0",
     "@types/lodash": "^4.14.117",
     "@types/moment-timezone": "^0.5.9",
     "babel": "^6.23.0",
@@ -28,11 +30,14 @@
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.23",
     "tslint": "^5.11.0",
-    "typescript": "^2.9.2"
+    "typescript": "3.9.7"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
   },
   "repository": {
     "type": "git",

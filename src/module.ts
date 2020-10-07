@@ -1,5 +1,4 @@
-export class GlpiAppConfigCtrl {
-}
+export class GlpiAppConfigCtrl {}
 export {
-    GlpiAppConfigCtrl as ConfigCtrl,
+  GlpiAppConfigCtrl as ConfigCtrl,
 };
