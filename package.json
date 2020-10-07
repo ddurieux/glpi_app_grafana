@@ -1,52 +1,29 @@
 {
-  "name": "glpi_app_grafana",
-  "version": "1.3.0",
-  "description": "",
-  "main": "Gruntfile.js",
-  "dependencies": {
-    "@grafana/toolkit": "^7.2.0",
-    "@grafana/ui": "^7.2.0",
-    "@types/lodash": "^4.14.117",
-    "@types/moment-timezone": "^0.5.9",
-    "babel": "^6.23.0",
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-es2015-block-scoping": "^6.26.0",
-    "babel-plugin-transform-es2015-modules-systemjs": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1",
-    "change-case": "^3.0.2",
-    "debug": "^3.2.6",
-    "grunt": "^1.0.3",
-    "grunt-angular-templates": "^1.1.0",
-    "grunt-babel": "^6.0.0",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^2.3.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-execute": "^0.2.2",
-    "grunt-systemjs-builder": "^1.0.0",
-    "grunt-ts": "^6.0.0-beta.21",
-    "load-grunt-tasks": "^3.5.2",
-    "lodash": "^4.17.11",
-    "moment": "^2.22.2",
-    "moment-timezone": "^0.5.23",
-    "tslint": "^5.11.0",
-    "typescript": "3.9.7"
-  },
-  "devDependencies": {},
+  "name": "glpi-glpi",
+  "version": "1.0.0",
+  "description": "Plugin GLPI description",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ddurieux/glpi_app_grafana.git"
+  "author": "David Durieux",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@grafana/data": "7.0.1",
+    "@grafana/toolkit": "7.0.1",
+    "@grafana/ui": "7.0.1",
+    "@testing-library/jest-dom": "5.4.0",
+    "@testing-library/react": "^10.0.2",
+    "@types/lodash": "latest"
   },
-  "author": "David Durieux && DCS",
-  "license": "AGPL3",
-  "bugs": {
-    "url": "https://github.com/ddurieux/glpi_app_grafana/issues"
+  "engines": {
+    "node": ">=12 <15"
   },
-  "homepage": "https://github.com/ddurieux/glpi_app_grafana#readme"
+  "dependencies": {
+    "@grafana/runtime": "^7.2.0",
+    "sanitize-html": "^2.0.0",
+    "striptags": "^3.1.1"
+  }
 }
