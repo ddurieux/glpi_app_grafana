@@ -152,7 +152,7 @@ export class QueryEditor extends PureComponent<Props> {
 
   render() {
     this.migrateConfig();
-  
+
     const query = defaults(this.props.query, defaultQuery);
     const { queryUrl, alias, datefield, dynamicsplit, counter, nocounterval, table, columns } = query;
 
@@ -297,15 +297,17 @@ export class QueryEditor extends PureComponent<Props> {
       this.props.query.columns = [];
       let i = 0;
       while (i <= 11) {
-        if (this.props.query['col_' + i].number !== undefined 
-          && parseInt(this.props.query['col_' + i].number, 10) !== 0) {
+        if (
+          this.props.query['col_' + i].number !== undefined &&
+          parseInt(this.props.query['col_' + i].number, 10) !== 0
+        ) {
           let alias = '';
           if (!this.props.query['col_' + i + '_alias'] !== undefined) {
             alias = this.props.query['col_' + i + '_alias'];
           }
           this.props.query.columns.push({
             field: parseInt(this.props.query['col_' + i].number, 10),
-            alias
+            alias,
           });
         }
         delete this.props.query['col_' + i];

@@ -54,7 +54,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           }
           const url = searchq[0].split('/');
           const itemtype = url[url.length - 1];
-      
+
           let listSearchOptions = await this.getListSearchOptions(itemtype);
           for (let column of query.columns) {
             let alias = column.alias;
@@ -136,7 +136,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 value: 0,
                 splitType: '',
               });
-        
             }
           }
           for (let dataInterval of dataIntervals) {
@@ -237,7 +236,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
     // Convert data when it's from old version (before grafana 7)
     query = this.convertQuery(query);
-    
+
     // Prepare data to send
     const queryUrl = decodeURI(query.queryUrl);
     const searchq = queryUrl.split('.php?');
@@ -361,7 +360,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           }
           query.columns.push({
             field: parseInt(query['col_' + i].number, 10),
-            alias
+            alias,
           });
         }
         delete query['col_' + i];
@@ -382,5 +381,4 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     }
     return myDate;
   }
-
 }
