@@ -62,6 +62,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             response.data.data_html.forEach((point: any) => {
               let myFrame: any[] = [];
               for (let column of query.columns) {
+                if (point[column.field].includes("class='invisible'")) {
+                  const textSplitInvisible = point[column.field].split("class='invisible'");
+                  point[column.field] = textSplitInvisible[0];
+                }
                 myFrame.push(striptags(sanitizeHtml(point[column.field])));
               }
               frames['table'].appendRow(myFrame);
@@ -211,6 +215,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     // Prepare data to send
     const queryUrl = decodeURI(query.queryUrl);
     const searchq = queryUrl.split('.php?');
+    if (searchq[1] === undefined) {
+      return;
+    }
     const url = searchq[0].split('/');
     const itemtype = url[url.length - 1];
 
@@ -234,7 +241,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         if (parseInt(match[1], 10) > criteriaIndex) {
           criteriaIndex = parseInt(match[1], 10);
         }
-        const paramSplit = arg.split('=');
+        let paramSplit = arg.split('=');
+        if (paramSplit[0].includes('value')) {
+          // hack because glpi interface replace space with + but API not understand it
+          paramSplit[1] = paramSplit[1].replace('+', ' ');
+        }
         params[paramSplit[0]] = paramSplit[1];
       }
     }
@@ -274,6 +285,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     otherParams['giveItems'] = 'true';
 
     params = Object.assign(params, otherParams);
+    if (params._glpi_csrf_token !== undefined) {
+      delete params._glpi_csrf_token;
+    }
 
     const options: any = {
       method: 'GET',
