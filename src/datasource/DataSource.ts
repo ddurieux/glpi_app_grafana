@@ -11,7 +11,7 @@ import {
   FieldType,
 } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
-import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
+import { MyQuery, MyDataSourceOptions } from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   url?: string;
@@ -45,12 +45,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
         if (query.table) {
           // case it's table
-          console.log(query.columns);
           let fields = [];
           for (let column of query.columns) {
             fields.push({
               name: column.alias,
-              type: FieldType.string
+              type: FieldType.string,
             });
           }
 
@@ -72,14 +71,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           // case it's NOT table
           if (response.data.data_html !== undefined) {
             response.data.data_html.forEach((point: any) => {
-              // TODO
-              // manage date if defined
-              // manage dynamicsplit if defined
               let pointTime = 0;
               let splitType = '';
 
               if (query.datefield !== -1) {
-                pointTime = new Date(point[query.datefield]).getTime() - options.intervalMs;
+                pointTime = new Date(this.formatDate(point[query.datefield])).getTime() - options.intervalMs;
                 from = range.from.valueOf();
                 to = range.to.valueOf();
               } else {
@@ -209,6 +205,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   async doRequest(query: MyQuery, from: number, to: number) {
     await this.checkSessionToken();
 
+    // Convert data when it's from old version (before grafana 7)
+    query = this.convertQuery(query);
+    
     // Prepare data to send
     const queryUrl = decodeURI(query.queryUrl);
     const searchq = queryUrl.split('.php?');
@@ -300,4 +299,48 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     }
     return dataIntervals;
   }
+
+  convertQuery(query: any) {
+    if (query.query !== undefined) {
+      query.queryUrl = query.query;
+      query.datefield = parseInt(query.datefield.number, 10);
+      query.dynamicsplit = parseInt(query.dynamicsplit.number, 10);
+      if (query.nocounterval !== undefined && query.nocounterval.number !== undefined) {
+        query.nocounterval = parseInt(query.nocounterval.number, 10);
+      }
+      delete query.query;
+      if (query.columns === undefined) {
+        query.columns = [];
+      }
+      let i = 0;
+      while (i <= 11) {
+        if (query['col_' + i].number !== undefined && parseInt(query['col_' + i].number, 10) !== 0) {
+          let alias = '';
+          if (!query['col_' + i + '_alias'] !== undefined) {
+            alias = query['col_' + i + '_alias'];
+          }
+          query.columns.push({
+            field: parseInt(query['col_' + i].number, 10),
+            alias
+          });
+        }
+        delete query['col_' + i];
+        delete query['col_' + i + '_alias'];
+        i += 1;
+      }
+    }
+    return query;
+  }
+
+  formatDate(myDate: string) {
+    // Because on some GLPI instance, date format is day-month-year instead year-month-day
+    const match = myDate.match(/^(\d{2})-(\d{2})-(\d{4}) (.*)$/);
+    if (match === null) {
+      return myDate;
+    } else {
+      return match[3] + '-' + match[2] + '-' + match[1] + ' ' + match[4];
+    }
+    return myDate;
+  }
+
 }

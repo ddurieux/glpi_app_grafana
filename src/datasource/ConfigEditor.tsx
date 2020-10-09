@@ -34,6 +34,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange({
       ...options,
       secureJsonData: {
+        ...options.secureJsonData,
         appToken: event.target.value,
       },
     });
@@ -59,6 +60,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange({
       ...options,
       secureJsonData: {
+        ...options.secureJsonData,
         userToken: event.target.value,
       },
     });
@@ -80,7 +82,9 @@ export class ConfigEditor extends PureComponent<Props, State> {
   };
 
   render() {
-    const { options } = this.props;
+    this.migrateConfig();
+
+    let { options } = this.props;
     const { jsonData, secureJsonFields } = options;
     const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
 
@@ -139,5 +143,29 @@ export class ConfigEditor extends PureComponent<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private migrateConfig() {
+    console.log(this.props.options);
+    if (this.props.options.jsonData.url === undefined && this.props.options.url !== undefined) {
+      this.props.options.access = 'proxy';
+      this.props.options.jsonData.url = this.props.options.url;
+      this.props.options.jsonData.timeZone = this.props.options.jsonData.timezone;
+
+      const { onOptionsChange, options } = this.props;
+      onOptionsChange({
+        ...options,
+        secureJsonData: {
+          ...options.secureJsonData,
+          appToken: this.props.options.jsonData.apptoken,
+          userToken: this.props.options.jsonData.token,
+        },
+      });
+      delete this.props.options.url;
+      delete this.props.options.jsonData.timezone;
+      delete this.props.options.jsonData.apptoken;
+      delete this.props.options.jsonData.token;
+    }
+    console.log('migrate', this.props.options.jsonData);
   }
 }

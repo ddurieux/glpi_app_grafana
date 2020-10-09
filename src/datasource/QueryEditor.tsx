@@ -1,7 +1,7 @@
 import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms, InlineFormLabel, Button } from '@grafana/ui';
-import { QueryEditorProps, PanelProps } from '@grafana/data';
+import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './DataSource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
 
@@ -54,7 +54,7 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  onCounterChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onCounterChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, counter: event.target.checked });
     // executes the query
@@ -68,7 +68,7 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  onTableChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onTableChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     console.log(event.target);
     onChange({ ...query, table: event.target.checked });
@@ -80,7 +80,7 @@ export class QueryEditor extends PureComponent<Props> {
     const { query, onRunQuery } = this.props;
     query.columns.push({
       field: 0,
-      alias: ''
+      alias: '',
     });
     onRunQuery();
   };
@@ -152,9 +152,11 @@ export class QueryEditor extends PureComponent<Props> {
   }
 
   render() {
+    this.migrateConfig();
+
     const query = defaults(this.props.query, defaultQuery);
     const { queryUrl, alias, datefield, dynamicsplit, counter, nocounterval, table, columns } = query;
-
+console.log(query);
     const datefieldSelected = this.searchOptionsDatetime.find(i => i.value === datefield);
     const dynamicsplitSelected = this.searchOptions.find(i => i.value === dynamicsplit);
     const nocountervalSelected = this.searchOptionsNumber.find(i => i.value === nocounterval);
@@ -211,7 +213,6 @@ export class QueryEditor extends PureComponent<Props> {
           <Switch
             label={'Count elements'}
             checked={counter}
-            Readonly={false}
             onChange={this.onCounterChange}
             // tooltip={''}
           />
@@ -239,35 +240,39 @@ export class QueryEditor extends PureComponent<Props> {
           <Switch
             label={'Is it a table panel?'}
             checked={table}
-            Readonly={false}
             onChange={this.onTableChange}
             // tooltip={''}
           />
         </div>
-        {
-          table && columns.map((el, idx) => 
-
-          <div className="gf-form-inline">
-            <InlineFormLabel width={9} tooltip={''}>
-              {'Field'}
-            </InlineFormLabel>
-            <Select
-              isMulti={false}
-              isClearable={false}
-              backspaceRemovesValue={false}
-              onChange={(e) => this.onColumnValue(e, idx)}
-              options={this.searchOptions}
-              // isSearchable={isSearchable}
-              maxMenuHeight={500}
-              placeholder={'Choose the field'}
-              noOptionsMessage={() => 'No options found'}
-              value={this.searchOptionsNumber.find(i => i.value === el.field)}
-            />
-            <FormField labelWidth={4} value={el.alias} label="Alias" onChange={(e) => this.onColumnAliasValue(e, idx)} type="text" />
-          </div>
-          )
-        }
-        {table && ( <Button
+        {table &&
+          columns.map((el, idx) => (
+            <div className="gf-form-inline">
+              <InlineFormLabel width={9} tooltip={''}>
+                {'Field'}
+              </InlineFormLabel>
+              <Select
+                isMulti={false}
+                isClearable={false}
+                backspaceRemovesValue={false}
+                onChange={e => this.onColumnValue(e, idx)}
+                options={this.searchOptions}
+                // isSearchable={isSearchable}
+                maxMenuHeight={500}
+                placeholder={'Choose the field'}
+                noOptionsMessage={() => 'No options found'}
+                value={this.searchOptionsNumber.find(i => i.value === el.field)}
+              />
+              <FormField
+                labelWidth={4}
+                value={el.alias}
+                label="Alias"
+                onChange={e => this.onColumnAliasValue(e, idx)}
+                type="text"
+              />
+            </div>
+          ))}
+        {table && (
+          <Button
             // className="btn btn-success"
             onClick={this.addColumn}
             type="submit"
@@ -288,5 +293,33 @@ export class QueryEditor extends PureComponent<Props> {
       table...
     */
     //  <div class="gf-form-inline" ng-hide="ctrl.target.resultFormat === 'table'">
+  }
+
+  private migrateConfig() {
+    if (this.props.query.query !== undefined) {
+      this.props.query.queryUrl = this.props.query.query;
+      this.props.query.datefield = parseInt(this.props.query.datefield.number, 10);
+      this.props.query.dynamicsplit = parseInt(this.props.query.dynamicsplit.number, 10);
+      if (this.props.query.nocounterval !== undefined && this.props.query.nocounterval.number !== undefined) {
+        this.props.query.nocounterval = parseInt(this.props.query.nocounterval.number, 10);
+      }
+      delete this.props.query.query;
+      let i = 0;
+      while (i <= 11) {
+        if (this.props.query['col_' + i].number !== undefined) {
+          let alias = '';
+          if (!this.props.query['col_' + i + '_alias'] !== undefined) {
+            alias = this.props.query['col_' + i + '_alias'];
+          }
+          this.props.query.columns.push({
+            field: parseInt(this.props.query['col_' + i].number, 10),
+            alias
+          });
+        }
+        delete this.props.query['col_' + i];
+        delete this.props.query['col_' + i + '_alias'];
+        i += 1;
+      }
+    }
   }
 }
