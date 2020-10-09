@@ -22,13 +22,13 @@ export class QueryEditor extends PureComponent<Props> {
     this.searchOptionsNumber = [];
     this.itemtype = '';
 
-    this.getListSearchOptions();
+    this.getListSearchOptions(true);
   }
 
   onQueryUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, queryUrl: event.target.value });
-    this.getListSearchOptions();
+    this.getListSearchOptions(false);
     // executes the query
     onRunQuery();
   };
@@ -70,7 +70,6 @@ export class QueryEditor extends PureComponent<Props> {
 
   onTableChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
-    console.log(event.target);
     onChange({ ...query, table: event.target.checked });
     // executes the query
     onRunQuery();
@@ -97,7 +96,7 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  async getListSearchOptions() {
+  async getListSearchOptions(runQuery: boolean) {
     // Get the itemtype from queryUrl
     const query = defaults(this.props.query, defaultQuery);
 
@@ -109,9 +108,6 @@ export class QueryEditor extends PureComponent<Props> {
     if (itemtype !== '' && itemtype !== this.itemtype) {
       this.itemtype = itemtype;
       const res = await this.props.datasource.getListSearchOptions(itemtype);
-      console.log('searchoptions', res);
-      // this.searchOptions = [];
-      // this.searchOptionsDatetime = [];
       this.searchOptionsDatetime.push({
         label: 'Do not use date search (get all data)',
         value: -1,
@@ -140,7 +136,6 @@ export class QueryEditor extends PureComponent<Props> {
             description: 'uid: ' + res.data[key].uid,
           });
         }
-        // console.log(res.data[key]);
 
         this.searchOptions.push({
           label: res.data[key].name,
@@ -148,15 +143,19 @@ export class QueryEditor extends PureComponent<Props> {
           description: 'uid: ' + res.data[key].uid,
         });
       }
+      if (runQuery) {
+        const { onRunQuery } = this.props;
+        onRunQuery();
+      }
     }
   }
 
   render() {
     this.migrateConfig();
-
+  
     const query = defaults(this.props.query, defaultQuery);
     const { queryUrl, alias, datefield, dynamicsplit, counter, nocounterval, table, columns } = query;
-console.log(query);
+
     const datefieldSelected = this.searchOptionsDatetime.find(i => i.value === datefield);
     const dynamicsplitSelected = this.searchOptions.find(i => i.value === dynamicsplit);
     const nocountervalSelected = this.searchOptionsNumber.find(i => i.value === nocounterval);
@@ -251,6 +250,7 @@ console.log(query);
                 {'Field'}
               </InlineFormLabel>
               <Select
+                width={16}
                 isMulti={false}
                 isClearable={false}
                 backspaceRemovesValue={false}
@@ -260,7 +260,7 @@ console.log(query);
                 maxMenuHeight={500}
                 placeholder={'Choose the field'}
                 noOptionsMessage={() => 'No options found'}
-                value={this.searchOptionsNumber.find(i => i.value === el.field)}
+                value={this.searchOptions.find(i => i.value === el.field)}
               />
               <FormField
                 labelWidth={4}
@@ -283,16 +283,6 @@ console.log(query);
         )}
       </div>
     );
-    /*
-      alias
-      timerange based on
-      Dynamic split this query by a query per each values of the field
-      count elements
-      Field value to use (display only of count unchecked)
-
-      table...
-    */
-    //  <div class="gf-form-inline" ng-hide="ctrl.target.resultFormat === 'table'">
   }
 
   private migrateConfig() {
@@ -304,9 +294,11 @@ console.log(query);
         this.props.query.nocounterval = parseInt(this.props.query.nocounterval.number, 10);
       }
       delete this.props.query.query;
+      this.props.query.columns = [];
       let i = 0;
       while (i <= 11) {
-        if (this.props.query['col_' + i].number !== undefined) {
+        if (this.props.query['col_' + i].number !== undefined 
+          && parseInt(this.props.query['col_' + i].number, 10) !== 0) {
           let alias = '';
           if (!this.props.query['col_' + i + '_alias'] !== undefined) {
             alias = this.props.query['col_' + i + '_alias'];
