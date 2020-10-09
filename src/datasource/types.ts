@@ -49,10 +49,12 @@ export const defaultQuery: Partial<MyQuery> = {
   counter: true,
   nocounterval: 0,
   table: false,
-  columns: [{
-    field: 0,
-    alias: ''
-  }]
+  columns: [
+    {
+      field: 0,
+      alias: '',
+    },
+  ],
 };
 
 /**

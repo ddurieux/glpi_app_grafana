@@ -1,6 +1,6 @@
 {
-  "name": "glpi-glpi",
-  "version": "1.0.0",
+  "name": "glpi_app_grafana",
+  "version": "2.0.0",
   "description": "Plugin GLPI description",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -9,7 +9,7 @@
     "watch": "grafana-toolkit plugin:dev --watch"
   },
   "author": "David Durieux",
-  "license": "Apache-2.0",
+  "license": "AGPL3",
   "devDependencies": {
     "@grafana/data": "7.0.1",
     "@grafana/toolkit": "7.0.1",
