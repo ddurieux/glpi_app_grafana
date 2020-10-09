@@ -108,6 +108,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 if (splitType === '') {
                   splitType = '[empty]';
                 }
+              } else {
+                if (query.alias !== undefined && query.alias !== '') {
+                  splitType = query.alias;
+                }
               }
               if (!splitTypes.includes(splitType)) {
                 dataIntervals = this.definedataIntervals(dataIntervals, from, to, options.intervalMs, splitType);
