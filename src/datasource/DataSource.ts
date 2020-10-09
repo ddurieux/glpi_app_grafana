@@ -31,7 +31,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const requestTo = Math.round(options.range.to.valueOf() / 1000);
 
     const promises = options.targets.map(query =>
-      this.doRequest(query, requestFrom, requestTo).then(response => {
+      this.doRequest(query, requestFrom, requestTo).then(async response => {
         let name = '';
         if (query.alias !== '') {
           name = query.alias;
@@ -46,9 +46,23 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         if (query.table) {
           // case it's table
           let fields = [];
+
+          const queryUrl = decodeURI(query.queryUrl);
+          const searchq = queryUrl.split('.php?');
+          if (searchq[1] === undefined) {
+            return;
+          }
+          const url = searchq[0].split('/');
+          const itemtype = url[url.length - 1];
+      
+          let listSearchOptions = await this.getListSearchOptions(itemtype);
           for (let column of query.columns) {
+            let alias = column.alias;
+            if (alias === undefined || alias === '') {
+              alias = listSearchOptions.data[column.field].name;
+            }
             fields.push({
-              name: column.alias,
+              name: alias,
               type: FieldType.string,
             });
           }
@@ -112,6 +126,14 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 }
               }
             });
+            if (dataIntervals.length === 0 && query.datefield === -1) {
+              dataIntervals.push({
+                time: 9000000000,
+                value: 0,
+                splitType: '',
+              });
+        
+            }
           }
           for (let dataInterval of dataIntervals) {
             if (frames[dataInterval.splitType] === undefined) {
