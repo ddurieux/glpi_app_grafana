@@ -3,40 +3,43 @@ import { DataQuery, DataSourceJsonData } from '@grafana/data';
 export interface MyQuery extends DataQuery {
   queryUrl: string;
   alias: string;
-  datefield: number;
-  dynamicsplit: number;
+  datefield: any; // must be number but old version of plugin has bee an object
+  dynamicsplit: any; // must be number but old version of plugin has bee an object
   counter: boolean;
-  nocounterval: number;
+  nocounterval: any; // must be number but old version of plugin has bee an object
   table: boolean;
   columns: any[];
+
+  // Old values
+  query?: string;
+  col_0?: any;
+  col_1?: any;
+  col_2?: any;
+  col_3?: any;
+  col_4?: any;
+  col_5?: any;
+  col_6?: any;
+  col_7?: any;
+  col_8?: any;
+  col_9?: any;
+  col_10?: any;
+  col_11?: any;
+  col_0_alias?: any;
+  col_1_alias?: any;
+  col_2_alias?: any;
+  col_3_alias?: any;
+  col_4_alias?: any;
+  col_5_alias?: any;
+  col_6_alias?: any;
+  col_7_alias?: any;
+  col_8_alias?: any;
+  col_9_alias?: any;
+  col_10_alias?: any;
+  col_11_alias?: any;
 
   // histogram
   // nocounterval
   // table
-  // col_0
-  // col_0_alias
-  // col_1
-  // col_1_alias
-  // col_2
-  // col_2_alias
-  // col_3
-  // col_3_alias
-  // col_4
-  // col_4_alias
-  // col_5
-  // col_5_alias
-  // col_6
-  // col_6_alias
-  // col_7
-  // col_7_alias
-  // col_8
-  // col_8_alias
-  // col_9
-  // col_9_alias
-  // col_10
-  // col_10_alias
-  // col_11
-  // col_11_alias
   // metrics
 }
 
@@ -63,6 +66,11 @@ export const defaultQuery: Partial<MyQuery> = {
 export interface MyDataSourceOptions extends DataSourceJsonData {
   url?: string;
   timeZone?: string;
+
+  // Old values
+  timezone?: string;
+  apptoken?: string;
+  token?: string;
 }
 
 /**

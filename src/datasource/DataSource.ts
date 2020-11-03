@@ -1,4 +1,3 @@
-import defaults from 'lodash/defaults';
 var striptags = require('striptags');
 var sanitizeHtml = require('sanitize-html');
 
@@ -32,10 +31,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
     const promises = options.targets.map(query =>
       this.doRequest(query, requestFrom, requestTo).then(async response => {
-        let name = '';
-        if (query.alias !== '') {
-          name = query.alias;
-        }
+        // let name = '';
+        // if (query.alias !== '') {
+        //   name = query.alias;
+        // }
 
         let dataIntervals: any[] = [];
         let splitTypes: any[] = [];
@@ -93,7 +92,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
               let splitType = '';
 
               if (query.datefield !== -1) {
-                pointTime = new Date(this.formatDate(point[query.datefield])).getTime() - options.intervalMs;
+                let intervalMs = 0;
+                if (options.intervalMs) {
+                  intervalMs = options.intervalMs;
+                }
+                pointTime = new Date(this.formatDate(point[query.datefield])).getTime() - intervalMs;
                 from = range.from.valueOf();
                 to = range.to.valueOf();
               } else {
@@ -114,7 +117,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 }
               }
               if (!splitTypes.includes(splitType)) {
-                dataIntervals = this.definedataIntervals(dataIntervals, from, to, options.intervalMs, splitType);
+                let intervalMs = 0;
+                if (options.intervalMs) {
+                  intervalMs = options.intervalMs;
+                }
+                dataIntervals = this.definedataIntervals(dataIntervals, from, to, intervalMs, splitType);
                 splitTypes.push(splitType);
               }
               for (let dataInterval of dataIntervals) {
@@ -149,7 +156,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 ],
               });
             }
-            frames[dataInterval.splitType].appendRow([dataInterval.time + options.intervalMs / 2, dataInterval.value]);
+            let intervalMs = 0;
+            if (options.intervalMs) {
+              intervalMs = options.intervalMs;
+            }
+            frames[dataInterval.splitType].appendRow([dataInterval.time + intervalMs / 2, dataInterval.value]);
           }
         }
         return frames;

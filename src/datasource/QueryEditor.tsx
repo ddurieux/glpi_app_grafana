@@ -295,25 +295,223 @@ export class QueryEditor extends PureComponent<Props> {
       }
       delete this.props.query.query;
       this.props.query.columns = [];
-      let i = 0;
-      while (i <= 11) {
-        if (
-          this.props.query['col_' + i].number !== undefined &&
-          parseInt(this.props.query['col_' + i].number, 10) !== 0
-        ) {
-          let alias = '';
-          if (!this.props.query['col_' + i + '_alias'] !== undefined) {
-            alias = this.props.query['col_' + i + '_alias'];
-          }
-          this.props.query.columns.push({
-            field: parseInt(this.props.query['col_' + i].number, 10),
-            alias,
-          });
+
+      // No loop because error on access property
+      // col_0
+      if (
+        this.props.query.col_0.number !== undefined &&
+        this.props.query.col_0.number !== undefined &&
+        parseInt(this.props.query.col_0.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_0_alias !== undefined) {
+          alias = this.props.query.col_0_alias;
         }
-        delete this.props.query['col_' + i];
-        delete this.props.query['col_' + i + '_alias'];
-        i += 1;
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_0.number, 10),
+          alias,
+        });
       }
+      delete this.props.query.col_0;
+      delete this.props.query.col_0_alias;
+
+      // col_1
+      if (
+        this.props.query.col_1.number !== undefined &&
+        this.props.query.col_1.number !== undefined &&
+        parseInt(this.props.query.col_1.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_1_alias !== undefined) {
+          alias = this.props.query.col_1_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_1.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_1;
+      delete this.props.query.col_1_alias;
+
+      // col_2
+      if (
+        this.props.query.col_2.number !== undefined &&
+        this.props.query.col_2.number !== undefined &&
+        parseInt(this.props.query.col_2.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_2_alias !== undefined) {
+          alias = this.props.query.col_2_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_2.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_2;
+      delete this.props.query.col_2_alias;
+
+      // col_3
+      if (
+        this.props.query.col_3.number !== undefined &&
+        this.props.query.col_3.number !== undefined &&
+        parseInt(this.props.query.col_3.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_3_alias !== undefined) {
+          alias = this.props.query.col_3_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_3.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_3;
+      delete this.props.query.col_3_alias;
+
+      // col_4
+      if (
+        this.props.query.col_4.number !== undefined &&
+        this.props.query.col_4.number !== undefined &&
+        parseInt(this.props.query.col_4.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_4_alias !== undefined) {
+          alias = this.props.query.col_4_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_4.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_4;
+      delete this.props.query.col_4_alias;
+
+      // col_5
+      if (
+        this.props.query.col_5.number !== undefined &&
+        this.props.query.col_5.number !== undefined &&
+        parseInt(this.props.query.col_5.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_5_alias !== undefined) {
+          alias = this.props.query.col_5_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_5.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_5;
+      delete this.props.query.col_5_alias;
+
+      // col_6
+      if (
+        this.props.query.col_6.number !== undefined &&
+        this.props.query.col_6.number !== undefined &&
+        parseInt(this.props.query.col_6.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_6_alias !== undefined) {
+          alias = this.props.query.col_6_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_6.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_6;
+      delete this.props.query.col_6_alias;
+
+      // col_7
+      if (
+        this.props.query.col_7.number !== undefined &&
+        this.props.query.col_7.number !== undefined &&
+        parseInt(this.props.query.col_7.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_7_alias !== undefined) {
+          alias = this.props.query.col_7_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_7.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_7;
+      delete this.props.query.col_7_alias;
+
+      // col_8
+      if (
+        this.props.query.col_8.number !== undefined &&
+        this.props.query.col_8.number !== undefined &&
+        parseInt(this.props.query.col_8.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_8_alias !== undefined) {
+          alias = this.props.query.col_8_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_8.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_8;
+      delete this.props.query.col_8_alias;
+
+      // col_9
+      if (
+        this.props.query.col_9.number !== undefined &&
+        this.props.query.col_9.number !== undefined &&
+        parseInt(this.props.query.col_9.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_9_alias !== undefined) {
+          alias = this.props.query.col_9_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_9.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_9;
+      delete this.props.query.col_9_alias;
+
+      // col_10
+      if (
+        this.props.query.col_10.number !== undefined &&
+        this.props.query.col_10.number !== undefined &&
+        parseInt(this.props.query.col_10.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_10_alias !== undefined) {
+          alias = this.props.query.col_10_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_10.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_10;
+      delete this.props.query.col_10_alias;
+
+      // col_11
+      if (
+        this.props.query.col_11.number !== undefined &&
+        this.props.query.col_11.number !== undefined &&
+        parseInt(this.props.query.col_11.number, 10) !== 0
+      ) {
+        let alias = '';
+        if (!this.props.query.col_11_alias !== undefined) {
+          alias = this.props.query.col_11_alias;
+        }
+        this.props.query.columns.push({
+          field: parseInt(this.props.query.col_11.number, 10),
+          alias,
+        });
+      }
+      delete this.props.query.col_11;
+      delete this.props.query.col_11_alias;
     }
   }
 }
