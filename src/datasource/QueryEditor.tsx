@@ -54,7 +54,7 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  onCounterChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  onCounterChange = (event: any) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, counter: event.target.checked });
     // executes the query
@@ -68,7 +68,7 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  onTableChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  onTableChange = (event: any) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, table: event.target.checked });
     // executes the query

@@ -161,7 +161,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
           userToken: this.props.options.jsonData.token,
         },
       });
-      delete this.props.options.url;
+      // delete this.props.options.url;
       delete this.props.options.jsonData.timezone;
       delete this.props.options.jsonData.apptoken;
       delete this.props.options.jsonData.token;
