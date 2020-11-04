@@ -9,21 +9,21 @@
     "watch": "grafana-toolkit plugin:dev --watch"
   },
   "author": "David Durieux",
-  "license": "AGPL3",
+  "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@grafana/data": "7.0.1",
-    "@grafana/toolkit": "7.0.1",
-    "@grafana/ui": "7.0.1",
-    "@testing-library/jest-dom": "5.4.0",
-    "@testing-library/react": "^10.0.2",
-    "@types/lodash": "latest"
+    "@grafana/data": "7.3.1",
+    "@grafana/toolkit": "7.3.1",
+    "@grafana/ui": "7.3.1",
+    "@testing-library/jest-dom": "5.11.5",
+    "@testing-library/react": "^11.1.0",
+    "@types/lodash": "4.14.164"
   },
   "engines": {
     "node": ">=12 <15"
   },
   "dependencies": {
-    "@grafana/runtime": "^7.2.0",
-    "sanitize-html": "^2.0.0",
+    "@grafana/runtime": "^7.3.1",
+    "sanitize-html": "^2.1.1",
     "striptags": "^3.1.1"
   }
 }
