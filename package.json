@@ -13,13 +13,13 @@
   "devDependencies": {
     "@grafana/data": "7.3.1",
     "@grafana/toolkit": "7.3.1",
-    "@grafana/ui": "7.3.1",
+    "@grafana/ui": "^8.1.6",
     "@testing-library/jest-dom": "5.11.5",
     "@testing-library/react": "^11.1.0",
     "@types/lodash": "4.14.164"
   },
   "engines": {
-    "node": ">=12 <15"
+    "node": ">=14"
   },
   "dependencies": {
     "@grafana/runtime": "^7.3.1",
