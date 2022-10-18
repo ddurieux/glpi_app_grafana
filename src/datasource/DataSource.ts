@@ -71,7 +71,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             // refId: query.refId,
             fields,
           });
-          if (response.data.data_html !== undefined) {
+          if (response !== undefined && response.data.data_html !== undefined) {
             response.data.data_html.forEach((point: any) => {
               let myFrame: any[] = [];
               for (let column of query.columns) {
@@ -86,7 +86,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           }
         } else {
           // case it's NOT table
-          if (response.data.data_html !== undefined) {
+          if (response !== undefined && response.data.data_html !== undefined) {
             response.data.data_html.forEach((point: any) => {
               let pointTime = 0;
               let splitType = '';

@@ -245,7 +245,7 @@ export class QueryEditor extends PureComponent<Props> {
         </div>
         {table &&
           columns.map((el, idx) => (
-            <div className="gf-form-inline">
+            <div className="gf-form-inline" key={idx}>
               <InlineFormLabel width={9} tooltip={''}>
                 {'Field'}
               </InlineFormLabel>
