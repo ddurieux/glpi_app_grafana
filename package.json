@@ -11,9 +11,9 @@
   "author": "David Durieux",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@grafana/data": "9.1.8",
-    "@grafana/toolkit": "9.1.8",
-    "@grafana/ui": "9.1.8",
+    "@grafana/data": "^9.2.1",
+    "@grafana/toolkit": "^9.2.1",
+    "@grafana/ui": "^9.2.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/lodash": "^4.14.186"
@@ -22,7 +22,7 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@grafana/runtime": "9.1.8",
+    "@grafana/runtime": "^9.2.1",
     "sanitize-html": "^2.7.2",
     "striptags": "^3.1.1"
   }

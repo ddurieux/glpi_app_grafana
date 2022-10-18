@@ -1,5 +1,5 @@
-var striptags = require('striptags');
-var sanitizeHtml = require('sanitize-html');
+let striptags = require('striptags');
+let sanitizeHtml = require('sanitize-html');
 
 import {
   DataQueryRequest,
