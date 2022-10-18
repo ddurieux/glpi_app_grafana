@@ -26,8 +26,8 @@
       {"name": "GLPI Project", "url": "http://glpi-project.org/"},
       {"name": "DCS", "url": "https://www.dcsit-group.com/"}
     ],
-    "version": "2.0.0",
-    "updated": "2020-11-03"
+    "version": "2.1.0",
+    "updated": "2022-10-18"
   },
 
   "includes": [
@@ -36,7 +36,7 @@
   ],
 
   "dependencies": {
-    "grafanaDependency": ">=8.0.0",
+    "grafanaDependency": ">=9.0.0",
     "plugins": []
   }
 }
