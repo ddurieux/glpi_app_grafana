@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This application gets information in GLPI (Gestion Libre de Parc Informatique) thanks to the REST API added in
+This application gets information in GLPI (Gestion Libre de Parc Informatique). It use the REST API added in
 version 9.1. You will be able to have graphs, singlestat, tables... of your data (tickets, devices, users...).
 
 ## screenshot
@@ -37,10 +37,10 @@ Header set Access-Control-Allow-Headers "X-Requested-With, Content-Type, Origin,
 ### NGINX
 
 ```
-more_set_headers 'Access-Control-Allow-Origin: *';
-more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE';
-more_set_headers 'Access-Control-Allow-Credentials: true';
-more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization,App-Token,Session-Token';
+add_header 'Access-Control-Allow-Origin' '*';
+add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
+add_header 'Access-Control-Allow-Credentials' 'true';
+add_header 'Access-Control-Allow-Headers' 'Origin,Content-Type,Accept,Authorization,App-Token,Session-Token';
 ```
 
 
@@ -102,10 +102,17 @@ If you have a bug repoort or request feature, you can open issues in the [github
 
 Do you need professional support, training, others?
 
-Please contact the [DCS company](https://www.dcsit-group.com/) / send a mail to [dcs.glpi@dcsit-group.com](mailto:dcs.glpi@dcsit-group.com)
+Please contact the [DCS Easyware company](https://www.dcsit-group.com/) / send a mail to [dcs.glpi@dcsit-group.com](mailto:dcs.glpi@dcsit-group.com)
 
 
 ## Changelog
+
+### 2.0.1
+* compatibility with Grafana 9.x
+
+### 2.0.0 (unreleased)
+* compatibility with Grafana 8.x
+* rewrite part of code to be easier to read
 
 ### 1.4.0
 * manage variables for GLPI datasource (use the variable name with `[[]]` like `[[myvar]]` in the query)

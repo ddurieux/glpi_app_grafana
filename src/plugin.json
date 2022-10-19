@@ -3,19 +3,13 @@
   "name": "glpi",
   "id": "ddurieux-glpi-app",
 
-  "pages": [
-  ],
-
-  "css": {
-  },
-
   "info": {
     "description": "GLPI app for Grafana",
     "author": {
-      "name": "David Durieux && DCS",
+      "name": "David Durieux && DCS Easyware",
       "url": "https://github.com/ddurieux/glpi_app_grafana"
     },
-    "keywords": ["glpi app"],
+    "keywords": ["glpi app","glpi","David Durieux"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -23,8 +17,9 @@
     "links": [
       {"name": "Project site (github)", "url": "https://github.com/ddurieux/glpi_app_grafana"},
       {"name": "License & Terms", "url": "https://raw.githubusercontent.com/ddurieux/glpi_app_grafana/master/LICENSE"},
+      {"name": "Blog of David Durieux", "url": "https://david.durieux.family/"},
       {"name": "GLPI Project", "url": "http://glpi-project.org/"},
-      {"name": "DCS", "url": "https://www.dcsit-group.com/"}
+      {"name": "DCS Easyware", "url": "https://www.dcsit-group.com/"}
     ],
     "version": "2.1.0",
     "updated": "2022-10-18"
@@ -40,4 +35,3 @@
     "plugins": []
   }
 }
-
