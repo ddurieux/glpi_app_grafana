@@ -22,7 +22,10 @@
       {"name": "DCS Easyware", "url": "https://www.dcsit-group.com/"}
     ],
     "version": "2.1.0",
-    "updated": "2022-10-18"
+    "updated": "2022-10-18",
+    "screenshots": [
+      {"name": "dashboard", "path": "img/screenshot1.png"}
+    ]
   },
 
   "includes": [
