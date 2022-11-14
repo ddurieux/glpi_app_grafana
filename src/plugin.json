@@ -36,5 +36,6 @@
   "dependencies": {
     "grafanaDependency": ">=9.0.0",
     "plugins": []
-  }
+  },
+  "autoEnabled": true
 }

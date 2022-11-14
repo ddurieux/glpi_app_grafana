@@ -13,7 +13,7 @@
       "glpi app"
     ],
     "logos": {
-      "small": "../img/logo.svg",
+      "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
     "links": [
@@ -39,7 +39,8 @@
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaVersion": "7.x.x",
+    "grafanaVersion": "9.x.x",
+    "grafanaDependency": ">=9.0.0",
     "plugins": []
   },
   "routes": [
@@ -67,5 +68,6 @@
         }
       ]
     }
-  ]
+  ],
+  "autoEnabled": true
 }
