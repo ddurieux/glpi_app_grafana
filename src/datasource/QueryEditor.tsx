@@ -84,6 +84,12 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
+  removeColumn = (idx: number) => {
+    const { query, onRunQuery } = this.props;
+    query.columns.splice(idx, 1);
+    onRunQuery();
+  };
+
   onColumnValue = (event: any, idx: number) => {
     const { query, onRunQuery } = this.props;
     query.columns[idx].field = event.value;
@@ -110,6 +116,10 @@ export class QueryEditor extends PureComponent<Props> {
       const res = await this.props.datasource.getListSearchOptions(itemtype);
       this.searchOptionsDatetime.push({
         label: 'Do not use date search (get all data)',
+        value: -1,
+      });
+      this.searchOptions.push({
+        label: 'Do not use split (get all data)',
         value: -1,
       });
       for (let key of Object.keys(res.data)) {
@@ -269,6 +279,11 @@ export class QueryEditor extends PureComponent<Props> {
                 onChange={e => this.onColumnAliasValue(e, idx)}
                 type="text"
               />
+              <Button
+                onClick={e => this.removeColumn(idx)}
+              >
+                Remove
+              </Button>
             </div>
           ))}
         {table && (

@@ -148,7 +148,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           for (let dataInterval of dataIntervals) {
             if (frames[dataInterval.splitType] === undefined) {
               frames[dataInterval.splitType] = new MutableDataFrame({
-                name: dataInterval.splitType,
                 // refId: query.refId,
                 fields: [
                   { name: 'time', type: FieldType.time },

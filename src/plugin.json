@@ -11,8 +11,8 @@
     },
     "keywords": ["glpi app","glpi","David Durieux"],
     "logos": {
-      "small": "img/logo.svg",
-      "large": "img/logo.svg"
+      "small": "img/small.png",
+      "large": "img/small.png"
     },
     "links": [
       {"name": "Project site (github)", "url": "https://github.com/ddurieux/glpi_app_grafana"},
@@ -34,6 +34,7 @@
   ],
 
   "dependencies": {
+    "grafanaVersion": "9.x.x",
     "grafanaDependency": ">=9.0.0",
     "plugins": []
   },

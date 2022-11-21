@@ -48,7 +48,7 @@ export const defaultQuery: Partial<MyQuery> = {
     'http://127.0.0.1/glpi090/front/ticket.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=12&criteria%5B0%5D%5Bsearchtype%5D=equals&criteria%5B0%5D%5Bvalue%5D=notold&search=Rechercher&itemtype=Ticket&start=0',
   alias: '',
   datefield: -1,
-  dynamicsplit: 0,
+  dynamicsplit: -1,
   counter: true,
   nocounterval: 0,
   table: false,

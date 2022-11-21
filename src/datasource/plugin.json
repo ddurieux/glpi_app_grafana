@@ -13,8 +13,8 @@
       "glpi app"
     ],
     "logos": {
-      "small": "img/logo.svg",
-      "large": "img/logo.svg"
+      "small": "img/small.png",
+      "large": "img/small.png"
     },
     "links": [
       {
