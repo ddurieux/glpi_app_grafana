@@ -28,7 +28,7 @@ export class QueryEditor extends PureComponent<Props> {
   onQueryUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, queryUrl: event.target.value });
-    this.getListSearchOptions(false);
+    this.getListSearchOptions(false, event.target.value);
     // executes the query
     onRunQuery();
   };
@@ -102,12 +102,18 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
-  async getListSearchOptions(runQuery: boolean) {
+  async getListSearchOptions(runQuery: boolean, newUrl: string|null = null) {
     // Get the itemtype from queryUrl
     const query = defaults(this.props.query, defaultQuery);
 
     const queryUrl = decodeURI(query.queryUrl);
-    const searchq = queryUrl.split('.php?');
+    let searchq: any[] = [];
+
+    if (newUrl !== null) {
+      searchq = newUrl.split('.php?');
+    } else {
+      searchq = queryUrl.split('.php?');
+    }
     const url = searchq[0].split('/');
     const itemtype = url[url.length - 1];
 
@@ -179,7 +185,7 @@ export class QueryEditor extends PureComponent<Props> {
             value={queryUrl || ''}
             onChange={this.onQueryUrlChange}
             label="Search query Url"
-            tooltip="Do the search you want into GLPI, then copy the url and to finish, paste it here"
+            tooltip="Do the search you want into GLPI, then copy the url and to finish, paste it here."
             type="text"
           />
         </div>

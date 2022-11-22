@@ -188,10 +188,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       .datasourceRequest(options)
       .catch((err: any) => {
         if (err.data && err.data.error) {
-          throw {
-            message: 'GLPI error: ' + err.data.error.reason,
-            error: err.data.error,
-          };
+          throw new Error('GLPI error: ' + err.data.message);
         }
         return err;
       });
