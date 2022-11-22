@@ -92,7 +92,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
       <div className="gf-form-group">
         <div className="gf-form">
           <FormField
-            label="URL de GLPI"
+            label="GLPI URL"
             labelWidth={10}
             inputWidth={24}
             onChange={this.onUrlChange}
